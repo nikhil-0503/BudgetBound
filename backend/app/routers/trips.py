@@ -11,6 +11,7 @@ import datetime
 
 from app import models, schemas, auth
 from app.database import get_db
+from app.services.gemini import gemini_service
 
 # ReportLab imports for PDF generation
 from reportlab.lib.pagesizes import letter
@@ -174,12 +175,28 @@ def calculate_weighted_score(
     
     return round(weighted_score, 2)
 
-def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: int):
-    itineraries = []
+def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: int, travel_type: str = ""):
+    # --- Try Gemini first ---
     attractions = dest.attractions if isinstance(dest.attractions, list) else []
     if not attractions:
         attractions = ["Local Market", "Town Square", "Scenic Viewpoint", "Historical Museum"]
 
+    ai_result = gemini_service.generate_itinerary(
+        destination_name=dest.name,
+        state=dest.state,
+        category=dest.category,
+        attractions=attractions,
+        travel_type=travel_type or dest.category,
+        days=days,
+        comfort_score=comfort_score,
+        avg_food_cost=dest.avg_food_cost,
+        avg_activity_cost=dest.avg_activity_cost,
+    )
+    if ai_result is not None:
+        return ai_result
+
+    # --- Template fallback (original logic) ---
+    itineraries = []
     attr_count = len(attractions)
 
     for day in range(1, days + 1):
@@ -204,7 +221,7 @@ def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: 
         elif day == days:
             day_activities.append({
                 "time": "Morning",
-                "title": f"Souvenir Shopping at local bazaars",
+                "title": "Souvenir Shopping at local bazaars",
                 "cost": round(dest.avg_activity_cost * 0.5, 2)
             })
             day_activities.append({
@@ -222,7 +239,7 @@ def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: 
             activities_per_day = 1 if comfort_score < 30 else (2 if comfort_score <= 70 else 3)
             times = ["Morning", "Afternoon", "Evening"]
             idx_offset = (day - 2) * 2
-            
+
             for i in range(activities_per_day):
                 time_slot = times[i % 3]
                 attr_name = attractions[(idx_offset + i) % attr_count]
@@ -231,7 +248,7 @@ def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: 
                     "title": f"Sightseeing at {attr_name}",
                     "cost": round(dest.avg_activity_cost * 0.8, 2)
                 })
-            
+
             description = f"Full day of adventure and sightseeing in {dest.name}. Experiencing major attractions."
 
         itineraries.append({
@@ -267,7 +284,7 @@ def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends(get_d
 
     # Generate daily itinerary
     dest = selected_plan["destination"]
-    itineraries = generate_itinerary_days(dest, req.days, req.comfort_score)
+    itineraries = generate_itinerary_days(dest, req.days, req.comfort_score, req.travel_type)
 
     return {
         "destination": dest,

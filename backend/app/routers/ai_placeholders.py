@@ -2,67 +2,53 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
 
 from app import auth, models
-from app.services.openai import ai_travel_service
+from app.services.gemini import gemini_service
 
-router = APIRouter(prefix="/api/ai", tags=["AI Copilot Placeholders"])
+router = APIRouter(prefix="/api/ai", tags=["AI Copilot"])
 
-@router.post("/regenerate")
-async def ai_regenerate(
-    payload: Dict[str, Any],
-    current_user: models.User = Depends(auth.get_current_user)
-):
-    try:
-        trip_id = payload.get("trip_id")
-        instruction = payload.get("instruction")
-        result = await ai_travel_service.regenerate_trip(trip_id, instruction)
-        return result
-    except NotImplementedError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
-
-@router.post("/explain")
-async def ai_explain(
-    payload: Dict[str, Any],
-    current_user: models.User = Depends(auth.get_current_user)
-):
-    try:
-        trip_id = payload.get("trip_id")
-        result = await ai_travel_service.explain_budget_choices(trip_id)
-        return result
-    except NotImplementedError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
 
 @router.post("/chat")
 async def ai_chat(
     payload: Dict[str, Any],
-    current_user: models.User = Depends(auth.get_current_user)
+    current_user: models.User = Depends(auth.get_current_user),
 ):
+    messages = payload.get("messages", [])
     try:
-        messages = payload.get("messages", [])
-        result = await ai_travel_service.chat_assistant(messages)
-        return result
+        return await gemini_service.chat_assistant(messages)
     except NotImplementedError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(e))
+
+
+@router.post("/regenerate")
+async def ai_regenerate(
+    payload: Dict[str, Any],
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Trip regeneration via natural language is coming soon.",
+    )
+
+
+@router.post("/explain")
+async def ai_explain(
+    payload: Dict[str, Any],
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Budget explanation AI is coming soon.",
+    )
+
 
 @router.post("/personalized-plan")
 async def ai_personalized_plan(
     payload: Dict[str, Any],
-    current_user: models.User = Depends(auth.get_current_user)
+    current_user: models.User = Depends(auth.get_current_user),
 ):
-    try:
-        preferences = payload.get("preferences", {})
-        result = await ai_travel_service.generate_personalized_plan(preferences)
-        return result
-    except NotImplementedError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Personalized AI planner is coming soon.",
+    )

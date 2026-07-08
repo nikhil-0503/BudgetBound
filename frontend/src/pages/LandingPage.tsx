@@ -134,7 +134,7 @@ export const LandingPage: React.FC = () => {
               <Compass className="h-16 w-16 text-violet-600 mx-auto animate-bounce mb-4" />
               <h3 className="text-xl font-bold text-slate-850 dark:text-white mb-2">Deterministic Travel Engine</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md">
-                Analyzing 50+ locations, calculating seasonal accommodations, rail/flight pricing, and daily dining to maximize your travel savings.
+                Analyzing 50+ locations, calculating seasonal accommodations, rail / flight pricing, and daily dining to maximize your travel savings.
               </p>
             </div>
           </div>

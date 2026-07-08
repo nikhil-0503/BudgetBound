@@ -61,7 +61,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row transition-colors duration-200">
+    <div className="h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row transition-colors duration-200">
       
       {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm sticky top-0 z-50">
@@ -89,7 +89,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       {/* Sidebar Navigation */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 h-full bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -157,7 +157,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-x-hidden p-6 md:p-10 max-w-7xl mx-auto w-full">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 md:ml-64 w-full">
         {/* Overlay for mobile sidebar */}
         {sidebarOpen && (
           <div 

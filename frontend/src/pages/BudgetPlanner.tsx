@@ -76,7 +76,7 @@ interface PlanResult {
 export const BudgetPlanner: React.FC = () => {
   const navigate = useNavigate();
   const [startingCity, setStartingCity] = useState('');
-  const [budget, setBudget] = useState<number>(20000);
+  const [budget, setBudget] = useState<string>('20000');
   const [days, setDays] = useState<number>(4);
   const [travelType, setTravelType] = useState('Nature');
   const [travelersCount, setTravelersCount] = useState<number>(1);
@@ -95,7 +95,7 @@ export const BudgetPlanner: React.FC = () => {
       try {
         const data = JSON.parse(rawData);
         setStartingCity(data.startingCity || 'Bangalore');
-        setBudget(data.budget || 20000);
+        setBudget(String(data.budget || 20000));
         setDays(data.days || 4);
         setTravelType(data.travelType || 'Nature');
         setTravelersCount(data.travelersCount || 1);
@@ -141,7 +141,7 @@ export const BudgetPlanner: React.FC = () => {
 
   const getComfortLabel = (score: number) => {
     if (score < 30) return { label: 'Budget Traveler', desc: 'Sleeper Trains, local homestays & street eats.', color: 'text-emerald-500' };
-    if (score <= 70) return { label: 'Mid-Range Comfort', desc: 'AC Trains/Flights, 3-star hotels & dining.', color: 'text-violet-500' };
+    if (score <= 70) return { label: 'Mid-Range Comfort', desc: 'AC Trains / Flights, 3-star hotels & dining.', color: 'text-violet-500' };
     return { label: 'Luxury Stays', desc: 'Premium Flights, 4/5-star resorts & fine dining.', color: 'text-amber-500' };
   };
 
@@ -157,7 +157,8 @@ export const BudgetPlanner: React.FC = () => {
       setError('Please enter a starting city.');
       return;
     }
-    if (budget <= 0) {
+    const budgetNum = Number(budget);
+    if (!budget || isNaN(budgetNum) || budgetNum <= 0) {
       setError('Please enter a valid budget.');
       return;
     }
@@ -170,7 +171,7 @@ export const BudgetPlanner: React.FC = () => {
     try {
       const response = await api.post('/api/trips/plan', {
         starting_city: startingCity,
-        budget,
+        budget: budgetNum,
         days,
         travel_type: travelType,
         travelers_count: travelersCount,
@@ -276,7 +277,7 @@ export const BudgetPlanner: React.FC = () => {
                     required
                     min={1000}
                     value={budget}
-                    onChange={(e) => setBudget(Number(e.target.value))}
+                    onChange={(e) => setBudget(e.target.value)}
                     placeholder="20000"
                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
                   />
@@ -586,7 +587,7 @@ export const BudgetPlanner: React.FC = () => {
                     </h4>
                     <div className="flex flex-col gap-2.5 text-[11px] text-slate-500 dark:text-slate-400">
                       <div className="flex justify-between">
-                        <span>Local Auto/Cab Pool</span>
+                        <span>Local Auto / Cab Pool</span>
                         <span className="font-semibold text-slate-700 dark:text-slate-300">INR {Math.round(plan.costs.local_transport_cost * 0.6).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">

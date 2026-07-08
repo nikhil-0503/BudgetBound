@@ -246,7 +246,7 @@ export const DestinationExplorer: React.FC = () => {
                 {/* Pricing footprint */}
                 <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20 flex justify-between items-center text-xs">
                   <div>
-                    <span className="text-[9px] text-slate-400 block font-bold uppercase">Lodging/Night (Avg)</span>
+                    <span className="text-[9px] text-slate-400 block font-bold uppercase">Lodging / Night (Avg)</span>
                     <span className="font-bold text-slate-800 dark:text-white">₹{dest.avg_hotel_cost.toLocaleString()}</span>
                   </div>
 
