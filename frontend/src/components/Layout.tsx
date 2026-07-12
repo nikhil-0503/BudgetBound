@@ -5,7 +5,6 @@ import { useTheme } from '../context/ThemeContext';
 import { 
   LayoutDashboard, 
   Compass, 
-  Search, 
   Map, 
   Sparkles, 
   LogOut, 
@@ -54,8 +53,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const navLinks = [
     { to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { to: '/planner', label: 'Budget Planner', icon: <Compass size={20} /> },
-    { to: '/reverse-search', label: 'Reverse Search', icon: <Search size={20} /> },
+    { to: '/planner', label: 'Trip Flow', icon: <Compass size={20} /> },
     { to: '/explorer', label: 'Destination Explorer', icon: <Map size={20} /> },
     { to: '/ai-companion', label: 'AI Companion', icon: <Sparkles size={20} /> },
   ];

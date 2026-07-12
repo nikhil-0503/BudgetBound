@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
+import { TripFlowGuide } from '../components/TripFlowGuide';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -67,7 +68,9 @@ export const DestinationDetail: React.FC = () => {
       days: 4,
       travelType: dest.category,
       travelersCount: 1,
-      destName: dest.name
+      destName: dest.name,
+      destinationId: dest.id,
+      flowMode: 'plan'
     }));
     navigate('/planner');
   };
@@ -122,6 +125,18 @@ export const DestinationDetail: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8">
+
+      <TripFlowGuide
+        eyebrow="One destination, one shortcut"
+        title="This page is for inspecting a destination before you plan it"
+        description="Read the average costs, attractions, and season info first. If it looks right, the button below sends those values to the Budget Planner so you can build a full itinerary around this destination type."
+        ctaLabel="Send this to planner"
+        steps={[
+          { title: 'Review the destination', description: 'Check costs, attractions, and the best season before you commit.' },
+          { title: 'Use the plan button', description: 'Plan Itinerary Here pre-fills the planner with this destination category.' },
+          { title: 'Generate the trip', description: 'Adjust budget and duration, then let the planner build the final trip.' }
+        ]}
+      />
       
       {/* Header back */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

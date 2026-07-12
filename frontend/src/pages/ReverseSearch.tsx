@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { 
-  Search, 
-  Wallet, 
-  Calendar, 
-  Compass, 
-  Loader, 
+import { TripFlowGuide } from '../components/TripFlowGuide';
+import {
+  Search,
+  Wallet,
+  Calendar,
+  Compass,
+  Loader,
   AlertTriangle,
   ArrowRight,
   Star,
   Sliders,
-  MapPin
+  MapPin,
+  Map
 } from 'lucide-react';
+import { LocationPickerModal } from '../components/LocationPickerModal';
+
 
 interface DestinationResult {
   destination: {
@@ -48,9 +52,10 @@ export const ReverseSearch: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<DestinationResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const travelTypes = [
-    'Nature', 'Adventure', 'Family', 'Religious', 
+    'Nature', 'Adventure', 'Family', 'Religious',
     'Beach', 'City Exploration', 'Romantic', 'Solo'
   ];
 
@@ -116,7 +121,7 @@ export const ReverseSearch: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      
+
       {/* Title */}
       <div>
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
@@ -128,8 +133,20 @@ export const ReverseSearch: React.FC = () => {
         </p>
       </div>
 
+      <TripFlowGuide
+        eyebrow="Best for users who are still deciding where to go"
+        title="Use Reverse Search when you know your budget, but not the destination"
+        description="This screen scans the destination database and ranks the best options for your budget. Pick one result, and it sends the same values into the planner so you can build the final itinerary."
+        ctaLabel="Find matching destinations"
+        steps={[
+          { title: 'Set your limits', description: 'Tell the app your budget, starting city, days, and comfort level.' },
+          { title: 'Compare top matches', description: 'The app ranks destinations by value score instead of locking you into one place.' },
+          { title: 'Move to planner', description: 'Select a destination and continue into the Budget Planner to generate the full trip.' }
+        ]}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Form panel */}
         <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
           <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
@@ -140,16 +157,26 @@ export const ReverseSearch: React.FC = () => {
           <form onSubmit={handleSearch} className="flex flex-col gap-5">
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Starting From</label>
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
-                <input 
-                  type="text"
-                  required
-                  value={startingCity}
-                  onChange={(e) => setStartingCity(e.target.value)}
-                  placeholder="e.g. Bangalore, Delhi"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
-                />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <MapPin className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <input
+                    type="text"
+                    required
+                    value={startingCity}
+                    onChange={(e) => setStartingCity(e.target.value)}
+                    placeholder="e.g. Bangalore, Delhi"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMapModalOpen(true)}
+                  className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center"
+                  title="Pick on map"
+                >
+                  <Map size={18} />
+                </button>
               </div>
             </div>
 
@@ -157,7 +184,7 @@ export const ReverseSearch: React.FC = () => {
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Total Budget (INR)</label>
               <div className="relative">
                 <Wallet className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
-                <input 
+                <input
                   type="number"
                   required
                   min={1000}
@@ -174,7 +201,7 @@ export const ReverseSearch: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Duration (Days)</label>
                 <div className="relative">
                   <Calendar className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
-                  <input 
+                  <input
                     type="number"
                     required
                     min={1}
@@ -189,7 +216,7 @@ export const ReverseSearch: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Travelers</label>
-                <input 
+                <input
                   type="number"
                   required
                   min={1}
@@ -202,7 +229,7 @@ export const ReverseSearch: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Trip Category</label>
-              <select 
+              <select
                 value={travelType}
                 onChange={(e) => setTravelType(e.target.value)}
                 className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white appearance-none"
@@ -218,7 +245,7 @@ export const ReverseSearch: React.FC = () => {
                 <span className="uppercase tracking-wider">Comfort vs Savings</span>
                 <span className="text-violet-600 font-bold">{comfortScore}%</span>
               </div>
-              <input 
+              <input
                 type="range"
                 min="0"
                 max="100"
@@ -285,14 +312,14 @@ export const ReverseSearch: React.FC = () => {
           {!loading && hasSearched && results.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wider">Top 5 Best Matches</h3>
-              
+
               <div className="flex flex-col gap-4">
                 {results.map((res, index) => (
-                  <div 
+                  <div
                     key={res.destination.id}
                     className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row gap-5 items-start justify-between relative group hover:border-violet-500/40 transition-colors"
                   >
-                    
+
                     {/* Left details */}
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center gap-3 flex-wrap">
@@ -355,6 +382,13 @@ export const ReverseSearch: React.FC = () => {
 
       </div>
 
+      <LocationPickerModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        onSelectLocation={(city) => setStartingCity(city)}
+        initialCity={startingCity}
+      />
     </div>
   );
 };
+

@@ -1,205 +1,263 @@
 # BudgetBound — Budget-First Travel Planning Platform
 
-BudgetBound is a comprehensive, production-quality full-stack travel planning platform built to revolutionize the travel planning lifecycle by introducing a **budget-first discovery model**.
+BudgetBound is a full-stack travel planning platform built around a **budget-first discovery model**.
 
 Instead of asking users where they want to go first, BudgetBound flips the travel discovery equation:
-1. **What is your budget?** (e.g., ₹15,000, ₹50,000, etc.)
-2. **Where are you starting from?** (e.g., Bangalore, Delhi, Mumbai, Kolkata, etc.)
-3. **How many days do you have?** (e.g., 3 days, 5 days, etc.)
-4. **What type of trip (Beach, Adventure, Nature, Religious, Romantic, etc.) do you want?**
 
-Based on these constraints and a comfort slider (0-100), the platform dynamically evaluates, scores, and ranks destinations in its database to recommend the single best getaway. It then generates a complete day-by-day sightseeing itinerary, predicts hidden expenses (contingencies, taxes, local transit), compares planned vs actual spending in visual ledgers, and downloads offline PDF itineraries.
+1. **What is your budget?** (e.g., ₹15,000, ₹50,000)
+2. **Where are you starting from?** (e.g., Bangalore, Delhi, Mumbai — with an interactive map picker)
+3. **How many days do you have?** (e.g., 3 days, 5 days)
+4. **What type of trip do you want?** (Beach, Adventure, Nature, Religious, Romantic, City Exploration, etc.)
 
----
-
-## 🛠️ Complete Technical Stack
-
-### Frontend Architecture
-* **Framework:** React 18 with TypeScript (Vite bundler).
-* **Styling & Theme Engine:** Tailwind CSS v4 (incorporating custom class-based dark mode variants and glassmorphism styling).
-* **Routing:** React Router v6 (`react-router-dom`) with Route Guards separating public anonymous pages from protected dashboard modules.
-* **Data Visualizations:** Recharts (rendering comparison bar graphs and expense category pie charts adapting dynamically to dark/light theme properties).
-* **Icons:** Lucide React.
-* **API Client:** Axios wrapped with request interceptors to automatically attach JWT authorization headers from local cache.
-
-### Backend Architecture
-* **Framework:** FastAPI (Python 3.11/3.12) running under an asynchronous Uvicorn server.
-* **Database & ORM:** PostgreSQL (production database) with a transparent **SQLite auto-fallback engine** (automatically creating `budgetbound.db` locally if the primary database is offline, ensuring zero-setup dev runnability). Managed via SQLAlchemy ORM.
-* **Authentication:** Stateless JWT bearer tokens signed using HMAC-SHA256, alongside bcrypt password hashing via `passlib`.
-* **Reporting:** ReportLab (generating dynamic, multi-page vector PDF travel plans containing tabular summaries, allocations, and day-by-day itineraries).
+Based on these constraints and a comfort slider (0–100), the platform scores and ranks destinations, generates a day-by-day itinerary, predicts hidden expenses (taxes, local transit, emergency reserve), compares planned vs. actual spending, and exports offline PDF itineraries.
 
 ---
 
-## 🗺️ Project Structure
+## Key Features
 
-Below is the directory map of the BudgetBound repository:
+| Module | Route | Description |
+|--------|-------|-------------|
+| **Dashboard** | `/dashboard` | Trip summaries, budget vs. estimated vs. actual charts, expense category breakdown |
+| **Trip Flow** | `/planner` | Budget-first planner — set constraints, get the best destination, full cost breakdown, and itinerary |
+| **Destination Discovery** | `/reverse-search` | Same planner UI in *discover* mode — returns top 5 ranked destinations without committing to a plan |
+| **Destination Explorer** | `/explorer`, `/explorer/:id` | Paginated catalog with search, category filters, and detailed destination pages |
+| **Budget Optimizer** | `/optimizer/:tripId` | Rules-based cost optimization (hotel downgrade, transit swap, itinerary trim, surplus upgrade) |
+| **Expense Tracker** | `/expenses/:tripId` | Log transactions by category, compare against estimates, view difference stats |
+| **AI Companion** | `/ai-companion` | Groq-powered travel chat assistant (other AI tabs are planned) |
+
+---
+
+## Technical Stack
+
+### Frontend
+- **Framework:** React 19 with TypeScript (Vite 8)
+- **Styling:** Tailwind CSS v4 with class-based dark mode and glassmorphism
+- **Routing:** React Router v7 with inline `ProtectedRoute` / `AnonymousRoute` guards in `App.tsx`
+- **Charts:** Recharts (budget comparison bars, expense category pie charts)
+- **Maps:** Leaflet + React-Leaflet (interactive starting-city picker via OpenStreetMap/Nominatim)
+- **Icons:** Lucide React
+- **HTTP Client:** Axios with JWT request interceptors and 401 session handling
+
+### Backend
+- **Framework:** FastAPI (Python 3.11) on Uvicorn
+- **Database:** PostgreSQL with automatic **SQLite fallback** (`budgetbound.db`) when PostgreSQL is unreachable
+- **ORM:** SQLAlchemy 2.x
+- **Auth:** JWT bearer tokens (HMAC-SHA256) + bcrypt password hashing via `passlib`
+- **PDF Reports:** ReportLab (multi-page travel plan PDFs)
+- **AI:** Groq API (`gemini.py` service) for itinerary generation and chat; template fallback when no API key is set
+
+---
+
+## Project Structure
 
 ```
 BudgetBound/
-├── docker-compose.yml          # Multistage container orchestrator
-├── README.md                   # Full platform guide and installation scripts
+├── docker-compose.yml          # PostgreSQL + backend + frontend orchestration
+├── README.md
 ├── backend/
-│   ├── Dockerfile              # Slim Python container configuration
-│   ├── main.py                 # FastAPI app entry point (mounts, seeding, CORS)
-│   ├── requirements.txt        # Backend dependencies list
+│   ├── Dockerfile
+│   ├── main.py                 # FastAPI entry point, CORS, auto-seed on startup
+│   ├── requirements.txt
 │   └── app/
-│       ├── auth.py             # JWT token signing, validation, and password hashing
-│       ├── config.py           # Pydantic BaseSettings class loading ENV variables
-│       ├── database.py         # SQLAlchemy engine setup and SQLite fallback fallback
-│       ├── models.py           # Database tables schemas (User, Destination, Trip, Itinerary, etc.)
-│       ├── schemas.py          # Pydantic schemas validating input/output JSON payloads
-│       ├── seed.py             # Pre-seeding script containing 50 Indian destinations
+│       ├── auth.py             # JWT signing, validation, password hashing
+│       ├── config.py           # Pydantic settings (DB, JWT, env)
+│       ├── database.py         # SQLAlchemy engine with PostgreSQL → SQLite fallback
+│       ├── models.py           # User, Destination, Trip, Itinerary, Expense
+│       ├── schemas.py          # Pydantic request/response schemas
+│       ├── seed.py             # 60 pre-seeded Indian destinations
 │       ├── routers/
-│       │   ├── auth.py         # Auth endpoints (Signup, Signin, Me profile)
-│       │   ├── destinations.py # Destination Catalog endpoints (Pagination, filters, unique lists)
-│       │   ├── expenses.py     # Expense Ledger endpoints (CRUD transactions, difference statistics)
-│       │   ├── trips.py        # Core Plan generator, regional calculators, rules optimizer, and ReportLab PDF builder
-│       │   └── ai_placeholders.py # Abstract endpoints routing to AI service boundaries
+│       │   ├── auth.py         # Register, login, profile
+│       │   ├── destinations.py # Catalog, filters, detail
+│       │   ├── expenses.py     # Expense CRUD and trip stats
+│       │   ├── trips.py        # Planning, scoring, optimizer, PDF export
+│       │   └── ai_placeholders.py # AI chat and planned AI endpoints
 │       └── services/
-│           └── openai.py       # OpenAI interface boundary class ready for future API keys hook
+│           ├── gemini.py       # Groq-powered itinerary + chat (active)
+│           └── openai.py       # OpenAI interface stub for future integration
 └── frontend/
-    ├── Dockerfile              # Multi-stage build (Node build compile -> Nginx serve)
+    ├── Dockerfile              # Node build → Nginx static serve
     ├── package.json
-    ├── vite.config.ts          # Vite bundler configuration utilizing @tailwindcss/vite
+    ├── vite.config.ts
     └── src/
-        ├── App.tsx             # Route declarations wrapped with context provider hierarchies
-        ├── index.css           # Tailwind v4 import and class-based variant definition
-        ├── main.tsx            # Entry point rendering strict mode and ThemeProvider
+        ├── App.tsx             # Routes and auth guards
+        ├── main.tsx            # ThemeProvider wrapper
+        ├── index.css           # Tailwind v4 + dark variant
         ├── components/
-        │   ├── Layout.tsx      # Sidebar Shell structure with page headers and theme toggle
-        │   └── ProtectedRoute.tsx # Route guards checking AuthContext status
+        │   ├── Layout.tsx              # Sidebar shell, nav, theme toggle
+        │   ├── LocationPickerModal.tsx # Leaflet map + city search
+        │   └── TripFlowGuide.tsx       # Step-by-step planner guide UI
         ├── context/
-        │   ├── AuthContext.tsx # Context managing active JWT sessions
-        │   └── ThemeContext.tsx# Context managing light/dark document classes
+        │   ├── AuthContext.tsx
+        │   └── ThemeContext.tsx
         ├── services/
-        │   └── api.ts          # Axios wrapper instance pre-configured for /api calls
+        │   └── api.ts          # Axios instance (http://localhost:8000)
         └── pages/
-            ├── LandingPage.tsx # SaaS homepage showcasing screenshots, testimonials, and features
-            ├── Login.tsx       # Sign in card with validation errors
-            ├── Register.tsx    # Sign up form
-            ├── Dashboard.tsx   # Aggregations, Recharts comparators, and logged travel cards
-            ├── BudgetPlanner.tsx # Main sliding form with gauges, itinerary checklists, and buffers
-            ├── ReverseSearch.tsx # Value-ranking query panel outputting top 5 matching destinations
-            ├── DestinationExplorer.tsx # Catalog grid implementing paging, category tags, and search
-            ├── DestinationDetail.tsx # Detailed view containing base cost items and recommended schedules
-            ├── BudgetOptimizer.tsx # Side-by-side comparative table executing rules-based optimizations
-            ├── ExpenseTracker.tsx # Interactive transaction logs and estimation difference graphs
-            └── AICompanion.tsx # LLM placeholder workspace (Chat, Planner, Regenerator, Explain)
+            ├── LandingPage.tsx
+            ├── Login.tsx / Register.tsx
+            ├── Dashboard.tsx
+            ├── BudgetPlanner.tsx       # Plan + discover modes (replaces standalone reverse search)
+            ├── DestinationExplorer.tsx / DestinationDetail.tsx
+            ├── BudgetOptimizer.tsx
+            ├── ExpenseTracker.tsx
+            └── AICompanion.tsx
 ```
 
 ---
 
-## ⚡ Core Architectural Engines & Algorithms
+## Core Algorithms
 
-### 1. Weighted Destination Scoring Matrix
-To return the most logical destination, the backend scoring engine evaluates all pre-seeded locations using a weighted matrix:
+### 1. Weighted Destination Scoring
+
 $$\text{Score} = 40\% \times \text{Budget Fit} + 25\% \times \text{Category Match} + 15\% \times \text{Rating} + 10\% \times \text{Comfort Match} + 10\% \times \text{Duration Suitability}$$
 
-1. **Budget Fit (40% weight):**
-   * If the calculated trip cost $C$ is under the user's budget $B$, the fit score is $1.0 - \frac{B - C}{B}$ (encouraging destinations that maximize comfort close to the budget limits).
-   * If the trip cost exceeds the budget, it is heavily penalized: $\max\left(0.0, 1.0 - \frac{C-B}{B} \times 4\right)$.
-2. **Category Match (25% weight):**
-   * Blends the main destination category match (60% weight) with the specific sub-category score (40% weight) loaded from database columns (e.g. `nature_score`, `adventure_score`). This allows multi-dimensional locations (like Rishikesh, which has both high `adventure` and `religious` profiles) to rise to the top dynamically.
-3. **Rating (15% weight):**
-   * Normalized rating: $\frac{\text{Rating}}{5.0}$.
-4. **Comfort Match (10% weight):**
-   * Computes differences between user comfort settings and destination baseline profiles: $1.0 - \frac{|\text{Comfort Slider} - \text{Comfort Level}|}{100}$.
-5. **Duration Suitability (10% weight):**
-   * Scores duration alignment: $1.0 - \frac{|\text{Requested Days} - \text{Recommended Duration}|}{5}$.
+- **Budget Fit (40%):** Rewards destinations that use budget efficiently; heavily penalizes over-budget options
+- **Category Match (25%):** Blends main category (60%) with sub-category scores from DB columns (`nature_score`, `adventure_score`, etc.)
+- **Rating (15%):** Normalized to 0–1 from a 5-star scale
+- **Comfort Match (10%):** Alignment between user comfort slider and destination `comfort_level`
+- **Duration Suitability (10%):** Alignment with `recommended_duration`
 
-### 2. Regional Surcharges & Starting City Logic
-To make the starting location impact travel recommendations, the platform implements a regional routing calculator. Destinations and starting cities are grouped into region clusters (North, South, East, West).
-* **Intra-Region Travel:** If the starting city region matches the destination state region, transport base cost is discounted by **55%** (simulating shorter local drives, bus transits, or local trains).
-* **Cross-Country Travel:** Opposite-region matches (e.g. North starting city to South destination) apply a **1.45x surcharge multiplier** on baseline transport costs.
-* **Adjacent Region Travel:** Calculated at a standard **1.0x rate**.
-* *Changing the starting city immediately recalculates travel costs, modifying the budget fit score, and recommending a different optimal destination.*
+### 2. Regional Surcharges
+
+Starting city and destination are mapped to region clusters (North, South, East, West):
+
+- **Same region:** 0.45× transport multiplier (55% discount)
+- **Opposite regions** (e.g. North ↔ South): 1.45× surcharge
+- **Adjacent regions:** 1.0× standard rate
 
 ### 3. Rules-Based Budget Optimizer
-Allows users to optimize an expensive trip by applying deterministic optimization policies:
-* **Hotel Downgrade:** Reduces lodging category (Luxury $\rightarrow$ Mid-Range, Mid-Range $\rightarrow$ Budget), saving 35% to 50% on accommodation.
-* **Transit Swap:** Swaps flights to trains for trips with high comfort scores, replacing transit costs with train estimates.
-* **Itinerary Streamlining:** Reduces daily activity count by 50%, lowering tickets and entrance fees.
-* **Surplus Upgrade:** If the trip is under-budget with remaining cash surplus, it suggests upgrading to luxury lodging.
+
+- **Hotel Downgrade:** Luxury → Mid-Range → Budget (35–50% lodging savings)
+- **Transit Swap:** Replace flights with trains for high-comfort trips
+- **Itinerary Streamlining:** Halve daily activities to cut ticket costs
+- **Surplus Upgrade:** Suggest luxury lodging when under budget
 
 ---
 
-## 🌓 Persistent Global Theme System
+## Theme System
 
-The application implements a custom class-based dark/light theme switcher backed by a React Context hook (`ThemeContext`):
-* **Tailwind v4 Integration:** Enabled class-based listening by declaring the variant inside the CSS file:
-  ```css
-  @variant dark (&:where(.dark, .dark *));
-  ```
-* **Persistence:** User selections are saved to `localStorage` under the key `theme` with values `"light"` or `"dark"`. The selection is restored on application startup, and remains persistent after registrations, login sessions, and logouts.
-* **Responsive Visuals:** Cards, inputs, layouts, and Recharts components adapt instantly. Recharts Tooltips read the theme state to dynamically adjust backgrounds and text styles (`#1e293b` vs `rgba(255,255,255,0.9)`), ensuring readability in both modes.
+Class-based dark/light mode via `ThemeContext`:
 
----
+```css
+@variant dark (&:where(.dark, .dark *));
+```
 
-## 🚀 Step-by-Step Installation & Setup
-
-### Method 1: Local Development (Bare Metal)
-
-#### Prerequisites
-* Node.js v18+
-* Python 3.10+
-* PostgreSQL (Optional, defaults to SQLite auto-fallback automatically)
-
-#### 1. Start the Backend API
-1. Navigate to the `backend/` directory:
-   ```bash
-   cd backend
-   ```
-2. Create and source a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Launch the Uvicorn server:
-   ```bash
-   uvicorn main:app --reload
-   ```
-   * *Note: The server checks for PostgreSQL. If not found, it gracefully initializes a local SQLite file `budgetbound.db` and seeds all 50 destinations instantly.*
-
-#### 2. Start the Frontend Client
-1. Navigate to the `frontend/` directory in a new terminal window:
-   ```bash
-   cd frontend
-   ```
-2. Install Node packages:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-4. Access the web application at `http://localhost:5173`.
+Selection persists in `localStorage` under the key `theme`. Recharts tooltips adapt background and text colors for both modes.
 
 ---
 
-### Method 2: Multi-Container Deployment (Docker Compose)
+## AI Integration (Groq)
 
-Deploy the entire stack—including PostgreSQL Database, FastAPI Backend, and React Frontend—using Docker:
+The backend uses the **Groq API** (not OpenAI) for AI features:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Itinerary generation** | Active | Used during trip planning; falls back to templates if `GROQ_API_KEY` is missing |
+| **AI chat** (`/api/ai/chat`) | Active | Interactive travel companion in AI Companion page |
+| **Trip regeneration** | Planned | Returns 501 |
+| **Budget explanation** | Planned | Returns 501 |
+| **Personalized planner** | Planned | Returns 501 |
+
+Set `GROQ_API_KEY` in `backend/.env` to enable AI. Default model is `gemma2-9b-it`; override with `GROQ_MODEL`.
+
+---
+
+## Environment Variables
+
+Create `backend/.env` with:
+
+```env
+# Database (PostgreSQL; falls back to SQLite if unreachable)
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/budgetbound
+
+# Auth
+JWT_SECRET_KEY=your_secret_key_here
+
+# Groq AI (optional — templates used when absent)
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=gemma2-9b-it
+```
+
+The frontend API base URL is set in `frontend/src/services/api.ts` (`http://localhost:8000`).
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.11+
+- PostgreSQL (optional — SQLite fallback works out of the box)
+
+### Local Development
+
+**1. Backend**
+
+```bash
+cd backend
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+On startup, the server creates tables, attempts PostgreSQL, falls back to `budgetbound.db` if needed, and seeds 60 destinations.
+
+- API: `http://localhost:8000`
+- Swagger docs: `http://localhost:8000/docs`
+
+**2. Frontend** (separate terminal)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+App: `http://localhost:5173`
+
+### Docker Compose
+
 ```bash
 docker-compose up --build
 ```
-* **React Web Frontend:** `http://localhost:3000`
-* **FastAPI documentation (Swagger Docs):** `http://localhost:8000/docs`
-* **PostgreSQL Port:** `5432`
+
+| Service | URL |
+|---------|-----|
+| Frontend | `http://localhost:3000` |
+| Backend API / Docs | `http://localhost:8000` / `http://localhost:8000/docs` |
+| PostgreSQL | `localhost:5432` |
 
 ---
 
-## 🔍 Database Seed Details (50 Destinations)
-The seeding database covers scenic Indian locations distributed across 8 categories:
-* **Beach:** North Goa, South Goa, Gokarna, Varkala, Havelock Island, Kovalam, Pondicherry, etc.
-* **Nature:** Munnar, Coorg, Ooty, Wayanad, Kodaikanal, Araku Valley, Srinagar, etc.
-* **Adventure:** Manali, Leh Ladakh, Rishikesh, Auli, Spiti Valley, Bir Billing, Gulmarg, etc.
-* **Romantic:** Darjeeling, Nainital, Udaipur, Alleppey Houseboat, Shimla, Mount Abu, Kasauli, etc.
-* **Religious:** Kedarnath, Varanasi, Haridwar, Rishikesh Temple, Amritsar, Tirupati, Rameshwaram, etc.
-* **City Exploration:** Bengaluru, Mumbai, Delhi, Hyderabad, Kolkata, Jaipur, Chandigarh, etc.
-* **Solo:** Hampi, Ziro Valley, Mcleodganj, Kasol, Gokarna Hostels, Pushkar, Vashisht, etc.
-* **Family:** Mahabaleshwar, Lonavala, Ooty Family, South Goa Resorts, Mysore, Mount Abu Parks, etc.
+## API Overview
+
+| Prefix | Endpoints |
+|--------|-----------|
+| `/api/auth` | `POST /register`, `POST /login`, `POST /login-json`, `GET /me` |
+| `/api/destinations` | `GET /`, `GET /states`, `GET /categories`, `GET /{id}` |
+| `/api/trips` | `POST /plan`, `POST /`, `GET /`, `GET /{id}`, `DELETE /{id}`, `GET /reverse/search`, `POST /{id}/optimize`, `POST /{id}/optimize/apply`, `GET /{id}/pdf` |
+| `/api/expenses` | `POST /`, `GET /trip/{trip_id}`, `PUT /{id}`, `DELETE /{id}`, `GET /trip/{trip_id}/stats` |
+| `/api/ai` | `POST /chat`, `POST /regenerate`, `POST /explain`, `POST /personalized-plan` |
+| `/api/dashboard` | `GET /stats` |
+
+---
+
+## Database Seed (60 Destinations)
+
+Six categories, 10 destinations each:
+
+| Category | Examples |
+|----------|----------|
+| **Beach** | North Goa, South Goa, Gokarna, Varkala, Havelock Island, Kovalam, Pondicherry |
+| **Nature** | Munnar, Coorg, Ooty, Wayanad, Kodaikanal, Araku Valley |
+| **Adventure** | Manali, Leh Ladakh, Rishikesh, Auli, Spiti Valley, Bir Billing, Gulmarg |
+| **Religious** | Kedarnath, Varanasi, Haridwar, Amritsar, Tirupati, Rameshwaram |
+| **City Exploration** | Mumbai, Delhi, Bengaluru, Hyderabad, Kolkata, Jaipur, Chandigarh, Chennai |
+| **Romantic** | Srinagar, Udaipur, Darjeeling, Nainital, Alleppey Houseboat, Shimla |
+
+Each destination includes expanded metadata: `budget_tier`, `recommended_duration`, `comfort_level`, and per-category affinity scores used by the scoring engine.

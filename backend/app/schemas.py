@@ -124,6 +124,7 @@ class TripPlanRequest(BaseModel):
     travel_type: str
     travelers_count: int = 1
     comfort_score: int = 50
+    destination_id: Optional[int] = None
 
 # Trip Output Schemas
 class TripOut(BaseModel):

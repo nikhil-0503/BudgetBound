@@ -1,0 +1,25 @@
+# Python
+backend/venv/
+venv/
+.venv/
+
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment variables
+.env
+backend/.env
+
+# Database (if generated locally)
+*.db
+
+# Node
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Logs
+*.log

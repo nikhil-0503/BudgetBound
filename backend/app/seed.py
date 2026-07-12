@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.models import Destination
 
 DESTINATIONS_DATA = [
-    # BEACH (10)
+    # BEACH (15)
     {
         "name": "North Goa", "state": "Goa", "avg_travel_cost": 3000.0, "avg_hotel_cost": 2200.0,
         "avg_food_cost": 800.0, "avg_activity_cost": 600.0, "rating": 4.5, "category": "Beach",
@@ -63,8 +63,38 @@ DESTINATIONS_DATA = [
         "best_season": "October to February", "description": "A sacred beach destination on the Bay of Bengal, famous for sand art and high tides.",
         "attractions": ["Puri Beach", "Golden Beach", "Jagannath Temple", "Swargadwar Beach"]
     },
-    
-    # NATURE (10)
+    {
+        "name": "Daman", "state": "Daman & Diu", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 300.0, "rating": 4.1, "category": "Beach",
+        "best_season": "October to March", "description": "A quiet coastal union territory with Portuguese forts, palm-lined shores, and relaxed promenades.",
+        "attractions": ["Devka Beach", "Jampore Beach", "Fort of Moti Daman", "Mirasol Lake Garden"]
+    },
+    {
+        "name": "Tarkarli", "state": "Maharashtra", "avg_travel_cost": 2200.0, "avg_hotel_cost": 1800.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 900.0, "rating": 4.5, "category": "Beach",
+        "best_season": "October to March", "description": "Crystal-clear waters ideal for scuba diving, houseboats, and Sindhudurg fort excursions.",
+        "attractions": ["Tarkarli Beach", "Scuba Diving Point", "Sindhudurg Fort", "Devbag Beach"]
+    },
+    {
+        "name": "Neil Island", "state": "Andaman & Nicobar", "avg_travel_cost": 7500.0, "avg_hotel_cost": 3800.0,
+        "avg_food_cost": 1000.0, "avg_activity_cost": 1800.0, "rating": 4.6, "category": "Beach",
+        "best_season": "October to May", "description": "A slow-paced island paradise with coral reefs, lagoons, and bicycle-friendly village roads.",
+        "attractions": ["Bharatpur Beach", "Laxmanpur Beach", "Natural Bridge", "Sitapur Beach"]
+    },
+    {
+        "name": "Diu", "state": "Daman & Diu", "avg_travel_cost": 2000.0, "avg_hotel_cost": 1700.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 350.0, "rating": 4.2, "category": "Beach",
+        "best_season": "October to March", "description": "A fortified island town blending Portuguese heritage with calm beaches and seafood shacks.",
+        "attractions": ["Nagoa Beach", "Diu Fort", "St. Paul's Church", "Ghogla Beach"]
+    },
+    {
+        "name": "Lakshadweep", "state": "Lakshadweep", "avg_travel_cost": 9000.0, "avg_hotel_cost": 5000.0,
+        "avg_food_cost": 1100.0, "avg_activity_cost": 2200.0, "rating": 4.7, "category": "Beach",
+        "best_season": "October to May", "description": "Remote coral atolls with turquoise lagoons, snorkeling, and pristine white-sand beaches.",
+        "attractions": ["Bangaram Island", "Agatti Lagoon", "Kadmat Beach", "Scuba Reefs"]
+    },
+
+    # NATURE (15)
     {
         "name": "Munnar", "state": "Kerala", "avg_travel_cost": 3000.0, "avg_hotel_cost": 2000.0,
         "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.7, "category": "Nature",
@@ -125,8 +155,38 @@ DESTINATIONS_DATA = [
         "best_season": "June to September", "description": "Western Ghats hill station blooming with waterfalls, fog, and dense green hills during monsoon.",
         "attractions": ["Bhushi Dam", "Tiger's Point", "Karla Caves", "Lohagad Fort"]
     },
+    {
+        "name": "Chikmagalur", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 1900.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Nature",
+        "best_season": "September to March", "description": "Coffee country with misty Mullayanagiri peaks, waterfalls, and plantation homestays.",
+        "attractions": ["Mullayanagiri Peak", "Hebbe Falls", "Baba Budangiri", "Coffee Estate Tour"]
+    },
+    {
+        "name": "Idukki", "state": "Kerala", "avg_travel_cost": 2800.0, "avg_hotel_cost": 1700.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 450.0, "rating": 4.4, "category": "Nature",
+        "best_season": "September to May", "description": "Arch dam vistas, spice gardens, and rolling green hills in Kerala's high ranges.",
+        "attractions": ["Idukki Arch Dam", "Ramakkalmedu", "Hill View Park", "Spice Plantation Walk"]
+    },
+    {
+        "name": "Kalimpong", "state": "West Bengal", "avg_travel_cost": 3200.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 350.0, "rating": 4.3, "category": "Nature",
+        "best_season": "March to May, September to December", "description": "Quiet Himalayan town with flower nurseries, monasteries, and Kanchenjunga viewpoints.",
+        "attractions": ["Deolo Hill", "Morgan House", "Durpin Monastery", "Cactus Nursery"]
+    },
+    {
+        "name": "Saputara", "state": "Gujarat", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1500.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 300.0, "rating": 4.1, "category": "Nature",
+        "best_season": "October to February", "description": "Gujarat's only hill station with a lake, ropeway, tribal museums, and monsoon greenery.",
+        "attractions": ["Saputara Lake", "Sunset Point", "Gira Falls", "Ropeway Ride"]
+    },
+    {
+        "name": "Ziro Valley", "state": "Arunachal Pradesh", "avg_travel_cost": 5500.0, "avg_hotel_cost": 1400.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 500.0, "rating": 4.6, "category": "Nature",
+        "best_season": "March to October", "description": "UNESCO-listed Apatani cultural landscape of pine hills, rice fields, and music festivals.",
+        "attractions": ["Talley Valley Wildlife Sanctuary", "Apatani Villages", "Ziro Music Festival Grounds", "Kile Pakho Ridge"]
+    },
 
-    # ADVENTURE (10)
+    # ADVENTURE (15)
     {
         "name": "Rishikesh", "state": "Uttarakhand", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1200.0,
         "avg_food_cost": 500.0, "avg_activity_cost": 1500.0, "rating": 4.6, "category": "Adventure",
@@ -187,8 +247,38 @@ DESTINATIONS_DATA = [
         "best_season": "April to June", "description": "Valley of Flowers of the East, surrounded by snow peaks and natural hot springs.",
         "attractions": ["Yumesamdong (Zero Point)", "Lachung", "Hot Springs", "Shingba Rhododendron Sanctuary"]
     },
+    {
+        "name": "Kasol", "state": "Himachal Pradesh", "avg_travel_cost": 2400.0, "avg_hotel_cost": 1100.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 1400.0, "rating": 4.5, "category": "Adventure",
+        "best_season": "March to June", "description": "Parvati Valley base for treks, riverside camps, and trails to Kheerganga and Malana.",
+        "attractions": ["Parvati River", "Kheerganga Trek", "Manikaran Sahib", "Chalal Village Trail"]
+    },
+    {
+        "name": "Dandeli", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 1800.0, "rating": 4.4, "category": "Adventure",
+        "best_season": "October to May", "description": "White-water rafting on the Kali River, jungle safaris, and canopy walks in dense forests.",
+        "attractions": ["Kali River Rafting", "Dandeli Wildlife Sanctuary", "Syntheri Rocks", "Kayaking Point"]
+    },
+    {
+        "name": "Chadar Trek", "state": "Ladakh", "avg_travel_cost": 8000.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 3500.0, "rating": 4.9, "category": "Adventure",
+        "best_season": "January to February", "description": "Legendary winter trek walking on the frozen Zanskar River through dramatic ice canyons.",
+        "attractions": ["Frozen Zanskar River", "Nerak Waterfall", "Tilat Sumdo Camp", "Tsomo Paldar"]
+    },
+    {
+        "name": "Meghalaya Caves", "state": "Meghalaya", "avg_travel_cost": 4500.0, "avg_hotel_cost": 1800.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 2000.0, "rating": 4.7, "category": "Adventure",
+        "best_season": "October to May", "description": "Caving expeditions through limestone chambers, living root bridges, and waterfall hikes.",
+        "attractions": ["Mawsmai Cave", "Double Decker Root Bridge", "Nohkalikai Falls", "Dawki River"]
+    },
+    {
+        "name": "Zanskar Valley", "state": "Ladakh", "avg_travel_cost": 6500.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 2200.0, "rating": 4.8, "category": "Adventure",
+        "best_season": "June to September", "description": "Remote Buddhist valley of dramatic gorges, ancient monasteries, and high-altitude rafting.",
+        "attractions": ["Padum", "Phugtal Monastery", "Zanskar River Rafting", "Drang Drung Glacier View"]
+    },
 
-    # RELIGIOUS (10)
+    # RELIGIOUS (15)
     {
         "name": "Varanasi", "state": "Uttar Pradesh", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1200.0,
         "avg_food_cost": 400.0, "avg_activity_cost": 200.0, "rating": 4.7, "category": "Religious",
@@ -249,8 +339,38 @@ DESTINATIONS_DATA = [
         "best_season": "October to March", "description": "The holy home of the 19th-century spiritual master Sai Baba.",
         "attractions": ["Sai Baba Samadhi Mandir", "Dwarkamai", "Chavadi", "Dixit Wada Museum"]
     },
+    {
+        "name": "Ajmer Sharif", "state": "Rajasthan", "avg_travel_cost": 1600.0, "avg_hotel_cost": 1300.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 180.0, "rating": 4.6, "category": "Religious",
+        "best_season": "October to March", "description": "Sufi shrine of Khwaja Moinuddin Chishti drawing pilgrims from across South Asia.",
+        "attractions": ["Dargah Sharif", "Ana Sagar Lake", "Adhai Din Ka Jhonpra", "Taragarh Fort"]
+    },
+    {
+        "name": "Badrinath", "state": "Uttarakhand", "avg_travel_cost": 4800.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 550.0, "rating": 4.8, "category": "Religious",
+        "best_season": "May to June, September to October", "description": "Char Dham temple of Lord Vishnu set against the Neelkanth peak in the Garhwal Himalayas.",
+        "attractions": ["Badrinath Temple", "Tapt Kund", "Mana Village", "Vasudhara Falls"]
+    },
+    {
+        "name": "Bodh Gaya", "state": "Bihar", "avg_travel_cost": 2000.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 400.0, "avg_activity_cost": 200.0, "rating": 4.7, "category": "Religious",
+        "best_season": "October to March", "description": "Where Buddha attained enlightenment beneath the Bodhi tree, a UNESCO World Heritage site.",
+        "attractions": ["Mahabodhi Temple", "Bodhi Tree", "Great Buddha Statue", "Thai Monastery"]
+    },
+    {
+        "name": "Somnath", "state": "Gujarat", "avg_travel_cost": 2400.0, "avg_hotel_cost": 1500.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 200.0, "rating": 4.6, "category": "Religious",
+        "best_season": "October to March", "description": "First among the twelve Jyotirlinga shrines, rebuilt on the shores of the Arabian Sea.",
+        "attractions": ["Somnath Temple", "Triveni Sangam", "Bhalka Tirth", "Somnath Beach"]
+    },
+    {
+        "name": "Palani", "state": "Tamil Nadu", "avg_travel_cost": 1400.0, "avg_hotel_cost": 1100.0,
+        "avg_food_cost": 400.0, "avg_activity_cost": 180.0, "rating": 4.4, "category": "Religious",
+        "best_season": "October to March", "description": "Hilltop Murugan temple reached by ropeway, one of Tamil Nadu's most visited shrines.",
+        "attractions": ["Palani Murugan Temple", "Temple Ropeway", "Kongu Nadu Viewpoint", "Idumban Shrine"]
+    },
 
-    # CITY EXPLORATION (10)
+    # CITY EXPLORATION (15)
     {
         "name": "Mumbai", "state": "Maharashtra", "avg_travel_cost": 1500.0, "avg_hotel_cost": 3500.0,
         "avg_food_cost": 900.0, "avg_activity_cost": 400.0, "rating": 4.4, "category": "City Exploration",
@@ -311,8 +431,38 @@ DESTINATIONS_DATA = [
         "best_season": "October to March", "description": "Gateway to the South, famous for Marina Beach, temples, and rich Carnatic heritage.",
         "attractions": ["Marina Beach", "Kapaleeshwarar Temple", "Santhome Cathedral", "Fort St. George"]
     },
+    {
+        "name": "Jaipur", "state": "Rajasthan", "avg_travel_cost": 1800.0, "avg_hotel_cost": 2400.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "City Exploration",
+        "best_season": "October to March", "description": "The Pink City of grand forts, royal palaces, bazaars, and Rajasthani cuisine.",
+        "attractions": ["Amber Fort", "Hawa Mahal", "City Palace", "Johari Bazaar"]
+    },
+    {
+        "name": "Lucknow", "state": "Uttar Pradesh", "avg_travel_cost": 1600.0, "avg_hotel_cost": 1800.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 250.0, "rating": 4.3, "category": "City Exploration",
+        "best_season": "October to March", "description": "Nawabi heritage city famed for kebabs, Awadhi cuisine, and Mughal-era architecture.",
+        "attractions": ["Bara Imambara", "Chota Imambara", "Rumi Darwaza", "Hazratganj"]
+    },
+    {
+        "name": "Indore", "state": "Madhya Pradesh", "avg_travel_cost": 1400.0, "avg_hotel_cost": 1900.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 220.0, "rating": 4.2, "category": "City Exploration",
+        "best_season": "October to March", "description": "Central India's food capital with street snacks, Rajwada Palace, and lively night markets.",
+        "attractions": ["Rajwada Palace", "Sarafa Bazaar", "Lal Bagh Palace", "Kanch Mandir"]
+    },
+    {
+        "name": "Guwahati", "state": "Assam", "avg_travel_cost": 2800.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 300.0, "rating": 4.3, "category": "City Exploration",
+        "best_season": "October to April", "description": "Gateway to Northeast India with river cruises, Kamakhya Temple, and tea-country access.",
+        "attractions": ["Kamakhya Temple", "Umananda Island", "Brahmaputra River Cruise", "Assam State Museum"]
+    },
+    {
+        "name": "Mysuru", "state": "Karnataka", "avg_travel_cost": 1600.0, "avg_hotel_cost": 2100.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 280.0, "rating": 4.4, "category": "City Exploration",
+        "best_season": "October to March", "description": "Cultural city of illuminated palaces, silk markets, yoga traditions, and Dasara festivities.",
+        "attractions": ["Mysore Palace", "Chamundi Hills", "Devaraja Market", "Brindavan Gardens"]
+    },
 
-    # ROMANTIC (10)
+    # ROMANTIC (15)
     {
         "name": "Srinagar", "state": "Jammu & Kashmir", "avg_travel_cost": 4500.0, "avg_hotel_cost": 3000.0,
         "avg_food_cost": 800.0, "avg_activity_cost": 600.0, "rating": 4.8, "category": "Romantic",
@@ -372,6 +522,160 @@ DESTINATIONS_DATA = [
         "avg_food_cost": 1000.0, "avg_activity_cost": 1000.0, "rating": 4.7, "category": "Romantic",
         "best_season": "September to March", "description": "Luxury private wooden houseboats cruising along palm-fringed Kerala backwaters.",
         "attractions": ["Vembanad Lake", "Kuttanad paddy fields", "Punnamada Lake", "Alappuzha Beach"]
+    },
+    {
+        "name": "Kumarakom", "state": "Kerala", "avg_travel_cost": 3000.0, "avg_hotel_cost": 3800.0,
+        "avg_food_cost": 900.0, "avg_activity_cost": 700.0, "rating": 4.6, "category": "Romantic",
+        "best_season": "September to March", "description": "Lakeside resorts on Vembanad with bird sanctuaries, sunset cruises, and Ayurveda spas.",
+        "attractions": ["Kumarakom Bird Sanctuary", "Vembanad Lake Cruise", "Pathiramanal Island", "Ayurveda Spa"]
+    },
+    {
+        "name": "Kasauli", "state": "Himachal Pradesh", "avg_travel_cost": 2000.0, "avg_hotel_cost": 2100.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 350.0, "rating": 4.3, "category": "Romantic",
+        "best_season": "March to June, September to November", "description": "Colonial-era hill town with misty walks, heritage churches, and quiet forest trails.",
+        "attractions": ["Monkey Point", "Christ Church", "Gilbert Trail", "Sunset Point"]
+    },
+    {
+        "name": "Cherrapunji", "state": "Meghalaya", "avg_travel_cost": 4200.0, "avg_hotel_cost": 1700.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 500.0, "rating": 4.5, "category": "Romantic",
+        "best_season": "October to May", "description": "Rain-soaked cliffs, living root bridges, and misty waterfalls in the wettest place on Earth.",
+        "attractions": ["Nohkalikai Falls", "Double Decker Root Bridge", "Mawsmai Cave", "Seven Sisters Falls"]
+    },
+    {
+        "name": "Thekkady", "state": "Kerala", "avg_travel_cost": 2800.0, "avg_hotel_cost": 2400.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 600.0, "rating": 4.5, "category": "Romantic",
+        "best_season": "September to May", "description": "Periyar wildlife sanctuary surrounds spice plantations, lake cruises, and jungle lodges.",
+        "attractions": ["Periyar Lake Cruise", "Spice Plantation Tour", "Bamboo Rafting", "Elephant Junction"]
+    },
+    {
+        "name": "Mahabaleshwar", "state": "Maharashtra", "avg_travel_cost": 1500.0, "avg_hotel_cost": 2300.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 350.0, "rating": 4.4, "category": "Romantic",
+        "best_season": "October to June", "description": "Strawberry farms, misty viewpoints, and colonial-era hill cottages in the Western Ghats.",
+        "attractions": ["Wilson Point", "Mapro Garden", "Venna Lake", "Arthur's Seat"]
+    },
+
+    # FAMILY (10)
+    {
+        "name": "Mahabaleshwar Family Getaway", "state": "Maharashtra", "avg_travel_cost": 1500.0, "avg_hotel_cost": 2200.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 400.0, "rating": 4.4, "category": "Family",
+        "best_season": "October to June", "description": "Kid-friendly hill station with boating, strawberry farms, and easy nature walks.",
+        "attractions": ["Venna Lake Boating", "Mapro Garden", "Elephant's Head Point", "Panchgani Table Land"]
+    },
+    {
+        "name": "Ooty Family Escape", "state": "Tamil Nadu", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2100.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Family",
+        "best_season": "October to June", "description": "Toy train rides, botanical gardens, and gentle lake activities for all ages.",
+        "attractions": ["Ooty Lake", "Botanical Gardens", "Nilgiri Mountain Railway", "Doddabetta Peak"]
+    },
+    {
+        "name": "Lonavala Family Weekend", "state": "Maharashtra", "avg_travel_cost": 1000.0, "avg_hotel_cost": 2300.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 400.0, "rating": 4.3, "category": "Family",
+        "best_season": "June to September", "description": "Short-drive hill escape with dams, viewpoints, and chikki shops perfect for weekend trips.",
+        "attractions": ["Bhushi Dam", "Tiger's Point", "Imagicaa Theme Park", "Karla Caves"]
+    },
+    {
+        "name": "Mussoorie Family Hills", "state": "Uttarakhand", "avg_travel_cost": 2000.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.3, "category": "Family",
+        "best_season": "April to June, September to November", "description": "Queen of Hills with cable car rides, mall road strolls, and Kempty Falls picnics.",
+        "attractions": ["Gun Hill Cable Car", "Kempty Falls", "Mall Road", "Company Garden"]
+    },
+    {
+        "name": "Jaipur Heritage Family", "state": "Rajasthan", "avg_travel_cost": 1800.0, "avg_hotel_cost": 2300.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Family",
+        "best_season": "October to March", "description": "Palaces, forts, and colorful bazaars offering engaging history lessons for children.",
+        "attractions": ["Amber Fort", "City Palace", "Jantar Mantar", "Chokhi Dhani Village"]
+    },
+    {
+        "name": "South Goa Family Resort", "state": "Goa", "avg_travel_cost": 3000.0, "avg_hotel_cost": 3200.0,
+        "avg_food_cost": 900.0, "avg_activity_cost": 500.0, "rating": 4.5, "category": "Family",
+        "best_season": "November to February", "description": "Calm beaches, resort pools, and dolphin-spotting cruises ideal for family holidays.",
+        "attractions": ["Palolem Beach", "Cabo de Rama Fort", "Dolphin Cruise", "Colva Beach"]
+    },
+    {
+        "name": "Mysore Family Circuit", "state": "Karnataka", "avg_travel_cost": 1600.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 300.0, "rating": 4.4, "category": "Family",
+        "best_season": "October to March", "description": "Illuminated palace visits, zoo outings, and garden fountain shows for relaxed family touring.",
+        "attractions": ["Mysore Palace", "Sri Chamarajendra Zoo", "Brindavan Gardens", "Chamundi Hills"]
+    },
+    {
+        "name": "Darjeeling Family Tour", "state": "West Bengal", "avg_travel_cost": 3000.0, "avg_hotel_cost": 2100.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Family",
+        "best_season": "October to May", "description": "Toy train joyrides, tea garden visits, and sunrise viewpoints the whole family can enjoy.",
+        "attractions": ["Darjeeling Himalayan Railway", "Tiger Hill", "Padmaja Naidu Zoo", "Batasia Loop"]
+    },
+    {
+        "name": "Kerala Family Backwaters", "state": "Kerala", "avg_travel_cost": 3000.0, "avg_hotel_cost": 2800.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 600.0, "rating": 4.6, "category": "Family",
+        "best_season": "September to March", "description": "Houseboat stays, village canoe rides, and Kathakali shows on gentle backwater routes.",
+        "attractions": ["Alleppey Houseboat", "Kumarakom Bird Sanctuary", "Village Canoe Ride", "Kathakali Centre"]
+    },
+    {
+        "name": "Mount Abu Family Parks", "state": "Rajasthan", "avg_travel_cost": 2000.0, "avg_hotel_cost": 1700.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 300.0, "rating": 4.2, "category": "Family",
+        "best_season": "October to March", "description": "Rajasthan's cool hill retreat with lake boating, wildlife sanctuary, and sunset points.",
+        "attractions": ["Nakki Lake", "Sunset Point", "Mount Abu Wildlife Sanctuary", "Achalgarh Fort"]
+    },
+
+    # SOLO (10)
+    {
+        "name": "Hampi", "state": "Karnataka", "avg_travel_cost": 1800.0, "avg_hotel_cost": 900.0,
+        "avg_food_cost": 400.0, "avg_activity_cost": 250.0, "rating": 4.7, "category": "Solo",
+        "best_season": "October to March", "description": "UNESCO boulder-strewn ruins of the Vijayanagara Empire, perfect for solo exploration on a moped.",
+        "attractions": ["Virupaksha Temple", "Vittala Temple", "Matanga Hill Sunrise", "Hemakuta Hill"]
+    },
+    {
+        "name": "Mcleodganj", "state": "Himachal Pradesh", "avg_travel_cost": 2400.0, "avg_hotel_cost": 1000.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 600.0, "rating": 4.6, "category": "Solo",
+        "best_season": "March to June", "description": "Tibetan culture hub with monasteries, trekking trails, and a thriving solo backpacker scene.",
+        "attractions": ["Tsuglagkhang Complex", "Bhagsu Falls", "Triund Trek", "Dal Lake Mcleodganj"]
+    },
+    {
+        "name": "Pushkar", "state": "Rajasthan", "avg_travel_cost": 1600.0, "avg_hotel_cost": 800.0,
+        "avg_food_cost": 400.0, "avg_activity_cost": 200.0, "rating": 4.5, "category": "Solo",
+        "best_season": "October to March", "description": "Sacred lake town with rooftop cafes, camel fairs, and a relaxed solo-traveler atmosphere.",
+        "attractions": ["Pushkar Lake", "Brahma Temple", "Savitri Temple Hike", "Pushkar Bazaar"]
+    },
+    {
+        "name": "Vashisht", "state": "Himachal Pradesh", "avg_travel_cost": 2200.0, "avg_hotel_cost": 900.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 500.0, "rating": 4.4, "category": "Solo",
+        "best_season": "March to June", "description": "Hot springs village above Manali with budget guesthouses and trails into pine forests.",
+        "attractions": ["Vashisht Hot Springs", "Jogini Waterfall Trek", "Old Vashisht Temple", "Forest Trail"]
+    },
+    {
+        "name": "Kasol Solo Trail", "state": "Himachal Pradesh", "avg_travel_cost": 2400.0, "avg_hotel_cost": 1000.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 800.0, "rating": 4.5, "category": "Solo",
+        "best_season": "March to June", "description": "Parvati Valley backpacker hub with riverside cafes, treks, and a strong solo traveler community.",
+        "attractions": ["Parvati River Walk", "Chalal Village", "Kheerganga Trek", "Manikaran Hot Springs"]
+    },
+    {
+        "name": "Pondicherry Solo", "state": "Tamil Nadu", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1400.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 250.0, "rating": 4.4, "category": "Solo",
+        "best_season": "October to March", "description": "French Quarter cafes, beach promenades, and Auroville day trips ideal for independent travelers.",
+        "attractions": ["French Quarter", "Promenade Beach", "Auroville", "Paradise Beach"]
+    },
+    {
+        "name": "Jaipur Solo Explorer", "state": "Rajasthan", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 300.0, "rating": 4.4, "category": "Solo",
+        "best_season": "October to March", "description": "Walkable heritage quarters, rooftop restaurants, and affordable hostels for solo city explorers.",
+        "attractions": ["Hawa Mahal", "Nahargarh Fort Sunset", "Johari Bazaar", "Patrika Gate"]
+    },
+    {
+        "name": "Gokarna Solo Beach", "state": "Karnataka", "avg_travel_cost": 2000.0, "avg_hotel_cost": 800.0,
+        "avg_food_cost": 400.0, "avg_activity_cost": 200.0, "rating": 4.5, "category": "Solo",
+        "best_season": "October to March", "description": "Budget beach shacks, cliff trails between beaches, and a laid-back solo surf-and-trek vibe.",
+        "attractions": ["Om Beach", "Kudle Beach", "Beach Cliff Trail", "Half Moon Beach Trek"]
+    },
+    {
+        "name": "Ziro Solo", "state": "Arunachal Pradesh", "avg_travel_cost": 5500.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 400.0, "rating": 4.6, "category": "Solo",
+        "best_season": "March to October", "description": "Offbeat pine hills and Apatani culture attracting independent travelers and festival goers.",
+        "attractions": ["Talley Valley", "Apatani Village Walk", "Ziro Pine Grove", "Kile Pakho Viewpoint"]
+    },
+    {
+        "name": "Varkala Cliff Solo", "state": "Kerala", "avg_travel_cost": 3500.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Solo",
+        "best_season": "October to March", "description": "Cliff-top hostels, yoga retreats, and surf lessons on Kerala's most solo-friendly beach strip.",
+        "attractions": ["Varkala Cliff", "Papanasam Beach", "Janardhana Temple", "Surf School"]
     }
 ]
 
@@ -388,9 +692,15 @@ def get_expanded_fields(name: str, category: str, avg_hotel_cost: float) -> dict
         comfort_level = 85
         
     # Duration
-    if name in ["Havelock Island", "Leh Ladakh", "Spiti Valley", "Tawang", "Gulmarg", "Gulmarg Valley", "Srinagar", "Alleppey Houseboat"]:
+    if name in [
+        "Havelock Island", "Neil Island", "Lakshadweep", "Leh Ladakh", "Spiti Valley", "Zanskar Valley",
+        "Tawang", "Gulmarg", "Gulmarg Valley", "Srinagar", "Alleppey Houseboat", "Chadar Trek"
+    ]:
         recommended_duration = 6
-    elif name in ["North Goa", "South Goa", "Munnar", "Coorg", "Ooty", "Darjeeling", "Manali", "Rishikesh", "Auli", "Wayanad"]:
+    elif name in [
+        "North Goa", "South Goa", "Munnar", "Coorg", "Ooty", "Darjeeling", "Manali", "Rishikesh",
+        "Auli", "Wayanad", "Hampi", "Meghalaya Caves", "Kerala Family Backwaters"
+    ]:
         recommended_duration = 4
     else:
         recommended_duration = 3
@@ -419,6 +729,8 @@ def get_expanded_fields(name: str, category: str, avg_hotel_cost: float) -> dict
         scores.update({"city_score": 90.0, "family_score": 75.0, "romantic_score": 50.0, "nature_score": 20.0})
     elif category == "Romantic":
         scores.update({"romantic_score": 95.0, "nature_score": 80.0, "family_score": 50.0, "beach_score": 40.0})
+    elif category == "Family":
+        scores.update({"family_score": 95.0, "nature_score": 70.0, "beach_score": 45.0, "adventure_score": 35.0, "solo_score": 20.0})
     elif category == "Solo":
         scores.update({"solo_score": 90.0, "adventure_score": 75.0, "nature_score": 70.0, "family_score": 25.0})
 
@@ -433,8 +745,11 @@ def get_expanded_fields(name: str, category: str, avg_hotel_cost: float) -> dict
         scores["adventure_score"] = 98.0
         scores["nature_score"] = 95.0
         scores["solo_score"] = 95.0
-    if "Varanasi" in name or "Kedarnath" in name:
+    if "Varanasi" in name or "Kedarnath" in name or "Badrinath" in name:
         scores["religious_score"] = 99.0
+    if "Hampi" in name:
+        scores["solo_score"] = 95.0
+        scores["city_score"] = 70.0
         
     return {
         "budget_tier": budget_tier,
@@ -444,14 +759,21 @@ def get_expanded_fields(name: str, category: str, avg_hotel_cost: float) -> dict
     }
 
 def seed_destinations(db: Session):
-    count = db.query(Destination).count()
-    if count == 0:
-        print(f"Seeding {len(DESTINATIONS_DATA)} destinations into the database...")
-        for dest_data in DESTINATIONS_DATA:
-            expanded = get_expanded_fields(dest_data["name"], dest_data["category"], dest_data["avg_hotel_cost"])
-            db_destination = Destination(**dest_data, **expanded)
-            db.add(db_destination)
+    existing_names = {name for (name,) in db.query(Destination.name).all()}
+    added = 0
+
+    for dest_data in DESTINATIONS_DATA:
+        if dest_data["name"] in existing_names:
+            continue
+        expanded = get_expanded_fields(dest_data["name"], dest_data["category"], dest_data["avg_hotel_cost"])
+        db_destination = Destination(**dest_data, **expanded)
+        db.add(db_destination)
+        added += 1
+
+    if added:
         db.commit()
-        print("Seeding completed successfully!")
+        total = db.query(Destination).count()
+        print(f"Seeded {added} new destinations ({total} total in database).")
     else:
-        print(f"Database already contains {count} destinations. Seeding skipped.")
+        total = db.query(Destination).count()
+        print(f"Database already up to date with {total} destinations.")

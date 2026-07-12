@@ -8,7 +8,6 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { BudgetPlanner } from './pages/BudgetPlanner';
-import { ReverseSearch } from './pages/ReverseSearch';
 import { DestinationExplorer } from './pages/DestinationExplorer';
 import { DestinationDetail } from './pages/DestinationDetail';
 import { BudgetOptimizer } from './pages/BudgetOptimizer';
@@ -69,7 +68,7 @@ function App() {
             {/* Protected Dashboard/App Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/planner" element={<ProtectedRoute><BudgetPlanner /></ProtectedRoute>} />
-            <Route path="/reverse-search" element={<ProtectedRoute><ReverseSearch /></ProtectedRoute>} />
+            <Route path="/reverse-search" element={<ProtectedRoute><BudgetPlanner initialMode="discover" /></ProtectedRoute>} />
             
             <Route path="/explorer" element={<ProtectedRoute><DestinationExplorer /></ProtectedRoute>} />
             <Route path="/explorer/:id" element={<ProtectedRoute><DestinationDetail /></ProtectedRoute>} />

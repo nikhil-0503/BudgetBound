@@ -260,9 +260,15 @@ def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: 
 
 @router.post("/plan")
 def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends(get_db)):
-    # Fetch all destinations to rank them dynamically
-    destinations = db.query(models.Destination).all()
+    # Fetch either the selected destination or the full catalog to rank dynamically
+    query = db.query(models.Destination)
+    if req.destination_id is not None:
+        query = query.filter(models.Destination.id == req.destination_id)
+
+    destinations = query.all()
     if not destinations:
+        if req.destination_id is not None:
+            raise HTTPException(status_code=404, detail="Selected destination not found in database.")
         raise HTTPException(status_code=404, detail="No destinations found in database. Seed database first.")
 
     matched_plans = []
@@ -278,8 +284,10 @@ def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends(get_d
             "under_budget": costs["total_estimated_cost"] <= req.budget
         })
 
-    # Sort: highest score first
-    matched_plans.sort(key=lambda x: x["value_score"], reverse=True)
+    # Sort only when we are evaluating the full catalog
+    if req.destination_id is None:
+        matched_plans.sort(key=lambda x: x["value_score"], reverse=True)
+
     selected_plan = matched_plans[0]
 
     # Generate daily itinerary
