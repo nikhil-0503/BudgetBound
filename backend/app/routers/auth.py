@@ -78,3 +78,57 @@ def login_user_json(credentials: schemas.UserLogin, db: Session = Depends(get_db
 @router.get("/me", response_model=schemas.UserOut)
 def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
     return current_user
+
+@router.get("/profile")
+def get_user_profile_details(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    trips = db.query(models.Trip).filter(models.Trip.user_id == current_user.id).all()
+    
+    trips_completed = sum([1 for t in trips if t.status == "Completed"])
+    total_budget_planned = sum([t.budget for t in trips])
+    
+    total_savings = 0.0
+    for t in trips:
+        actual_spent = sum([e.amount for e in t.expenses])
+        total_savings += max(0.0, t.budget - actual_spent)
+        
+    from collections import Counter
+    styles = [t.travel_type for t in trips if t.travel_type]
+    fav_style = Counter(styles).most_common(1)[0][0] if styles else "—"
+
+    return {
+        "user": current_user,
+        "stats": {
+            "trips_completed": trips_completed,
+            "total_budget_planned": round(total_budget_planned, 2),
+            "total_savings": round(total_savings, 2),
+            "favorite_trip_type": fav_style
+        }
+    }
+
+@router.put("/profile", response_model=schemas.UserOut)
+def update_user_profile_details(
+    payload: schemas.UserUpdate,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    if payload.name is not None:
+        current_user.name = payload.name
+    if payload.photo_url is not None:
+        current_user.photo_url = payload.photo_url
+    if payload.default_budget is not None:
+        current_user.default_budget = payload.default_budget
+    if payload.preferred_travel_style is not None:
+        current_user.preferred_travel_style = payload.preferred_travel_style
+    if payload.preferred_comfort_level is not None:
+        current_user.preferred_comfort_level = payload.preferred_comfort_level
+    if payload.default_starting_city is not None:
+        current_user.default_starting_city = payload.default_starting_city
+    if payload.preferred_theme is not None:
+        current_user.preferred_theme = payload.preferred_theme
+
+    db.commit()
+    db.refresh(current_user)
+    return current_user

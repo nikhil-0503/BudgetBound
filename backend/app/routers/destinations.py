@@ -64,4 +64,7 @@ def get_destination(destination_id: int, db: Session = Depends(get_db)):
     destination = db.query(models.Destination).filter(models.Destination.id == destination_id).first()
     if not destination:
         raise HTTPException(status_code=404, detail="Destination not found")
+        
+    from app.routers.trips import calculate_weather_intelligence
+    destination.weather_intelligence = calculate_weather_intelligence(destination, None)
     return destination

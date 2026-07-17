@@ -29,6 +29,15 @@ interface Destination {
   best_season: string;
   description: string;
   attractions: string[];
+  weather_intelligence?: {
+    current_season: string;
+    best_season: string;
+    season_rating: string;
+    crowd_level: string;
+    temperature_range: string;
+    rain_probability: string;
+    recommendation: string;
+  };
 }
 
 export const DestinationDetail: React.FC = () => {
@@ -245,35 +254,83 @@ export const DestinationDetail: React.FC = () => {
 
         </div>
 
-        {/* Right Side: Sample Itinerary */}
-        <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-1.5">
-            <Calendar size={18} className="text-violet-500" />
-            Sample 4-Day Itinerary Plan
-          </h3>
+        {/* Right Side: Sample Itinerary & Weather */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
 
-          <div className="flex flex-col gap-5 text-xs">
-            {mockDays.map((d) => (
-              <div key={d.day} className="flex gap-4">
-                {/* Timeline bar */}
-                <div className="flex flex-col items-center shrink-0">
-                  <div className="h-6 w-6 rounded-full bg-violet-600 text-white font-bold flex items-center justify-center text-[10px]">
-                    D{d.day}
-                  </div>
-                  {d.day < 4 && <div className="w-0.5 bg-slate-200 dark:bg-slate-700 flex-1 my-1" />}
+          {/* Weather Intelligence Widget */}
+          {dest.weather_intelligence && (
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <CloudSun size={16} className="text-violet-500" />
+                  Season Intelligence
+                </h3>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  dest.weather_intelligence.season_rating === 'Excellent' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/30' :
+                  dest.weather_intelligence.season_rating === 'Good' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200/30' :
+                  dest.weather_intelligence.season_rating === 'Fair' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200/30' :
+                  'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200/30'
+                }`}>
+                  {dest.weather_intelligence.season_rating}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3.5 text-xs bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800 font-bold">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-slate-400 block uppercase">Current Season</span>
+                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.current_season}</span>
                 </div>
-
-                <div className="space-y-2 pb-2">
-                  <h4 className="font-bold text-slate-800 dark:text-white">{d.title}</h4>
-                  <ul className="list-disc pl-4 text-slate-500 dark:text-slate-400 space-y-1.5">
-                    {d.activities.map((act, actIdx) => (
-                      <li key={actIdx} className="leading-relaxed">{act}</li>
-                    ))}
-                  </ul>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-slate-400 block uppercase">Temp Range</span>
+                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.temperature_range}</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-slate-400 block uppercase">Crowd Density</span>
+                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.crowd_level}</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-slate-400 block uppercase">Rain Chance</span>
+                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.rain_probability}</span>
                 </div>
               </div>
-            ))}
+
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed italic border-l-2 border-violet-400 pl-3">
+                {dest.weather_intelligence.recommendation}
+              </p>
+            </div>
+          )}
+
+          {/* Sample Itinerary */}
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-1.5">
+              <Calendar size={18} className="text-violet-500" />
+              Sample 4-Day Itinerary Plan
+            </h3>
+
+            <div className="flex flex-col gap-5 text-xs">
+              {mockDays.map((d) => (
+                <div key={d.day} className="flex gap-4">
+                  {/* Timeline bar */}
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className="h-6 w-6 rounded-full bg-violet-600 text-white font-bold flex items-center justify-center text-[10px]">
+                      D{d.day}
+                    </div>
+                    {d.day < 4 && <div className="w-0.5 bg-slate-200 dark:bg-slate-700 flex-1 my-1" />}
+                  </div>
+
+                  <div className="space-y-2 pb-2">
+                    <h4 className="font-bold text-slate-800 dark:text-white">{d.title}</h4>
+                    <ul className="list-disc pl-4 text-slate-500 dark:text-slate-400 space-y-1.5">
+                      {d.activities.map((act, actIdx) => (
+                        <li key={actIdx} className="leading-relaxed">{act}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+
         </div>
 
       </div>

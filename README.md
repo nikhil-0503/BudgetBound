@@ -27,6 +27,72 @@ Based on these constraints and a comfort slider (0–100), the platform scores a
 
 ---
 
+## Comprehensive Feature Breakdown
+
+### 1. User Authentication & Security
+* **Secure Signup & Login**: Credentials-based signup and login flows with email validation.
+* **JWT-Based Session Tracking**: Stateless authentication using JSON Web Tokens (`HS256`). A React interceptor automatically attaches authorization headers to all outgoing requests.
+* **Bcrypt Password Cryptography**: Passwords are securely hashed with bcrypt inside the database using standard salt rounds.
+* **Client-Side Auth Guards**: React Router middleware (`ProtectedRoute` and `AnonymousRoute`) keeps unauthenticated users out of private views (planner, dashboard, optimizer, expenses) and automatically redirects authenticated users away from the login/signup screens.
+* **Auto-Session Cleanup**: Axios request/response interceptors automatically log the user out and redirect them to the login page on a `401 Unauthorized` status response.
+
+### 2. Budget-First Travel Planner & Discovery (`/planner`)
+* **Interactive Map Location Picker**: Visual starting-city selector powered by **Leaflet & React-Leaflet**. Users can search for a starting city or place a pin on the interactive map, which geocodes/reverse-geocodes their selection using the Nominatim OpenStreetMap API.
+* **Weighted Scoring Recommendation Engine**: Ranks destinations by checking how well they match constraints using a multi-criteria scoring algorithm:
+  * **35% Budget Fit**: Prefers destinations utilizing budget efficiently. Excludes over-budget destinations entirely unless show over-budget is checked (Hard Budget Constraint).
+  * **25% Category Match**: Blends main category matching with sub-category affinities.
+  * **12% User Rating**: Normalizes destination rating to a 5-star standard.
+  * **20% Comfort Match**: Aligns comfort level expectations with the destination profile (Comfort slider has a dynamic and strong influence).
+  * **8% Duration Match**: Checks constraints against the destination's recommended duration.
+* **Pacing & Comfort Slider**: Adjusts a slider between 0 and 100 to dynamically shift lodging recommendations (Budget, Mid-Range, Luxury), transport styles (Train vs. Flight), activities per day, and cost multipliers.
+* **Detailed Cost Estimator**: Calculates costs across multiple categories: base transport, lodging (hotel), meals (food), activity fees, local transport, booking taxes (12%), and emergency reserve buffers (8%).
+* **Itinerary Generator**: Constructs day-by-day plans with morning, afternoon, and evening slots. Integrates with the Groq API (e.g. `gemma2-9b-it`, `llama-3.1-8b-instant`) to generate customized itineraries, with an offline static template fallback system.
+* **Trip Saving & Database Commit**: Saves the generated trip details, calculated budget allocations, and day-by-day itineraries to the database.
+
+### 3. Dynamic Analytics Dashboard (`/dashboard`)
+* **Summary Analytics Cards**: Real-time stats showing Total Trips Planned, Total Planned Budget, Total Spent (Actual Expenses), and Net Savings.
+* **Trip Budget Comparison (Recharts Bar Chart)**: Dynamic visualization showing the financial health of the user's top 6 trips by comparing the original starting budget, the estimated planning cost, and the actual logged expenses side-by-side.
+* **Expense Categories Breakdown (Recharts Pie Chart)**: Clean color-coded pie chart showing aggregate spending distribution across Transport, Hotel, Food, Activities, Shopping, and Other categories.
+* **Recent Trips Feed**: Chronological feed of the 5 most recent planned trips with quick-view statistics.
+
+### 4. Interactive Destination Catalog (`/explorer`)
+* **Live Search & Filter**: Real-time keyword filtering of destinations by name, state, or keywords.
+* **Advanced Filters**: Quick-select filters based on categories (Beach, Nature, Adventure, Religious, City Exploration, Romantic) and locations.
+* **Detailed Explorer Card Profile**: Cards showing ratings, recommend duration, category badges, and budget level tags.
+* **Rich Destination Detail Page (`/explorer/:id`)**: Displays high-res visual assets, seasonal planning recommendations, base travel stats, geographic context, and a checklist of popular tourist attractions.
+
+### 5. Rules-Based Budget Optimizer (`/optimizer/:tripId`)
+* **Dynamic Target Estimation**: Calculates current trip estimates and compares them with the initial budget to highlight deficits or surpluses.
+* **Actionable Cost-Cut Recommendations**:
+  * *Lodging Tier Downgrades*: Swaps luxury resorts to mid-range hotels, or mid-range hotels to cozy local homestays/hostels (saving 35-50% on lodging).
+  * *Transit Method Swap*: Replaces flights with AC sleeper trains for a budget-friendly transit alternative.
+  * *Itinerary Trimming*: Lowers pre-booked activities by 50% to save on tickets and entry fees.
+* **Actionable Comfort Upgrades**:
+  * *Surplus Upgrades*: Suggests premium room/hotel upgrades if the trip estimated cost is significantly under budget.
+* **One-Click Apply**: Previews exact cost differences and applies adjustments directly, updating database allocations in real-time.
+
+### 6. Expense Ledger & Tracker (`/expenses/:tripId`)
+* **Transaction Logging CRUD**: Record expenses with exact dates, amounts, categories, and custom notes.
+* **Variance Analysis Graphs**: Compares the user's actual spending against the pre-calculated budget allocations for each category. If no expenses exist, displays the "Planned Budget Allocation" chart. If expenses exist, shows a comparison of "Planned vs. Actual Spend".
+* **Variance Indicator Badge**: Shows real-time difference figures (under-budget vs. over-budget) to highlight categories causing budget leaks. Shows warning cards and Forecasts.
+
+### 7. Groq AI Travel Companion Chatbot (`/ai-companion`)
+* **Interactive AI Interface**: Direct chat window to ask travel questions, local guidelines, packing tips, or regional cuisines.
+* **Groq Llama/Gemma Model Integration**: Utilizes fast AI inference through the Groq SDK, configurable to models like `gemma2-9b-it`, `llama-3.1-8b-instant`, or `llama-3.3-70b-versatile`.
+* **Smart fallback architecture**: Backend automatically falls back to static template rendering when `GROQ_API_KEY` is not present, keeping the application fully functional.
+
+### 8. High-Fidelity PDF Export Generator
+* **Aesthetic PDF Document Layout**: Clean document formats built using ReportLab, sporting modern fonts and aligned grid components.
+* **Budget Breakdown Charts**: Aligns estimated costs, taxes, and reserves in structured tables.
+* **Day-by-Day Travel Guide**: Embeds detailed activity timelines (Morning, Afternoon, Evening) for offline travel support.
+* **Disk-Free PDF Streaming**: Streams raw PDF bytes from system memory straight to the user's browser, eliminating disk clutter.
+
+### 9. Multi-Adapter Database Fallback
+* **Automatic Database Engine Selector**: Connects to a robust PostgreSQL server by default, but automatically registers a local SQLite database adapter (`budgetbound.db`) if PostgreSQL is offline or unreachable.
+* **60 Pre-seeded Indian Destinations**: Seeding system that populates the database with 60 detailed destinations categorized across 6 primary travel types.
+
+---
+
 ## Technical Stack
 
 ### Frontend
@@ -108,21 +174,22 @@ BudgetBound/
 
 ### 1. Weighted Destination Scoring
 
-$$\text{Score} = 40\% \times \text{Budget Fit} + 25\% \times \text{Category Match} + 15\% \times \text{Rating} + 10\% \times \text{Comfort Match} + 10\% \times \text{Duration Suitability}$$
+$$\text{Score} = 35\% \times \text{Budget Fit} + 25\% \times \text{Category Match} + 12\% \times \text{Rating} + 20\% \times \text{Comfort Match} + 8\% \times \text{Duration Suitability}$$
 
-- **Budget Fit (40%):** Rewards destinations that use budget efficiently; heavily penalizes over-budget options
-- **Category Match (25%):** Blends main category (60%) with sub-category scores from DB columns (`nature_score`, `adventure_score`, etc.)
-- **Rating (15%):** Normalized to 0–1 from a 5-star scale
-- **Comfort Match (10%):** Alignment between user comfort slider and destination `comfort_level`
-- **Duration Suitability (10%):** Alignment with `recommended_duration`
+- **Budget Fit (35%):** Rewards destinations that use budget efficiently. Budget is enforced as a **hard constraint**—destinations over budget are filtered out.
+- **Category Match (25%):** Blends main category (60%) with sub-category affinities from DB columns.
+- **Rating (12%):** Normalized to 0–1 from a 5-star scale.
+- **Comfort Match (20%):** Stronger alignment between comfort slider (0-100) and destination's comfort profile.
+- **Duration Suitability (8%):** Suitability check compared with recommended trip days.
 
 ### 2. Regional Surcharges
 
-Starting city and destination are mapped to region clusters (North, South, East, West):
+Starting city and destination are mapped to region clusters (North, South, East, West). Multipliers are applied directly to base transport costs first, ensuring regional differences remain after minimum cost floors:
 
 - **Same region:** 0.45× transport multiplier (55% discount)
-- **Opposite regions** (e.g. North ↔ South): 1.45× surcharge
-- **Adjacent regions:** 1.0× standard rate
+- **South ↔ West (e.g. Chennai ↔ Goa):** 1.05× multiplier (medium-short haul)
+- **North ↔ West (e.g. Delhi ↔ Goa), North ↔ East (e.g. Delhi ↔ Kolkata):** 1.25× multiplier (medium-long haul)
+- **North ↔ South (e.g. Delhi ↔ Chennai), East ↔ West (e.g. Kolkata ↔ Mumbai):** 1.45× multiplier (long haul)
 
 ### 3. Rules-Based Budget Optimizer
 

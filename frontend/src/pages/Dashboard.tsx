@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { BudgetHealthMeter } from '../components/BudgetHealthMeter';
 import { 
   BarChart, 
   Bar, 
@@ -38,6 +40,8 @@ interface RecentTrip {
   days: number;
   category: string;
   date: string;
+  status?: string;
+  start_date?: string;
 }
 
 interface BudgetUsagePoint {
@@ -57,7 +61,13 @@ interface DashboardStats {
   planned_budget: number;
   actual_expenses: number;
   savings: number;
+  trips_planned: number;
+  trips_in_progress: number;
+  trips_completed: number;
+  trips_cancelled: number;
+  trips_draft: number;
   recent_trips: RecentTrip[];
+  upcoming_trips: RecentTrip[];
   budget_usage_chart: BudgetUsagePoint[];
   category_chart: CategoryExpensePoint[];
 }
@@ -70,6 +80,21 @@ export const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [latestTripStats, setLatestTripStats] = useState<any | null>(null);
+  const [latestTripDetails, setLatestTripDetails] = useState<any | null>(null);
+
+  const fetchLatestTripData = async (tripId: number) => {
+    try {
+      const [detailsRes, statsRes] = await Promise.all([
+        api.get(`/api/trips/${tripId}`),
+        api.get(`/api/expenses/trip/${tripId}/stats`)
+      ]);
+      setLatestTripDetails(detailsRes.data);
+      setLatestTripStats(statsRes.data);
+    } catch (err) {
+      console.error("Failed to load latest trip details for dashboard forecast:", err);
+    }
+  };
 
   // Fetch Dashboard Stats on load
   const fetchStats = async () => {
@@ -77,6 +102,9 @@ export const Dashboard: React.FC = () => {
       setLoading(true);
       const response = await api.get('/api/dashboard/stats');
       setStats(response.data);
+      if (response.data.recent_trips && response.data.recent_trips.length > 0) {
+        await fetchLatestTripData(response.data.recent_trips[0].id);
+      }
     } catch (err: any) {
       console.error(err);
       setError('Failed to load dashboard metrics.');
@@ -129,7 +157,12 @@ export const Dashboard: React.FC = () => {
   const COLORS = ['#6d28d9', '#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
 
   return (
-    <div className="flex flex-col gap-8">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="flex flex-col gap-8"
+    >
       
       {/* Welcome header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -190,11 +223,129 @@ export const Dashboard: React.FC = () => {
             <span className="text-xs text-slate-400 font-bold uppercase">Calculated Savings</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">₹{stats.savings.toLocaleString()}</h3>
           </div>
-          <div className="h-12 w-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <div className="h-12 w-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <Percent size={24} />
           </div>
         </div>
       </div>
+
+      {/* Status Metrics Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* Planned */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase">Planned</span>
+            <h4 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">{stats.trips_planned || 0}</h4>
+          </div>
+          <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-[10px]">
+            PL
+          </div>
+        </div>
+        {/* In Progress */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase">In Progress</span>
+            <h4 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">{stats.trips_in_progress || 0}</h4>
+          </div>
+          <div className="h-8 w-8 rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-[10px]">
+            IP
+          </div>
+        </div>
+        {/* Completed */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase">Completed</span>
+            <h4 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">{stats.trips_completed || 0}</h4>
+          </div>
+          <div className="h-8 w-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-[10px]">
+            CO
+          </div>
+        </div>
+        {/* Cancelled */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase">Cancelled</span>
+            <h4 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">{stats.trips_cancelled || 0}</h4>
+          </div>
+          <div className="h-8 w-8 rounded-lg bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-[10px]">
+            CA
+          </div>
+        </div>
+        {/* Draft */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm flex items-center justify-between col-span-2 lg:col-span-1">
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase">Drafts</span>
+            <h4 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">{stats.trips_draft || 0}</h4>
+          </div>
+          <div className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 flex items-center justify-center font-bold text-[10px]">
+            DR
+          </div>
+        </div>
+      </div>
+
+      {/* Latest Trip Budget Health & Predictions Forecast */}
+      {stats.total_trips > 0 && latestTripDetails && latestTripStats && (
+        <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 flex flex-col gap-6 shadow-sm animate-fade-in">
+          <div className="border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h2 className="text-base font-extrabold text-slate-800 dark:text-white uppercase tracking-wider">
+              Latest Travel Forecast: {latestTripDetails.destination.name}
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">Budget health and predictions for your upcoming trip</p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <BudgetHealthMeter
+              budget={latestTripDetails.budget}
+              estimatedCost={latestTripDetails.total_estimated_cost}
+              actualExpenses={latestTripStats.total_actual}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+            />
+            
+            {/* Predictions widget */}
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+              <div>
+                <h3 className="font-extrabold text-sm uppercase tracking-wider text-slate-800 dark:text-white">
+                  Live Financial Forecast
+                </h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">Real-time spend pacing and projections</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div className="space-y-0.5">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block">Remaining Budget</span>
+                  <span className={`font-bold ${latestTripStats.remaining_budget >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                    ₹{latestTripStats.remaining_budget ? latestTripStats.remaining_budget.toLocaleString() : '0'}
+                  </span>
+                </div>
+                
+                <div className="space-y-0.5">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block">Current Burn Rate</span>
+                  <span className="font-bold text-slate-700 dark:text-slate-300">
+                    ₹{latestTripStats.daily_burn_rate ? latestTripStats.daily_burn_rate.toLocaleString(undefined, { maximumFractionDigits: 1 }) : '0'}/day
+                  </span>
+                </div>
+                
+                <div className="space-y-0.5">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block">Projected Spend</span>
+                  <span className="font-bold text-slate-700 dark:text-slate-300">
+                    ₹{latestTripStats.projected_final_spend ? latestTripStats.projected_final_spend.toLocaleString() : '0'}
+                  </span>
+                </div>
+                
+                <div className="space-y-0.5">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block">Forecast Status</span>
+                  <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 ${
+                    latestTripStats.prediction_status === "Likely to stay within budget"
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                      : 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
+                  }`}>
+                    {latestTripStats.prediction_status || 'Pacing okay'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {stats.total_trips === 0 ? (
         /* Empty State */
@@ -388,6 +539,38 @@ export const Dashboard: React.FC = () => {
               )}
             </div>
 
+            {/* Upcoming Trips List */}
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+              <h3 className="text-sm font-extrabold text-slate-800 dark:text-white mb-4 uppercase tracking-wider">Upcoming Trips</h3>
+              
+              {(!stats.upcoming_trips || stats.upcoming_trips.length === 0) ? (
+                <p className="text-xs text-slate-400 italic">No upcoming planned trips found.</p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {stats.upcoming_trips.map((trip) => (
+                    <div 
+                      key={trip.id} 
+                      onClick={() => navigate(`/planner?tripId=${trip.id}`)}
+                      className="p-3 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-150 dark:border-slate-700 rounded-xl flex justify-between items-center cursor-pointer transition-all hover:translate-x-1"
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-xs text-slate-800 dark:text-white">{trip.destination}</span>
+                        <span className="text-[10px] text-slate-400">
+                          {trip.start_date ? `Starts: ${trip.start_date}` : `${trip.days} Days / ${trip.category}`}
+                        </span>
+                      </div>
+                      <div className="text-right flex flex-col items-end gap-1">
+                        <span className="text-[10px] font-bold text-slate-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-450 rounded">
+                          {trip.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Quick Tips Box */}
             <div className="bg-slate-900 dark:bg-slate-950 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-violet-600/20 rounded-full blur-xl pointer-events-none" />
@@ -405,6 +588,6 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-    </div>
+    </motion.div>
   );
 };
