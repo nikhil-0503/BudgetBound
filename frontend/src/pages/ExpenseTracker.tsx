@@ -26,6 +26,8 @@ import {
   Save,
   X
 } from 'lucide-react';
+import { BudgetHealthMeter } from '../components/BudgetHealthMeter';
+import { BudgetAllocationEditor } from '../components/BudgetAllocationEditor';
 
 interface Expense {
   id: number;
@@ -48,6 +50,14 @@ interface ExpenseStats {
   total_actual: number;
   savings: number;
   categories: CategoryDiff[];
+  remaining_budget?: number;
+  daily_burn_rate?: number;
+  projected_final_spend?: number;
+  prediction_status?: string;
+  estimated_overspend?: number;
+  estimated_savings?: number;
+  budget?: number;
+  days?: number;
 }
 
 interface TripDetails {
@@ -58,6 +68,7 @@ interface TripDetails {
   };
   budget: number;
   total_estimated_cost: number;
+  budget_allocation?: any;
 }
 
 export const ExpenseTracker: React.FC = () => {
@@ -78,8 +89,43 @@ export const ExpenseTracker: React.FC = () => {
   const [amount, setAmount] = useState<number>(0);
   const [notes, setNotes] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const [savingAllocations, setSavingAllocations] = useState(false);
 
   const categories = ['Transport', 'Hotel', 'Food', 'Activities', 'Shopping', 'Other'];
+
+  const handleAllocationSave = async (updated: any) => {
+    if (!tripId) return;
+    try {
+      setSavingAllocations(true);
+      await api.put(`/api/trips/${tripId}/allocations`, {
+        transport_cost: updated.transport_cost,
+        hotel_cost: updated.hotel_cost,
+        food_cost: updated.food_cost,
+        activities_cost: updated.activities_cost,
+        emergency_reserve: updated.emergency_reserve
+      });
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save manual budget allocations.');
+    } finally {
+      setSavingAllocations(false);
+    }
+  };
+
+  const handleAllocationReset = async () => {
+    if (!tripId) return;
+    try {
+      setSavingAllocations(true);
+      await api.post(`/api/trips/${tripId}/allocations/reset`);
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to reset allocations.');
+    } finally {
+      setSavingAllocations(false);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -190,20 +236,6 @@ export const ExpenseTracker: React.FC = () => {
     );
   }
 
-  const budgetPct = (stats.total_actual / trip.budget) * 100;
-  
-  const getHealthColor = (percent: number) => {
-    if (percent <= 85) return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-    if (percent <= 100) return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-    return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
-  };
-
-  const getHealthBarColor = (percent: number) => {
-    if (percent <= 85) return 'bg-emerald-500';
-    if (percent <= 100) return 'bg-amber-500';
-    return 'bg-rose-500';
-  };
-
   return (
     <div className="flex flex-col gap-8 relative">
       
@@ -272,17 +304,57 @@ export const ExpenseTracker: React.FC = () => {
         </div>
       </div>
 
-      {/* Progress Budget Health Bar */}
-      <div className={`p-5 rounded-2xl border ${getHealthColor(budgetPct)} flex flex-col gap-2.5 shadow-sm`}>
-        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
-          <span>Budget Health Indicator</span>
-          <span>{budgetPct.toFixed(1)}% Consumed</span>
-        </div>
-        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
-          <div 
-            className={`h-full transition-all duration-300 ${getHealthBarColor(budgetPct)}`}
-            style={{ width: `${Math.min(100, budgetPct)}%` }}
-          />
+      {/* Budget Health Meter & Live Predictions Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <BudgetHealthMeter
+          budget={trip.budget}
+          estimatedCost={trip.total_estimated_cost}
+          actualExpenses={stats.total_actual}
+          className="w-full"
+        />
+        
+        {/* Live Budget Predictions Card */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+          <div>
+            <h3 className="font-extrabold text-sm uppercase tracking-wider text-slate-800 dark:text-white">
+              Live Financial Forecast
+            </h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Real-time spend pacing and projections</p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="space-y-0.5">
+              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Remaining Budget</span>
+              <span className={`font-bold ${(stats.remaining_budget ?? 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                ₹{stats.remaining_budget ? stats.remaining_budget.toLocaleString() : '0'}
+              </span>
+            </div>
+            
+            <div className="space-y-0.5">
+              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Current Burn Rate</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                ₹{stats.daily_burn_rate ? stats.daily_burn_rate.toLocaleString(undefined, { maximumFractionDigits: 1 }) : '0'}/day
+              </span>
+            </div>
+            
+            <div className="space-y-0.5">
+              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Projected Spend</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                ₹{stats.projected_final_spend ? stats.projected_final_spend.toLocaleString() : '0'}
+              </span>
+            </div>
+            
+            <div className="space-y-0.5">
+              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Forecast Status</span>
+              <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 ${
+                stats.prediction_status === "Likely to stay within budget"
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                  : 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
+              }`}>
+                {stats.prediction_status || 'Pacing okay'}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -356,14 +428,38 @@ export const ExpenseTracker: React.FC = () => {
         <div className="lg:col-span-5 flex flex-col gap-6">
           
           <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">Estimate vs Actual</h3>
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                  {expenses.length === 0 ? 'Planned Budget Allocation' : 'Planned vs Actual Spend'}
+                </h3>
+                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                  {expenses.length === 0
+                    ? 'Log expenses to see actual vs planned comparison'
+                    : 'Category-level comparison of estimated vs actual costs'}
+                </p>
+              </div>
+              {expenses.length === 0 && (
+                <span className="text-[9px] font-bold uppercase tracking-widest bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 px-2 py-1 rounded-lg border border-violet-200 dark:border-violet-900/30">
+                  Planned
+                </span>
+              )}
+              {expenses.length > 0 && (
+                <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-lg border border-emerald-200 dark:border-emerald-900/30">
+                  Live
+                </span>
+              )}
+            </div>
             
             <div className="h-64 w-full text-xs">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.categories} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <BarChart
+                  data={stats.categories.filter(c => c.estimated > 0 || c.actual > 0)}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
-                  <XAxis dataKey="category" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
+                  <XAxis dataKey="category" stroke="#94a3b8" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} />
                   <Tooltip 
                     contentStyle={{ 
                       background: darkMode ? '#1e293b' : 'rgba(255,255,255,0.9)', 
@@ -371,37 +467,56 @@ export const ExpenseTracker: React.FC = () => {
                       color: darkMode ? '#f8fafc' : '#0f172a',
                       borderRadius: '12px' 
                     }} 
-                    itemStyle={{
-                      color: darkMode ? '#f8fafc' : '#0f172a'
-                    }}
+                    itemStyle={{ color: darkMode ? '#f8fafc' : '#0f172a' }}
+                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, undefined]}
                   />
-                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                  <Legend wrapperStyle={{ paddingTop: '10px', fontSize: '11px' }} />
                   <Bar name="Plan Estimate" dataKey="estimated" fill="#8b5cf6" radius={[3, 3, 0, 0]} />
-                  <Bar name="Actual Spent" dataKey="actual" fill="#ef4444" radius={[3, 3, 0, 0]} />
+                  {expenses.length > 0 && (
+                    <Bar name="Actual Spent" dataKey="actual" fill="#ef4444" radius={[3, 3, 0, 0]} />
+                  )}
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* List item savings/losses */}
-            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-3 text-xs">
-              <span className="font-bold text-slate-700 dark:text-slate-300 uppercase block mb-1">Difference Analysis</span>
-              
-              <div className="flex flex-col gap-2 font-medium">
-                {stats.categories.map((cat, idx) => {
-                  const isSaved = cat.difference >= 0;
-                  if (cat.estimated === 0 && cat.actual === 0) return null;
-                  return (
-                    <div key={idx} className="flex justify-between items-center text-slate-500 dark:text-slate-400">
-                      <span>{cat.category}</span>
-                      <span className={isSaved ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}>
-                        {isSaved ? `+₹${cat.difference.toLocaleString()}` : `-₹${Math.abs(cat.difference).toLocaleString()}`}
-                      </span>
-                    </div>
-                  );
-                })}
+            {/* Difference Analysis — only shown when actual expenses exist */}
+            {expenses.length > 0 ? (
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-3 text-xs">
+                <span className="font-bold text-slate-700 dark:text-slate-300 uppercase block mb-1">Difference Analysis</span>
+                <div className="flex flex-col gap-2 font-medium">
+                  {stats.categories.map((cat, idx) => {
+                    const isSaved = cat.difference >= 0;
+                    if (cat.estimated === 0 && cat.actual === 0) return null;
+                    return (
+                      <div key={idx} className="flex justify-between items-center text-slate-500 dark:text-slate-400">
+                        <span>{cat.category}</span>
+                        <span className={isSaved ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}>
+                          {isSaved ? `+₹${cat.difference.toLocaleString()}` : `-₹${Math.abs(cat.difference).toLocaleString()}`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-400 text-center py-2">
+                Log your first expense to see actual vs planned differences.
+              </div>
+            )}
 
+          </div>
+
+          {/* Manual Budget Allocation Editor — wrap in right column div */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            {trip.budget_allocation && (
+              <BudgetAllocationEditor
+                budget={trip.budget}
+                initialAllocations={trip.budget_allocation}
+                onSave={handleAllocationSave}
+                onReset={handleAllocationReset}
+                isSaving={savingAllocations}
+              />
+            )}
           </div>
 
         </div>

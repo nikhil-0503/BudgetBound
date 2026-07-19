@@ -17,9 +17,25 @@ class UserLogin(BaseModel):
 class UserOut(UserBase):
     id: int
     created_at: datetime
+    photo_url: Optional[str] = None
+    default_budget: Optional[float] = None
+    preferred_travel_style: Optional[str] = None
+    preferred_comfort_level: Optional[int] = None
+    default_starting_city: Optional[str] = None
+    preferred_theme: str = "light"
+    is_admin: bool = False
 
     class Config:
         from_attributes = True
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    photo_url: Optional[str] = None
+    default_budget: Optional[float] = None
+    preferred_travel_style: Optional[str] = None
+    preferred_comfort_level: Optional[int] = None
+    default_starting_city: Optional[str] = None
+    preferred_theme: Optional[str] = None
 
 # Token Schemas
 class Token(BaseModel):
@@ -57,8 +73,18 @@ class DestinationBase(BaseModel):
     city_score: Optional[float] = 0.0
     solo_score: Optional[float] = 0.0
 
+class WeatherIntelligenceOut(BaseModel):
+    current_season: str
+    best_season: str
+    season_rating: str
+    crowd_level: str
+    temperature_range: str
+    rain_probability: str
+    recommendation: str
+
 class DestinationOut(DestinationBase):
     id: int
+    weather_intelligence: Optional[WeatherIntelligenceOut] = None
 
     class Config:
         from_attributes = True
@@ -126,6 +152,45 @@ class TripPlanRequest(BaseModel):
     comfort_score: int = 50
     destination_id: Optional[int] = None
 
+class PackingItemOut(BaseModel):
+    id: int
+    trip_id: int
+    name: str
+    checked: bool
+
+    class Config:
+        from_attributes = True
+
+class CarbonFootprintOut(BaseModel):
+    transport_mode: str
+    co2_emissions: float
+    carbon_rating: str
+    eco_score: int
+    alternative_savings: float
+
+class NotificationOut(BaseModel):
+    id: int
+    user_id: int
+    type: str
+    message: str
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class TravelDocumentOut(BaseModel):
+    id: int
+    trip_id: int
+    category: str
+    filename: str
+    filepath: str
+    filesize: int
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True
+
 # Trip Output Schemas
 class TripOut(BaseModel):
     id: int
@@ -143,9 +208,26 @@ class TripOut(BaseModel):
     destination: DestinationOut
     itineraries: List[ItineraryOut] = []
     budget_allocation: Optional[BudgetAllocationOut] = None
+    status: str = "Planned"
+    start_date: Optional[str] = None
+    actual_spending: Optional[float] = 0.0
+    savings: Optional[float] = 0.0
+    is_public: bool = False
+    share_token: Optional[str] = None
+    packing_items: List[PackingItemOut] = []
+    carbon_footprint: Optional[CarbonFootprintOut] = None
+    documents: List[TravelDocumentOut] = []
 
     class Config:
         from_attributes = True
+
+class ScoreBreakdown(BaseModel):
+    budget_compatibility: float
+    trip_type_match: float
+    comfort_match: float
+    destination_rating: float
+    duration_suitability: float
+    explanations: List[str]
 
 # Reverse Search response
 class DestinationSearchScore(BaseModel):
@@ -154,6 +236,8 @@ class DestinationSearchScore(BaseModel):
     budget_fit: float
     rating: float
     value_score: float
+    breakdown: Optional[ScoreBreakdown] = None
+
 
 # Optimizer Schemas
 class OptimizationOption(BaseModel):

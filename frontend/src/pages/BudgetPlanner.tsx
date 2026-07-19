@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { DocumentManager } from '../components/DocumentManager';
 import { TripFlowGuide } from '../components/TripFlowGuide';
 import {
   Compass,
@@ -26,9 +29,18 @@ import {
   LifeBuoy,
   ChevronDown,
   ChevronUp,
-  Map
+  Map,
+  Share2,
+  CloudSun,
+  Leaf
 } from 'lucide-react';
 import { LocationPickerModal } from '../components/LocationPickerModal';
+import { BudgetHealthMeter } from '../components/BudgetHealthMeter';
+import { RecommendationExplainability } from '../components/RecommendationExplainability';
+import { BudgetAllocationEditor } from '../components/BudgetAllocationEditor';
+import { TimelineItinerary } from '../components/TimelineItinerary';
+import { TripChecklist } from '../components/TripChecklist';
+import { ShareModal } from '../components/ShareModal';
 
 
 interface ItineraryActivity {
@@ -66,6 +78,15 @@ interface PlanResult {
     category: string;
     best_season: string;
     attractions: string[];
+    weather_intelligence?: {
+      current_season: string;
+      best_season: string;
+      season_rating: string;
+      crowd_level: string;
+      temperature_range: string;
+      rain_probability: string;
+      recommendation: string;
+    };
   };
   costs: CostAllocation;
   savings: number;
@@ -77,6 +98,17 @@ interface PlanResult {
   travelers_count: number;
   comfort_score: number;
   travel_type: string;
+  breakdown?: any;
+  is_public?: boolean;
+  share_token?: string | null;
+  packing_items?: any[];
+  carbon_footprint?: {
+    transport_mode: string;
+    co2_emissions: number;
+    carbon_rating: string;
+    eco_score: number;
+    alternative_savings: number;
+  };
 }
 
 interface SearchResult {
@@ -85,6 +117,7 @@ interface SearchResult {
   budget_fit: number;
   rating: number;
   value_score: number;
+  breakdown?: any;
 }
 
 type PlannerMode = 'plan' | 'discover';
@@ -110,6 +143,20 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   const [selectedDestinationId, setSelectedDestinationId] = useState<number | null>(null);
   const [selectedDestinationName, setSelectedDestinationName] = useState<string | null>(null);
   const [allDestinations, setAllDestinations] = useState<{ id: number; name: string; category: string; state: string }[]>([]);
+  const { user } = useAuth();
+
+  // Pre-fill fields from user profile preferences if available on mount
+  React.useEffect(() => {
+    const tripIdParam = searchParams.get('tripId');
+    if (user && !tripIdParam) {
+      if (user.default_starting_city) setStartingCity(user.default_starting_city);
+      if (user.default_budget) setBudget(String(user.default_budget));
+      if (user.preferred_travel_style) setTravelType(user.preferred_travel_style);
+      if (user.preferred_comfort_level !== undefined && user.preferred_comfort_level !== null) {
+        setComfortScore(user.preferred_comfort_level);
+      }
+    }
+  }, [user, searchParams]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +167,11 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   const [savedTripId, setSavedTripId] = useState<number | null>(null);
   const [savingTrip, setSavingTrip] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const [tripStatus, setTripStatus] = useState<string>("Planned");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Fetch all destinations for select dropdown in Build Itinerary mode
   React.useEffect(() => {
@@ -132,6 +183,73 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         console.error('Failed to fetch destinations list:', err);
       });
   }, []);
+
+  // Fetch existing saved trip details if tripId query param is provided
+  React.useEffect(() => {
+    const tripIdParam = searchParams.get('tripId');
+    const fetchSavedTrip = async (id: string) => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/api/trips/${id}`);
+        const trip = response.data;
+        const alloc = trip.budget_allocation;
+        setPlan({
+          destination: trip.destination,
+          costs: {
+            transport_mode: trip.transport_mode,
+            hotel_tier: trip.hotel_tier,
+            transport_cost: alloc ? alloc.transport_cost : 0,
+            hotel_cost: alloc ? alloc.hotel_cost : 0,
+            food_cost: alloc ? alloc.food_cost : 0,
+            activities_cost: alloc ? alloc.activities_cost : 0,
+            local_transport_cost: alloc ? alloc.local_transport_cost : 0,
+            taxes_fees_cost: alloc ? alloc.taxes_fees_cost : 0,
+            emergency_reserve: alloc ? alloc.emergency_reserve : 0,
+            total_estimated_cost: trip.total_estimated_cost
+          },
+          savings: trip.budget - trip.total_estimated_cost,
+          value_score: trip.value_score || 85.0,
+          under_budget: trip.total_estimated_cost <= trip.budget,
+          itineraries: trip.itineraries,
+          budget: trip.budget,
+          days: trip.days,
+          travelers_count: trip.travelers_count,
+          comfort_score: trip.comfort_score,
+          travel_type: trip.travel_type,
+          breakdown: trip.breakdown || {
+            budget_compatibility: 80,
+            trip_type_match: 90,
+            comfort_match: 85,
+            destination_rating: 80,
+            duration_suitability: 95,
+            explanations: ["Loaded saved travel itinerary from history logs."]
+          },
+          is_public: trip.is_public,
+          share_token: trip.share_token,
+          packing_items: trip.packing_items,
+          carbon_footprint: trip.carbon_footprint
+        });
+        setSavedTripId(trip.id);
+        setTripStatus(trip.status || "Planned");
+        
+        setStartingCity('Your City');
+        setBudget(String(trip.budget));
+        setDays(trip.days);
+        setTravelType(trip.travel_type);
+        setTravelersCount(trip.travelers_count);
+        setComfortScore(trip.comfort_score);
+        setFlowMode('plan');
+      } catch (err: any) {
+        console.error(err);
+        setError(err.response?.data?.detail || 'Failed to load saved trip.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (tripIdParam) {
+      fetchSavedTrip(tripIdParam);
+    }
+  }, [searchParams]);
 
   // Prefill hook from Reverse Search
   React.useEffect(() => {
@@ -180,9 +298,120 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
   // Expandable days in itinerary
   const [expandedDays, setExpandedDays] = useState<Record<number, boolean>>({ 1: true });
+  const [expandedSearchIdx, setExpandedSearchIdx] = useState<number | null>(null);
 
   const toggleDay = (day: number) => {
     setExpandedDays(prev => ({ ...prev, [day]: !prev[day] }));
+  };
+
+  const handleAllocationSave = async (updated: any) => {
+    if (!plan) return;
+
+    if (savedTripId) {
+      try {
+        setSavingTrip(true);
+        const response = await api.put(`/api/trips/${savedTripId}/allocations`, {
+          transport_cost: updated.transport_cost,
+          hotel_cost: updated.hotel_cost,
+          food_cost: updated.food_cost,
+          activities_cost: updated.activities_cost,
+          emergency_reserve: updated.emergency_reserve
+        });
+        setPlan(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            costs: {
+              ...prev.costs,
+              transport_cost: response.data.budget_allocation.transport_cost,
+              hotel_cost: response.data.budget_allocation.hotel_cost,
+              food_cost: response.data.budget_allocation.food_cost,
+              activities_cost: response.data.budget_allocation.activities_cost,
+              emergency_reserve: response.data.budget_allocation.emergency_reserve,
+              local_transport_cost: response.data.budget_allocation.local_transport_cost,
+              taxes_fees_cost: response.data.budget_allocation.taxes_fees_cost,
+              total_estimated_cost: response.data.total_estimated_cost
+            },
+            savings: prev.budget - response.data.total_estimated_cost
+          };
+        });
+      } catch (err) {
+        console.error(err);
+        alert('Failed to save allocations.');
+      } finally {
+        setSavingTrip(false);
+      }
+    } else {
+      const total = updated.transport_cost + updated.hotel_cost + updated.food_cost + updated.activities_cost + updated.emergency_reserve;
+      setPlan({
+        ...plan,
+        costs: {
+          ...plan.costs,
+          transport_cost: updated.transport_cost,
+          hotel_cost: updated.hotel_cost,
+          food_cost: updated.food_cost,
+          activities_cost: updated.activities_cost,
+          emergency_reserve: updated.emergency_reserve,
+          local_transport_cost: 0,
+          taxes_fees_cost: 0,
+          total_estimated_cost: total
+        },
+        savings: plan.budget - total
+      });
+    }
+  };
+
+  const handleAllocationReset = async () => {
+    if (!plan) return;
+    if (savedTripId) {
+      try {
+        setSavingTrip(true);
+        const response = await api.post(`/api/trips/${savedTripId}/allocations/reset`, {
+          starting_city: startingCity
+        });
+        setPlan(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            costs: {
+              ...prev.costs,
+              transport_cost: response.data.budget_allocation.transport_cost,
+              hotel_cost: response.data.budget_allocation.hotel_cost,
+              food_cost: response.data.budget_allocation.food_cost,
+              activities_cost: response.data.budget_allocation.activities_cost,
+              local_transport_cost: response.data.budget_allocation.local_transport_cost,
+              taxes_fees_cost: response.data.budget_allocation.taxes_fees_cost,
+              emergency_reserve: response.data.budget_allocation.emergency_reserve,
+              total_estimated_cost: response.data.total_estimated_cost
+            },
+            savings: prev.budget - response.data.total_estimated_cost
+          };
+        });
+      } catch (err) {
+        console.error(err);
+        alert('Failed to reset allocations.');
+      } finally {
+        setSavingTrip(false);
+      }
+    } else {
+      setLoading(true);
+      try {
+        const response = await api.post('/api/trips/plan', {
+          starting_city: startingCity || 'Bangalore',
+          budget: Number(budget),
+          days,
+          travel_type: travelType,
+          travelers_count: travelersCount,
+          comfort_score: comfortScore,
+          destination_id: selectedDestinationId
+        });
+        setPlan(response.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const travelTypes = [
@@ -204,14 +433,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
   const comfortInfo = getComfortLabel(comfortScore);
 
-  const buildTripPayload = (destinationId?: number) => ({
-    starting_city: startingCity,
+  const buildTripPayload = (destinationId?: number | null) => ({
+    starting_city: startingCity || 'Bangalore',
     budget: Number(budget),
     days,
     travel_type: travelType,
     travelers_count: travelersCount,
     comfort_score: comfortScore,
-    destination_id: destinationId ?? selectedDestinationId ?? null
+    // Use explicit arg first, then fall back to current state
+    destination_id: destinationId !== undefined ? destinationId : (selectedDestinationId ?? null)
   });
 
   const handlePrimaryAction = async (e: React.FormEvent) => {
@@ -220,10 +450,6 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     setPlan(null);
     setSavedTripId(null);
 
-    if (!startingCity.trim()) {
-      setError('Please enter a starting city.');
-      return;
-    }
     const budgetNum = Number(budget);
     if (!budget || isNaN(budgetNum) || budgetNum <= 0) {
       setError('Please enter a valid budget.');
@@ -231,6 +457,18 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     }
     if (days < 1 || days > 14) {
       setError('Trip duration must be between 1 and 14 days.');
+      return;
+    }
+
+    // In discover mode: if no city is provided, fall back to 'Bangalore' silently
+    // so the button always fires. Show a soft hint rather than a hard block.
+    const effectiveCity = startingCity.trim() || 'Bangalore';
+    if (!startingCity.trim() && flowMode === 'discover') {
+      setStartingCity('Bangalore');
+    }
+    // In plan mode, starting city is required for accurate cost estimation
+    if (!startingCity.trim() && flowMode === 'plan') {
+      setError('Please enter a starting city for accurate cost estimation.');
       return;
     }
 
@@ -245,7 +483,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             days,
             travel_type: travelType,
             travelers_count: travelersCount,
-            starting_city: startingCity,
+            starting_city: effectiveCity,
             comfort_score: comfortScore
           }
         });
@@ -253,7 +491,12 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         setSearchCompleted(true);
       } catch (err: any) {
         console.error(err);
-        setError(err.response?.data?.detail || 'Failed to fetch matching destinations.');
+        const detail = err.response?.data?.detail;
+        if (err.response?.status === 422) {
+          setError(detail || 'No destinations found within your budget. Try increasing the budget or reducing comfort score.');
+        } else {
+          setError(detail || 'Failed to fetch matching destinations.');
+        }
       } finally {
         setSearchLoading(false);
       }
@@ -267,29 +510,61 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       setExpandedDays({ 1: true });
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to generate plan. Please try again.');
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail;
+      if (status === 422) {
+        // Backend returned a user-friendly constraint message (e.g. no destination fits budget)
+        setError(detail || 'No destination found within your selected budget. Try increasing your budget, reducing trip days, or lowering the comfort score.');
+      } else if (status === 404) {
+        setError('No destinations found in the database. Please contact support.');
+      } else if (status === 500) {
+        setError('Unable to generate itinerary. The planning service encountered an error. Please try adjusting your inputs and trying again.');
+      } else if (!navigator.onLine) {
+        setError('No internet connection. Please check your network and try again.');
+      } else {
+        setError(detail || 'Unable to generate the trip plan. Please check your inputs and try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleSelectDestination = async (result: SearchResult) => {
-    setSelectedDestinationId(result.destination.id);
+    const destId = result.destination.id;
+    const destCategory = result.destination.category;
+
+    setSelectedDestinationId(destId);
     setSelectedDestinationName(result.destination.name);
-    setTravelType(result.destination.category);
+    setTravelType(destCategory);
     setFlowMode('plan');
     setError(null);
     setSearchCompleted(false);
     setPlan(null);
     setLoading(true);
 
+    // Build payload immediately using the local values — don't wait for state to flush
+    const payload = {
+      starting_city: startingCity || 'Bangalore',
+      budget: Number(budget),
+      days,
+      travel_type: destCategory,
+      travelers_count: travelersCount,
+      comfort_score: comfortScore,
+      destination_id: destId
+    };
+
     try {
-      const response = await api.post('/api/trips/plan', buildTripPayload(result.destination.id));
+      const response = await api.post('/api/trips/plan', payload);
       setPlan(response.data);
       setExpandedDays({ 1: true });
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to generate a plan for this destination.');
+      const detail = err.response?.data?.detail;
+      if (err.response?.status === 422) {
+        setError(detail || 'This destination exceeds your budget. Try increasing your budget or reducing duration.');
+      } else {
+        setError(detail || 'Failed to generate a plan for this destination.');
+      }
     } finally {
       setLoading(false);
     }
@@ -298,12 +573,14 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   const handleSaveTrip = async () => {
     if (!plan || savedTripId) return;
     setSavingTrip(true);
+    setError(null);
     try {
       const response = await api.post('/api/trips/', plan);
       setSavedTripId(response.data.id);
     } catch (err: any) {
       console.error(err);
-      setError('Failed to save trip to database.');
+      const detail = err.response?.data?.detail;
+      setError(detail || 'Failed to save trip to database. Please try again.');
     } finally {
       setSavingTrip(false);
     }
@@ -331,27 +608,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     }
   };
 
-  // Health Meter Colors
-  const getUsagePercentage = () => {
-    if (!plan) return 0;
-    return (plan.costs.total_estimated_cost / plan.budget) * 100;
-  };
 
-  const pct = getUsagePercentage();
-  const getHealthColor = (percent: number) => {
-    if (percent <= 85) return 'bg-emerald-500';
-    if (percent <= 100) return 'bg-amber-500';
-    return 'bg-rose-500';
-  };
-
-  const getHealthBg = (percent: number) => {
-    if (percent <= 85) return 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400';
-    if (percent <= 100) return 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400';
-    return 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400';
-  };
 
   return (
-    <div className="flex flex-col gap-8">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="flex flex-col gap-8"
+    >
 
       {/* Title */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -487,6 +752,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     type="number"
                     required
                     min={1000}
+                    step={1000}
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
                     placeholder="20000"
@@ -500,12 +766,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 <div className="relative">
                   <Calendar className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     required
-                    min={1}
-                    max={14}
                     value={days}
-                    onChange={(e) => setDays(Number(e.target.value))}
+                    onChange={(e) => {
+                      const val = Number(e.target.value.replace(/[^0-9]/g, ''));
+                      if (!isNaN(val)) setDays(val);
+                    }}
                     placeholder="4"
                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
                   />
@@ -519,11 +788,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 <div className="relative">
                   <Users className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     required
-                    min={1}
                     value={travelersCount}
-                    onChange={(e) => setTravelersCount(Number(e.target.value))}
+                    onChange={(e) => {
+                      const val = Number(e.target.value.replace(/[^0-9]/g, ''));
+                      if (!isNaN(val) && val >= 1) setTravelersCount(val);
+                    }}
                     placeholder="1"
                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
                   />
@@ -570,12 +843,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               </div>
             </div>
 
-            {error && (
-              <p className="text-rose-500 text-xs font-medium bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg flex items-center gap-2">
-                <AlertTriangle size={14} className="shrink-0" />
-                {error}
-              </p>
-            )}
+
 
             {flowMode === 'discover' && (
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-3 rounded-xl">
@@ -617,9 +885,29 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
         {/* Right Column: Generated Plans */}
         <div className="lg:col-span-8">
+          {/* Error banner — shown in results area so it appears where destination cards would be */}
+              {error && (
+                <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 rounded-2xl p-6 flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-rose-100 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center shrink-0">
+                    <AlertTriangle size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-rose-700 dark:text-rose-400 text-sm mb-1">No results</h3>
+                    <p className="text-rose-600 dark:text-rose-300 text-xs leading-relaxed">{error}</p>
+                    <button
+                      type="button"
+                      onClick={() => setError(null)}
+                      className="mt-3 text-[10px] font-bold uppercase tracking-wider text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 transition-colors"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              )}
+
           {flowMode === 'discover' && (
             <div className="flex flex-col gap-6">
-              {!searchCompleted && !searchLoading && (
+              {!searchCompleted && !searchLoading && !error && (
                 <div className="bg-slate-100 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
                   <Search className="h-16 w-16 text-slate-300 dark:text-slate-600 mb-4 animate-pulse" />
                   <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">Search for matching destinations</h3>
@@ -660,69 +948,92 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     </p>
                   </div>
 
-                  {searchResults.map((res, index) => (
-                    <div
-                      key={res.destination.id}
-                      className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row gap-5 items-start justify-between relative group hover:border-violet-500/40 transition-colors"
-                    >
-                      <div className="space-y-3 flex-1">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <div className="h-6 w-6 rounded-full bg-violet-600/10 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-extrabold text-[10px] flex items-center justify-center">
-                            #{index + 1}
+                  {searchResults.map((res, index) => {
+                    const isExpanded = expandedSearchIdx === index;
+                    return (
+                      <div
+                        key={res.destination.id}
+                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col hover:border-violet-500/40 transition-all gap-4"
+                      >
+                        <div className="flex flex-col md:flex-row gap-5 items-start justify-between w-full">
+                          <div className="space-y-3 flex-1">
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <div className="h-6 w-6 rounded-full bg-violet-600/10 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-extrabold text-[10px] flex items-center justify-center">
+                                #{index + 1}
+                              </div>
+                              <h4 className="font-extrabold text-lg text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                                {res.destination.name}
+                              </h4>
+                              <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                {res.destination.category}
+                              </span>
+                            </div>
+
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                              <MapPin size={11} className="text-slate-400 shrink-0" />
+                              {res.destination.state}
+                            </span>
+
+                            <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed max-w-xl line-clamp-2">
+                              {res.destination.description}
+                            </p>
+
+                            <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400 pt-1">
+                              <div className="flex items-center gap-0.5 text-amber-500">
+                                <Star size={13} fill="currentColor" />
+                                <span className="font-bold text-slate-800 dark:text-white">{res.destination.rating}</span>
+                              </div>
+                              <span>Best season: {res.destination.best_season}</span>
+                            </div>
                           </div>
-                          <h4 className="font-extrabold text-lg text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                            {res.destination.name}
-                          </h4>
-                          <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                            {res.destination.category}
-                          </span>
-                        </div>
 
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                          <MapPin size={11} className="text-slate-400 shrink-0" />
-                          {res.destination.state}
-                        </span>
+                          <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-slate-100 md:dark:border-slate-700/60 md:pl-6 shrink-0 w-full md:w-auto">
+                            <div className="flex flex-col md:items-end">
+                              <span className="text-[9px] text-slate-400 font-bold uppercase">Estimated Cost</span>
+                              <span className="text-lg font-extrabold text-slate-900 dark:text-white">INR {res.estimated_cost.toLocaleString()}</span>
+                              <span className="text-[9px] text-slate-400 font-medium">({res.budget_fit}% of budget)</span>
+                            </div>
 
-                        <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed max-w-xl line-clamp-2">
-                          {res.destination.description}
-                        </p>
+                            <div className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase ${getValueScoreColor(res.value_score)}`}>
+                              Match Score: {res.value_score}
+                            </div>
 
-                        <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400 pt-1">
-                          <div className="flex items-center gap-0.5 text-amber-500">
-                            <Star size={13} fill="currentColor" />
-                            <span className="font-bold text-slate-800 dark:text-white">{res.destination.rating}</span>
+                            <div className="flex gap-2 w-full md:w-auto">
+                              <button
+                                type="button"
+                                onClick={() => setExpandedSearchIdx(isExpanded ? null : index)}
+                                className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-slate-200 dark:border-slate-600"
+                              >
+                                {isExpanded ? 'Hide Match' : 'Show Match'}
+                              </button>
+                              <button
+                                onClick={() => handleSelectDestination(res)}
+                                className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-slate-900/10"
+                              >
+                                Use this destination
+                                <ArrowRight size={13} />
+                              </button>
+                            </div>
                           </div>
-                          <span>Best season: {res.destination.best_season}</span>
                         </div>
+
+                        {isExpanded && res.breakdown && (
+                          <RecommendationExplainability
+                            destinationName={res.destination.name}
+                            overallScore={res.value_score}
+                            breakdown={res.breakdown}
+                            className="w-full mt-2 border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/10"
+                          />
+                        )}
                       </div>
-
-                      <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-slate-100 md:dark:border-slate-700/60 md:pl-6 shrink-0 w-full md:w-auto">
-                        <div className="flex flex-col md:items-end">
-                          <span className="text-[9px] text-slate-400 font-bold uppercase">Estimated Cost</span>
-                          <span className="text-lg font-extrabold text-slate-900 dark:text-white">INR {res.estimated_cost.toLocaleString()}</span>
-                          <span className="text-[9px] text-slate-400 font-medium">({res.budget_fit}% of budget)</span>
-                        </div>
-
-                        <div className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase ${getValueScoreColor(res.value_score)}`}>
-                          Match Score: {res.value_score}
-                        </div>
-
-                        <button
-                          onClick={() => handleSelectDestination(res)}
-                          className="w-full md:w-auto inline-flex items-center justify-center gap-1 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all"
-                        >
-                          Use this destination
-                          <ArrowRight size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
           )}
 
-          {flowMode === 'plan' && !plan && !loading && (
+          {flowMode === 'plan' && !plan && !loading && !error && (
             <div className="bg-slate-100 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
               <Compass className="h-16 w-16 text-slate-300 dark:text-slate-600 mb-4 animate-pulse" />
               <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">No Plan Generated Yet</h3>
@@ -758,14 +1069,47 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                   <div>
                     <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">{plan.destination.state}</span>
                     <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">{plan.destination.name}</h2>
+                    {savedTripId && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs text-slate-400 font-semibold">Status:</span>
+                        <select
+                          value={tripStatus}
+                          onChange={async (e) => {
+                            const newStatus = e.target.value;
+                            try {
+                              const response = await api.patch(`/api/trips/${savedTripId}/status`, { status: newStatus });
+                              setTripStatus(response.data.status);
+                            } catch (err) {
+                              console.error(err);
+                              alert('Failed to update trip status.');
+                            }
+                          }}
+                          className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-600 focus:outline-none"
+                        >
+                          {["Draft", "Planned", "In Progress", "Completed", "Cancelled"].map((st) => (
+                            <option key={st} value={st}>{st}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     {savedTripId ? (
                       <>
                         <button
+                          onClick={() => setIsShareModalOpen(true)}
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200 dark:border-slate-600"
+                        >
+                          <Share2 size={16} />
+                          Share Plan
+                        </button>
+                        <button
                           onClick={handleDownloadPDF}
+
                           disabled={downloadingPdf}
                           className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200 dark:border-slate-650"
                         >
                           {downloadingPdf ? (
                             <Loader size={16} className="animate-spin" />
@@ -820,103 +1164,141 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 </div>
               </div>
 
-              {/* Budget Health Meter */}
-              <div className={`border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm ${getHealthBg(pct)}`}>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
-                  <div>
-                    <h3 className="font-extrabold text-sm tracking-wide uppercase">Budget Utilization</h3>
-                    <p className="text-[11px] opacity-80 mt-0.5">Estimated Cost vs Allocated Budget</p>
-                  </div>
-                  <div className="text-right sm:text-right">
-                    <span className="text-base font-extrabold">INR {plan.costs.total_estimated_cost.toLocaleString()}</span>
-                    <span className="text-xs font-semibold opacity-80"> of INR {plan.budget.toLocaleString()}</span>
-                  </div>
-                </div>
+              {/* Recommendation Explainability Match Insights */}
+              {plan.breakdown && (
+                <RecommendationExplainability
+                  destinationName={plan.destination.name}
+                  overallScore={plan.value_score}
+                  breakdown={plan.breakdown}
+                  className="w-full"
+                />
+              )}
 
-                {/* Progress bar */}
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-500 ${getHealthColor(pct)}`}
-                    style={{ width: `${Math.min(100, pct)}%` }}
-                  />
+              {/* Weather & Season Intelligence */}
+              {plan.destination.weather_intelligence && (
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3.5">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+                      <CloudSun size={15} className="text-violet-500" />
+                      Weather & Season Intelligence
+                    </h3>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      plan.destination.weather_intelligence.season_rating === 'Excellent' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/30' :
+                      plan.destination.weather_intelligence.season_rating === 'Good' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200/30' :
+                      plan.destination.weather_intelligence.season_rating === 'Fair' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200/30' :
+                      'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200/30'
+                    }`}>
+                      {plan.destination.weather_intelligence.season_rating}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] text-slate-400 block uppercase">Current Season</span>
+                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.current_season}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] text-slate-400 block uppercase">Expected Temp</span>
+                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.temperature_range}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] text-slate-400 block uppercase">Rain Prob</span>
+                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.rain_probability}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] text-slate-400 block uppercase">Crowd Level</span>
+                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.crowd_level}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed italic border-l-2 border-violet-450 pl-3">
+                    {plan.destination.weather_intelligence.recommendation}
+                  </p>
                 </div>
+              )}
 
-                <div className="flex items-center justify-between mt-3 text-xs font-bold">
-                  <span>{pct.toFixed(0)}% Used</span>
-                  <span>
-                    {plan.savings >= 0 ? (
-                      <span className="text-emerald-500">Remaining Savings: INR {plan.savings.toLocaleString()}</span>
-                    ) : (
-                      <span className="text-rose-500">Exceeds Budget By: INR {Math.abs(plan.savings).toLocaleString()}</span>
-                    )}
-                  </span>
-                </div>
-              </div>
+              {/* Circular Budget Health Meter */}
+              <BudgetHealthMeter
+                budget={plan.budget}
+                estimatedCost={plan.costs.total_estimated_cost}
+                className="w-full text-slate-800 dark:text-white"
+              />
 
               {/* Two Column Cost Breakdown & Daily Itinerary */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                {/* Cost Breakdown Module */}
-                <div className="md:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-                  <h3 className="text-base font-bold text-slate-800 dark:text-white mb-4">Cost Breakdown</h3>
+                {/* Left Column: Cost Breakdown + Budget Allocation Editor */}
+                <div className="lg:col-span-5 flex flex-col gap-6">
+                  
+                  {/* Cost Breakdown Module */}
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+                    <h3 className="text-base font-bold text-slate-800 dark:text-white mb-4">Cost Breakdown</h3>
 
-                  <div className="flex flex-col gap-3.5 text-xs text-slate-600 dark:text-slate-300">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        {plan.costs.transport_mode === 'Flight' ? <Plane size={15} className="text-violet-500" /> : <Train size={15} className="text-violet-500" />}
-                        Transportation
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.transport_cost.toLocaleString()}</span>
-                    </div>
+                    <div className="flex flex-col gap-3.5 text-xs text-slate-600 dark:text-slate-300">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          {plan.costs.transport_mode === 'Flight' ? <Plane size={15} className="text-violet-500" /> : <Train size={15} className="text-violet-500" />}
+                          Transportation
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.transport_cost.toLocaleString()}</span>
+                      </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Building size={15} className="text-violet-500" />
-                        Accommodation
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.hotel_cost.toLocaleString()}</span>
-                    </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Building size={15} className="text-violet-500" />
+                          Accommodation
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.hotel_cost.toLocaleString()}</span>
+                      </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Utensils size={15} className="text-violet-500" />
-                        Food & Dining
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.food_cost.toLocaleString()}</span>
-                    </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Utensils size={15} className="text-violet-500" />
+                          Food & Dining
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.food_cost.toLocaleString()}</span>
+                      </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Camera size={15} className="text-violet-500" />
-                        Activities
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.activities_cost.toLocaleString()}</span>
-                    </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Camera size={15} className="text-violet-500" />
+                          Activities
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.activities_cost.toLocaleString()}</span>
+                      </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <MapPin size={15} className="text-violet-500" />
-                        Local Transport
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.local_transport_cost.toLocaleString()}</span>
-                    </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <MapPin size={15} className="text-violet-500" />
+                          Local Transport
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.local_transport_cost.toLocaleString()}</span>
+                      </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Percent size={15} className="text-violet-500" />
-                        Taxes & Booking Fees
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.taxes_fees_cost.toLocaleString()}</span>
-                    </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Percent size={15} className="text-violet-500" />
+                          Taxes & Booking Fees
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.taxes_fees_cost.toLocaleString()}</span>
+                      </div>
 
-                    <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
-                      <span className="flex items-center gap-2">
-                        <LifeBuoy size={15} className="text-violet-500" />
-                        Emergency Reserve
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.emergency_reserve.toLocaleString()}</span>
+                      <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
+                        <span className="flex items-center gap-2">
+                          <LifeBuoy size={15} className="text-violet-500" />
+                          Emergency Reserve
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.emergency_reserve.toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Manual Budget Allocation Editor */}
+                  <BudgetAllocationEditor
+                    budget={plan.budget}
+                    initialAllocations={plan.costs}
+                    onSave={handleAllocationSave}
+                    onReset={handleAllocationReset}
+                    isSaving={savingTrip}
+                  />
 
                   {/* Hidden Cost Prediction Module */}
                   <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-6">
@@ -947,49 +1329,97 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       </div>
                     </div>
                   </div>
+
+                  {/* Carbon Footprint Estimator */}
+                  {plan.carbon_footprint && (
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3.5 mt-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+                          <Leaf size={15} className="text-emerald-500" />
+                          Carbon Footprint Impact
+                        </h4>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          plan.carbon_footprint.carbon_rating === 'Eco Friendly' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/30' :
+                          plan.carbon_footprint.carbon_rating === 'Moderate' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200/30' :
+                          'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-250/30'
+                        }`}>
+                          {plan.carbon_footprint.carbon_rating}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl text-xs font-bold border border-slate-100 dark:border-slate-800">
+                        <span className="text-slate-500 flex items-center gap-2">
+                          {plan.carbon_footprint.transport_mode === 'Flight' ? <Plane size={15} className="text-rose-500" /> : <Train size={15} className="text-emerald-500" />}
+                          CO₂ Emissions ({plan.carbon_footprint.transport_mode})
+                        </span>
+                        <span className="text-slate-800 dark:text-white">{plan.carbon_footprint.co2_emissions} kg</span>
+                      </div>
+                      
+                      <div className="text-[10px] text-slate-550 dark:text-slate-400 leading-relaxed bg-emerald-50/20 dark:bg-emerald-950/10 p-3 rounded-xl border border-emerald-100/40 flex items-start gap-2">
+                        <Leaf size={13} className="text-emerald-500 mt-0.5 shrink-0" fill="currentColor" />
+                        <span>
+                          {plan.carbon_footprint.transport_mode === 'Flight'
+                            ? `Choosing train instead of flight reduces segment emissions by ${plan.carbon_footprint.alternative_savings} kg.`
+                            : `Eco Choice! Traveling by train instead of flight saved an estimated ${plan.carbon_footprint.alternative_savings} kg of CO₂.`
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Smart Packing Checklist */}
+                  {savedTripId && (
+                    <div className="mt-6">
+                      <TripChecklist tripId={savedTripId} />
+                    </div>
+                  )}
+
+                  {/* Travel Documents Manager */}
+                  {savedTripId && (
+                    <div className="mt-6">
+                      <DocumentManager tripId={savedTripId} />
+                    </div>
+                  )}
                 </div>
 
-                {/* Smart Daily Planner (Itinerary) */}
-                <div className="md:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-                  <h3 className="text-base font-bold text-slate-800 dark:text-white mb-4">Smart Daily Planner</h3>
-
-                  <div className="flex flex-col gap-3">
-                    {plan.itineraries.map((day) => {
-                      const isOpen = !!expandedDays[day.day_number];
-                      return (
-                        <div key={day.day_number} className="border border-slate-100 dark:border-slate-700/60 rounded-xl overflow-hidden">
-                          <button
-                            type="button"
-                            onClick={() => toggleDay(day.day_number)}
-                            className="w-full flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/40 text-left font-bold text-xs uppercase text-slate-700 dark:text-slate-300 focus:outline-none"
-                          >
-                            <span>Day {day.day_number} Plan</span>
-                            {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                          </button>
-
-                          {isOpen && (
-                            <div className="p-4 border-t border-slate-100 dark:border-slate-700/60 bg-white dark:bg-slate-800 flex flex-col gap-3">
-                              <p className="text-slate-500 dark:text-slate-400 text-xs italic leading-relaxed">{day.description}</p>
-
-                              <div className="flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/30">
-                                {day.activities.map((act, actIdx) => (
-                                  <div key={actIdx} className="flex justify-between items-start gap-4 text-xs">
-                                    <div className="flex items-start gap-2.5">
-                                      <span className="font-bold text-[10px] uppercase text-violet-500 shrink-0 mt-0.5 w-16">{act.time}</span>
-                                      <span className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">{act.title}</span>
-                                    </div>
-                                    <span className="text-slate-400 font-medium shrink-0">
-                                      {act.cost > 0 ? `INR ${act.cost}` : 'Free'}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                {/* Timeline-Based Itinerary */}
+                <div className="md:col-span-7 flex flex-col gap-4">
+                  <div className="flex justify-between items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-800 dark:text-white">Smart Chronological Itinerary</h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Chronologically organized daily travel timeline</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                         type="button"
+                         onClick={() => {
+                           const allExpanded = plan.itineraries.reduce((acc, it) => {
+                             acc[it.day_number] = true;
+                             return acc;
+                           }, {} as Record<number, boolean>);
+                           setExpandedDays(allExpanded);
+                         }}
+                         className="text-[10px] font-bold text-violet-600 hover:text-violet-500 uppercase"
+                       >
+                         Expand All
+                       </button>
+                       <span className="text-slate-300">|</span>
+                       <button
+                         type="button"
+                         onClick={() => setExpandedDays({})}
+                         className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase"
+                       >
+                         Collapse All
+                       </button>
+                    </div>
                   </div>
+                  
+                  <TimelineItinerary
+                    itineraries={plan.itineraries}
+                    expandedDays={expandedDays}
+                    toggleDay={toggleDay}
+                    className="w-full"
+                  />
                 </div>
 
               </div>
@@ -1007,6 +1437,25 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         onSelectLocation={(city) => setStartingCity(city)}
         initialCity={startingCity}
       />
-    </div>
+
+      {isShareModalOpen && savedTripId && plan && (
+        <ShareModal
+          tripId={savedTripId}
+          isPublic={plan.is_public || false}
+          shareToken={plan.share_token || null}
+          onClose={() => setIsShareModalOpen(false)}
+          onUpdate={(updatedTrip) => {
+            setPlan(prev => {
+              if (!prev) return null;
+              return {
+                ...prev,
+                is_public: updatedTrip.is_public,
+                share_token: updatedTrip.share_token
+              };
+            });
+          }}
+        />
+      )}
+    </motion.div>
   );
 };

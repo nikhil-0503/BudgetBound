@@ -6,6 +6,13 @@ interface User {
   name: string;
   email: string;
   created_at: string;
+  photo_url?: string | null;
+  default_budget?: number | null;
+  preferred_travel_style?: string | null;
+  preferred_comfort_level?: number | null;
+  default_starting_city?: string | null;
+  preferred_theme: string;
+  is_admin: boolean;
 }
 
 interface AuthContextType {
@@ -18,6 +25,7 @@ interface AuthContextType {
   logout: () => void;
   clearError: () => void;
   error: string | null;
+  updateUser: (updatedUser: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -104,6 +112,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearError = () => setError(null);
 
+  const updateUser = (updatedUser: User) => {
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   const value = {
     user,
     token,
@@ -113,7 +126,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     logout,
     error,
-    clearError
+    clearError,
+    updateUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
