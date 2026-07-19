@@ -676,6 +676,346 @@ DESTINATIONS_DATA = [
         "avg_food_cost": 450.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Solo",
         "best_season": "October to March", "description": "Cliff-top hostels, yoga retreats, and surf lessons on Kerala's most solo-friendly beach strip.",
         "attractions": ["Varkala Cliff", "Papanasam Beach", "Janardhana Temple", "Surf School"]
+    },
+
+    # ADDITIONAL BEACH
+    {
+        "name": "Mandarmani", "state": "West Bengal", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 200.0, "rating": 4.0, "category": "Beach",
+        "best_season": "November to March", "description": "Eastern India's longest motor-able beach, popular for seafood and peaceful evening strolls.",
+        "attractions": ["Mandarmani Beach", "Digha Beach", "Red Crab Colony", "Shankarpur Fishing Port"]
+    },
+    {
+        "name": "Digha", "state": "West Bengal", "avg_travel_cost": 1600.0, "avg_hotel_cost": 1300.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 200.0, "rating": 3.9, "category": "Beach",
+        "best_season": "October to March", "description": "Classic budget beach resort with broad sandy shores and the historic Marine Aquarium.",
+        "attractions": ["New Digha Beach", "Old Digha Beach", "Marine Aquarium", "Amrabati Park"]
+    },
+    {
+        "name": "Rameswaram Coast", "state": "Tamil Nadu", "avg_travel_cost": 2500.0, "avg_hotel_cost": 1400.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 300.0, "rating": 4.3, "category": "Beach",
+        "best_season": "October to April", "description": "Sacred temple town blending tranquil beaches, coral reefs, and snorkelling trips to Adam's Bridge.",
+        "attractions": ["Dhanushkodi beach ruins", "Ariyaman Beach", "Pamban Bridge view", "Agni Theertham"]
+    },
+    {
+        "name": "Murudeshwar", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 1700.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 500.0, "rating": 4.4, "category": "Beach",
+        "best_season": "October to March", "description": "Dramatic sea-cliff temple site with the world's second-tallest Shiva statue and excellent diving.",
+        "attractions": ["Murudeshwar Temple", "Murudeshwar Beach", "Scuba Diving Site", "R.N. Shetty Tower"]
+    },
+    {
+        "name": "Vizag Beach", "state": "Andhra Pradesh", "avg_travel_cost": 2200.0, "avg_hotel_cost": 1900.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.3, "category": "Beach",
+        "best_season": "October to February", "description": "City of destiny with picturesque RK Beach, submarine museum, and hilltop viewpoints.",
+        "attractions": ["RK Beach", "Kailasagiri", "INS Kurusura Submarine Museum", "Rushikonda Beach"]
+    },
+    {
+        "name": "Marari Beach", "state": "Kerala", "avg_travel_cost": 3500.0, "avg_hotel_cost": 2800.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Beach",
+        "best_season": "November to March", "description": "Uncrowded fishing village beach with coconut groves, hammocks, and organic resort retreats.",
+        "attractions": ["Marari Beach", "Fishermen Village Walk", "Kettuvallam Cruise", "Hammock Time"]
+    },
+
+    # ADDITIONAL NATURE
+    {
+        "name": "Chopta", "state": "Uttarakhand", "avg_travel_cost": 3800.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 700.0, "rating": 4.7, "category": "Nature",
+        "best_season": "April to November", "description": "Mini Switzerland of India, a high meadow gateway to Tungnath (highest Shiva temple) and Chandrashila.",
+        "attractions": ["Chandrashila Summit", "Tungnath Temple", "Deoria Tal", "Rohini Bugyal"]
+    },
+    {
+        "name": "Dzukou Valley", "state": "Nagaland", "avg_travel_cost": 5000.0, "avg_hotel_cost": 800.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 900.0, "rating": 4.8, "category": "Nature",
+        "best_season": "June to September", "description": "Extraordinary Naga highland valley carpeted with rare lilies and visited by very few tourists.",
+        "attractions": ["Dzukou Valley Trek", "Japfu Peak", "Seasonal Lily Blooms", "Viswema Village Trail"]
+    },
+    {
+        "name": "Kausani", "state": "Uttarakhand", "avg_travel_cost": 3200.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Nature",
+        "best_season": "March to June, September to November", "description": "Himalayan panorama viewpoint where Nanda Devi, Trishul, and Panchachuli peaks are visible.",
+        "attractions": ["Anasakti Ashram", "Someshwar Valley", "Rudradhari Falls", "Binsar Wildlife Sanctuary"]
+    },
+    {
+        "name": "Panchmarhi", "state": "Madhya Pradesh", "avg_travel_cost": 2400.0, "avg_hotel_cost": 1700.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 400.0, "rating": 4.3, "category": "Nature",
+        "best_season": "October to June", "description": "MP's only hill station in Satpura Range, packed with waterfalls, ancient caves, and dense forests.",
+        "attractions": ["Bee Falls", "Pandava Caves", "Priyadarshini Point", "Satpura National Park"]
+    },
+    {
+        "name": "Majuli Island", "state": "Assam", "avg_travel_cost": 3500.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Nature",
+        "best_season": "October to March", "description": "World's largest river island, home to Vaishnavite monasteries, mask-making, and birdwatching.",
+        "attractions": ["Kamalabari Satra", "Auniati Satra", "Migjur Pahar", "Birdwatching Wetlands"]
+    },
+    {
+        "name": "Nubra Valley", "state": "Ladakh", "avg_travel_cost": 7500.0, "avg_hotel_cost": 2200.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 1500.0, "rating": 4.8, "category": "Nature",
+        "best_season": "June to September", "description": "Cold desert valley with Bactrian camels, sand dunes of Hunder, and ancient Diskit Monastery.",
+        "attractions": ["Hunder Sand Dunes", "Diskit Monastery", "Bactrian Camel Safari", "Shyok River View"]
+    },
+    {
+        "name": "Sattal", "state": "Uttarakhand", "avg_travel_cost": 2000.0, "avg_hotel_cost": 1500.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 300.0, "rating": 4.2, "category": "Nature",
+        "best_season": "March to June", "description": "Seven interconnected lakes amid oak and rhododendron forests, paradise for birdwatchers.",
+        "attractions": ["Sattal Lake", "Bhimtal Lake", "Naukuchiatal", "Butterfly Research Centre"]
+    },
+
+    # ADDITIONAL ADVENTURE
+    {
+        "name": "Munsiyari", "state": "Uttarakhand", "avg_travel_cost": 4000.0, "avg_hotel_cost": 1500.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 1200.0, "rating": 4.7, "category": "Adventure",
+        "best_season": "May to October", "description": "Base camp for Milam and Ralam glaciers, offering sheer Himalayan views and cultural immersions.",
+        "attractions": ["Birthi Falls", "Milam Glacier Trek", "Khaliya Top", "Nanda Devi Temple"]
+    },
+    {
+        "name": "Mechuka", "state": "Arunachal Pradesh", "avg_travel_cost": 7000.0, "avg_hotel_cost": 1300.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 1000.0, "rating": 4.8, "category": "Adventure",
+        "best_season": "March to October", "description": "Isolated high-altitude frontier valley with ancient Samten Yongcha Monastery and Tsipo River views.",
+        "attractions": ["Samten Yongcha Monastery", "Tsipo River Bridge", "Sigin Lake", "Mechuka Adventure Festival"]
+    },
+    {
+        "name": "Sandakphu Trek", "state": "West Bengal", "avg_travel_cost": 4000.0, "avg_hotel_cost": 900.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 1500.0, "rating": 4.8, "category": "Adventure",
+        "best_season": "April to May, October to December", "description": "Highest point of West Bengal offering views of four 8000-m peaks including Everest and Kanchenjunga.",
+        "attractions": ["Sandakphu Peak", "Phalut", "Gurdum Village", "Sleeping Buddha View"]
+    },
+    {
+        "name": "Roopkund Lake", "state": "Uttarakhand", "avg_travel_cost": 5000.0, "avg_hotel_cost": 0.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 3000.0, "rating": 4.9, "category": "Adventure",
+        "best_season": "April to June, September to October", "description": "Mysterious glacial lake at 5029m, known for ancient skeletal remains and challenging high-altitude trek.",
+        "attractions": ["Roopkund Lake", "Ali Bugyal meadow", "Bedni Bugyal", "Tungnath side trail"]
+    },
+    {
+        "name": "Coorg Rafting Circuit", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 2000.0, "rating": 4.4, "category": "Adventure",
+        "best_season": "June to October", "description": "White-water rafting on River Barapole combined with plantation camping and coffee tasting.",
+        "attractions": ["Barapole River Rafting", "Iruppu Falls", "Coffee Estate Walk", "Nagarhole Safari"]
+    },
+
+    # ADDITIONAL CITY EXPLORATION
+    {
+        "name": "Agra", "state": "Uttar Pradesh", "avg_travel_cost": 1500.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 350.0, "rating": 4.6, "category": "City Exploration",
+        "best_season": "October to March", "description": "City of the Taj Mahal, Agra Fort, and Mughal architectural marvels along the Yamuna.",
+        "attractions": ["Taj Mahal", "Agra Fort", "Fatehpur Sikri", "Mehtab Bagh"]
+    },
+    {
+        "name": "Jodhpur", "state": "Rajasthan", "avg_travel_cost": 1900.0, "avg_hotel_cost": 2200.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 300.0, "rating": 4.5, "category": "City Exploration",
+        "best_season": "October to March", "description": "The Blue City dominated by the colossal Mehrangarh Fort, vibrant bazaars, and spicy Mirchi Bada.",
+        "attractions": ["Mehrangarh Fort", "Jaswant Thada", "Clock Tower Market", "Umaid Bhawan Palace"]
+    },
+    {
+        "name": "Bhopal", "state": "Madhya Pradesh", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1800.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 250.0, "rating": 4.1, "category": "City Exploration",
+        "best_season": "October to March", "description": "City of Lakes with Mughal mosques, tribal museums, and gateway access to Bhimbetka cave paintings.",
+        "attractions": ["Upper Lake", "Bhimbetka Rock Shelters", "Bhojpur Temple", "Tribal Museum"]
+    },
+    {
+        "name": "Varanasi Heritage Walk", "state": "Uttar Pradesh", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 250.0, "rating": 4.5, "category": "City Exploration",
+        "best_season": "October to March", "description": "Living heritage city where ancient ghats, silk weaving lanes, and daily rituals form an unmatched tableaux.",
+        "attractions": ["Dashashwamedh Ghat", "Vishwanath Gali", "Boat Ride at Dawn", "Banaras Hindu University"]
+    },
+    {
+        "name": "Puri Heritage Walk", "state": "Odisha", "avg_travel_cost": 2000.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 230.0, "rating": 4.3, "category": "City Exploration",
+        "best_season": "October to March", "description": "Spiritual coastal city with grand Jagannath Temple, pattachitra paintings, and famous chhena poda desserts.",
+        "attractions": ["Jagannath Temple", "Sudarshan Crafts Museum", "Marine Drive", "Raghurajpur Artisan Village"]
+    },
+    {
+        "name": "Cuttack", "state": "Odisha", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1500.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 200.0, "rating": 4.0, "category": "City Exploration",
+        "best_season": "October to March", "description": "Odisha's Silver City famous for filigree jewellery, Barabati Fort, and the grand Durga Puja pandals.",
+        "attractions": ["Barabati Fort", "Kadam Rasul Mosque", "Stone Revetment", "Taladanda Canal Walk"]
+    },
+
+    # ADDITIONAL HERITAGE & CULTURAL
+    {
+        "name": "Hampi Heritage Circuit", "state": "Karnataka", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1100.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 350.0, "rating": 4.8, "category": "City Exploration",
+        "best_season": "October to March", "description": "Beyond the main ruins — lesser-visited temples, rice-paddy sunrises, and coracle rides on the Tungabhadra.",
+        "attractions": ["Tungabhadra Coracle Ride", "Sasivekalu Ganesha", "Anegundi Village", "Lotus Mahal"]
+    },
+    {
+        "name": "Khajuraho", "state": "Madhya Pradesh", "avg_travel_cost": 2500.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "City Exploration",
+        "best_season": "October to March", "description": "UNESCO temples with intricate erotic sculptures, classical dance festivals, and quiet medieval alleys.",
+        "attractions": ["Western Temples Group", "Eastern Temples Group", "Khajuraho Light & Sound Show", "Ken Gharial Sanctuary"]
+    },
+    {
+        "name": "Sanchi", "state": "Madhya Pradesh", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1400.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 200.0, "rating": 4.4, "category": "Religious",
+        "best_season": "October to March", "description": "UNESCO Buddhist monument site with the Great Stupa, ancient carved toranas, and peaceful surroundings.",
+        "attractions": ["Great Stupa of Sanchi", "Ashoka Pillar", "Museum", "Udayagiri Caves"]
+    },
+    {
+        "name": "Orchha", "state": "Madhya Pradesh", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 250.0, "rating": 4.5, "category": "City Exploration",
+        "best_season": "October to March", "description": "Forgotten Bundela capital on the Betwa River, with towering cenotaphs and temple spires reflected in the water.",
+        "attractions": ["Jahangir Mahal", "Ram Raja Temple", "Chaturbhuj Temple", "Orchha Cenotaphs"]
+    },
+    {
+        "name": "Mandu", "state": "Madhya Pradesh", "avg_travel_cost": 2000.0, "avg_hotel_cost": 1500.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 250.0, "rating": 4.3, "category": "City Exploration",
+        "best_season": "July to October", "description": "Romantic ruined city perched on a plateau, transformed brilliantly by monsoon greenery.",
+        "attractions": ["Jahaz Mahal", "Hindola Mahal", "Rani Roopmati Pavilion", "Baz Bahadur Palace"]
+    },
+
+    # ADDITIONAL ROMANTIC
+    {
+        "name": "Coorg Couple Trail", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 3000.0,
+        "avg_food_cost": 800.0, "avg_activity_cost": 600.0, "rating": 4.6, "category": "Romantic",
+        "best_season": "October to April", "description": "Luxury plantation cottages, misty mornings, and waterfall picnics for couples.",
+        "attractions": ["Iruppu Falls", "Abbey Falls", "Coffee Plantation Stay", "Raja's Seat Sunset"]
+    },
+    {
+        "name": "Pondicherry Couple Escape", "state": "Tamil Nadu", "avg_travel_cost": 1500.0, "avg_hotel_cost": 2800.0,
+        "avg_food_cost": 800.0, "avg_activity_cost": 400.0, "rating": 4.4, "category": "Romantic",
+        "best_season": "October to March", "description": "Cobblestone French colonial streets, boutique bistros, and seaside promenades perfect for couples.",
+        "attractions": ["French Quarter Walk", "Promenade Beach Sunset", "Sri Aurobindo Ashram", "Paradise Beach Ferry"]
+    },
+    {
+        "name": "Andaman Islands Romantic Escape", "state": "Andaman & Nicobar", "avg_travel_cost": 9000.0, "avg_hotel_cost": 5000.0,
+        "avg_food_cost": 1200.0, "avg_activity_cost": 2200.0, "rating": 4.8, "category": "Romantic",
+        "best_season": "November to April", "description": "Bioluminescent beaches, private island sunset cruises, and couple snorkelling in coral lagoons.",
+        "attractions": ["Radhanagar Beach Sunset", "Glass Bottom Boat Ride", "Ross Island", "Sawai Island Picnic"]
+    },
+    {
+        "name": "Binsar", "state": "Uttarakhand", "avg_travel_cost": 2800.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Romantic",
+        "best_season": "March to June, September to November", "description": "Private forested estate viewpoints overlooking 300km of Himalayan peaks, wildlife, and birdsong.",
+        "attractions": ["Binsar Wildlife Sanctuary", "Zero Point Panorama", "Kasar Devi Temple", "Sunrise Forest Walk"]
+    },
+
+    # ADDITIONAL FAMILY
+    {
+        "name": "Coorg Family Holiday", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2400.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 600.0, "rating": 4.5, "category": "Family",
+        "best_season": "October to April", "description": "Kids enjoy elephant encounters, jungle trails, and coffee estate scavenger hunts.",
+        "attractions": ["Dubare Elephant Camp", "Abbey Falls", "Kodava Cultural Show", "Nagarhole Day Trip"]
+    },
+    {
+        "name": "Gangtok Family Sikkim", "state": "Sikkim", "avg_travel_cost": 4500.0, "avg_hotel_cost": 2200.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 700.0, "rating": 4.5, "category": "Family",
+        "best_season": "March to May, September to December", "description": "Beautiful orchid houses, cable car rides, and colourful Rumtek Monastery for family exploration.",
+        "attractions": ["Tsomgo Lake", "Rumtek Monastery", "Gangtok Ropeway", "Flower Exhibition Centre"]
+    },
+    {
+        "name": "Agra Family Heritage", "state": "Uttar Pradesh", "avg_travel_cost": 1500.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 400.0, "rating": 4.6, "category": "Family",
+        "best_season": "October to March", "description": "Children are enthralled by Taj Mahal, the maze-like Agra Fort, and the unique city of Fatehpur Sikri.",
+        "attractions": ["Taj Mahal", "Agra Fort", "Fatehpur Sikri", "Shilpgram Crafts Mela"]
+    },
+    {
+        "name": "Sikkim Nature Family", "state": "Sikkim", "avg_travel_cost": 5000.0, "avg_hotel_cost": 2500.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 900.0, "rating": 4.7, "category": "Family",
+        "best_season": "April to June", "description": "Rhododendron forests, yak rides at Tsomgo lake, and monastery learning experiences for families.",
+        "attractions": ["Tsomgo Lake Yak Ride", "Nathula Border", "Pemayangtse Monastery", "Orchid Sanctuary"]
+    },
+
+    # ADDITIONAL SOLO
+    {
+        "name": "Bir Billing Solo", "state": "Himachal Pradesh", "avg_travel_cost": 2200.0, "avg_hotel_cost": 900.0,
+        "avg_food_cost": 450.0, "avg_activity_cost": 2500.0, "rating": 4.6, "category": "Solo",
+        "best_season": "October to June", "description": "A solo traveler's paragliding dream, with budget cafes, dhaba food, and a thriving backpacker scene.",
+        "attractions": ["Billing Takeoff Meadow", "Sherabling Monastery", "Bir Village Market", "Trial Paragliding"]
+    },
+    {
+        "name": "Spiti Summer Solo", "state": "Himachal Pradesh", "avg_travel_cost": 5000.0, "avg_hotel_cost": 1200.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 1200.0, "rating": 4.8, "category": "Solo",
+        "best_season": "June to September", "description": "Extreme offbeat cold desert solo expedition with homestays in remote villages like Langza and Komic.",
+        "attractions": ["Ki Monastery", "Hikkim Post Office", "Langza Buddha Statue", "Komik Highest Village"]
+    },
+    {
+        "name": "Darjeeling Tea Trail Solo", "state": "West Bengal", "avg_travel_cost": 3000.0, "avg_hotel_cost": 1100.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Solo",
+        "best_season": "October to May", "description": "Tea garden walks, monastery hopping, and sunrise treks for the contemplative solo explorer.",
+        "attractions": ["Happy Valley Tea Estate", "Batasia Loop Walk", "Peace Pagoda", "Singalila Ridge Day Walk"]
+    },
+    {
+        "name": "Hampi Ruins Solo", "state": "Karnataka", "avg_travel_cost": 1800.0, "avg_hotel_cost": 800.0,
+        "avg_food_cost": 400.0, "avg_activity_cost": 350.0, "rating": 4.8, "category": "Solo",
+        "best_season": "October to March", "description": "Ruins cycling, sunrise boulder climbs, and riverside meditation for solo history lovers.",
+        "attractions": ["Matanga Hill Sunrise", "Vitthala Temple", "Hippy Island", "Coracle Ride"]
+    },
+
+    # WILDLIFE / SAFARI
+    {
+        "name": "Ranthambore", "state": "Rajasthan", "avg_travel_cost": 2500.0, "avg_hotel_cost": 3500.0,
+        "avg_food_cost": 800.0, "avg_activity_cost": 2000.0, "rating": 4.6, "category": "Adventure",
+        "best_season": "October to June", "description": "India's most famous tiger reserve with ancient Ranthambore Fort inside the safari zone.",
+        "attractions": ["Ranthambore Tiger Safari", "Ranthambore Fort", "Padam Lake", "Malik Talao"]
+    },
+    {
+        "name": "Sundarbans", "state": "West Bengal", "avg_travel_cost": 3500.0, "avg_hotel_cost": 1800.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 1500.0, "rating": 4.5, "category": "Adventure",
+        "best_season": "September to February", "description": "UNESCO mangrove delta, unique boat safaris for Royal Bengal Tigers and estuarine crocodiles.",
+        "attractions": ["Sajnekhali Tiger Reserve", "Sudhanyakhali Watch Tower", "Dobanki Camp Walk", "Netidhopani Ruins"]
+    },
+    {
+        "name": "Kaziranga National Park", "state": "Assam", "avg_travel_cost": 3800.0, "avg_hotel_cost": 2500.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 1800.0, "rating": 4.8, "category": "Adventure",
+        "best_season": "November to April", "description": "UNESCO park hosting two-thirds of world's one-horned rhinoceros population; famous elephant safaris.",
+        "attractions": ["Elephant Safari", "Jeep Safari", "Orchid Park", "Kohora Zone"]
+    },
+    {
+        "name": "Periyar Wildlife Circuit", "state": "Kerala", "avg_travel_cost": 2800.0, "avg_hotel_cost": 2200.0,
+        "avg_food_cost": 650.0, "avg_activity_cost": 1200.0, "rating": 4.5, "category": "Adventure",
+        "best_season": "September to April", "description": "Jungle patrols, bamboo rafting, and boat rides spotting wild elephants at Periyar Lake.",
+        "attractions": ["Periyar Boat Ride", "Bamboo Rafting", "Nature Walk", "Spice Plantation Visit"]
+    },
+    {
+        "name": "Bandhavgarh", "state": "Madhya Pradesh", "avg_travel_cost": 3000.0, "avg_hotel_cost": 3000.0,
+        "avg_food_cost": 750.0, "avg_activity_cost": 2200.0, "rating": 4.6, "category": "Adventure",
+        "best_season": "October to June", "description": "Highest density tiger reserve in India with ancient caves and a ruined hilltop fort.",
+        "attractions": ["Tala Zone Safari", "Bandhavgarh Fort", "Bamera Zone", "Vulture Point"]
+    },
+    {
+        "name": "Pench National Park", "state": "Madhya Pradesh", "avg_travel_cost": 2800.0, "avg_hotel_cost": 2800.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 2000.0, "rating": 4.4, "category": "Adventure",
+        "best_season": "October to June", "description": "Inspiration for Rudyard Kipling's Jungle Book, with tigers, leopards, and painted storks.",
+        "attractions": ["Core Zone Jeep Safari", "Jamtara Wilderness Walk", "Pench River Walk", "Bird Watching Tower"]
+    },
+
+    # NORTHEASTERN CULTURAL
+    {
+        "name": "Shillong", "state": "Meghalaya", "avg_travel_cost": 4500.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 400.0, "rating": 4.4, "category": "City Exploration",
+        "best_season": "March to June, September to November", "description": "Scotland of the East with rolling pine hills, colonial churches, and a thriving live music scene.",
+        "attractions": ["Elephant Falls", "Ward's Lake", "Shillong Peak", "Police Bazaar Market"]
+    },
+    {
+        "name": "Dimapur", "state": "Nagaland", "avg_travel_cost": 5000.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 500.0, "rating": 4.1, "category": "City Exploration",
+        "best_season": "October to March", "description": "Entry point to Nagaland, famed for the unique Kachari kingdom ruins and Hornbill Festival access.",
+        "attractions": ["Kachari Ruins", "Nagaland Zoological Park", "Dzukou Valley Base", "Hornbill Festival (December)"]
+    },
+    {
+        "name": "Imphal", "state": "Manipur", "avg_travel_cost": 5500.0, "avg_hotel_cost": 2000.0,
+        "avg_food_cost": 550.0, "avg_activity_cost": 500.0, "rating": 4.3, "category": "City Exploration",
+        "best_season": "October to March", "description": "City of gardens and legacy WWII battlefields, gateway to Loktak floating lake and Keibul Lamjao Park.",
+        "attractions": ["Loktak Lake Floating Islands", "Ima Keithel Women's Market", "Kangla Fort", "Keibul Lamjao National Park"]
+    },
+
+    # HERITAGE COASTAL
+    {
+        "name": "Mahabalipuram Heritage", "state": "Tamil Nadu", "avg_travel_cost": 1500.0, "avg_hotel_cost": 1900.0,
+        "avg_food_cost": 600.0, "avg_activity_cost": 350.0, "rating": 4.4, "category": "City Exploration",
+        "best_season": "October to March", "description": "UNESCO rock-cut temples by the sea; surfing schools, stone carving workshops, and seafood shacks.",
+        "attractions": ["Shore Temple", "Descent of the Ganges", "Five Rathas", "Tiger Cave"]
+    },
+    {
+        "name": "Tranquebar", "state": "Tamil Nadu", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1600.0,
+        "avg_food_cost": 500.0, "avg_activity_cost": 200.0, "rating": 4.1, "category": "City Exploration",
+        "best_season": "October to March", "description": "Tiny, well-preserved Danish colonial settlement with a fort, sea walls, and quiet beach walks.",
+        "attractions": ["Dansborg Fort", "New Jerusalem Church", "Tranquebar Beach", "Masilamani Nathar Temple"]
+    },
+    {
+        "name": "Fort Kochi Heritage Walk", "state": "Kerala", "avg_travel_cost": 3200.0, "avg_hotel_cost": 2500.0,
+        "avg_food_cost": 750.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "City Exploration",
+        "best_season": "October to March", "description": "Heritage bungalows, antique streets, artist cafes, and famous Chinese fishing nets at dusk.",
+        "attractions": ["Chinese Fishing Nets", "Indo-Portuguese Museum", "Mattancherry Palace", "Jew Town Antiques"]
     }
 ]
 

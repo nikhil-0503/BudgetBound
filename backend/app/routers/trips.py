@@ -401,6 +401,58 @@ def delete_trip(
     db.commit()
     return None
 
+@router.put("/{trip_id}")
+def update_trip(
+    trip_id: int,
+    payload: dict,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    trip = db.query(models.Trip).filter(
+        models.Trip.id == trip_id,
+        models.Trip.user_id == current_user.id
+    ).first()
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+        
+    # Update costs
+    costs = payload.get("costs")
+    if costs:
+        trip.total_estimated_cost = costs.get("total_estimated_cost", trip.total_estimated_cost)
+        trip.hotel_tier = costs.get("hotel_tier", trip.hotel_tier)
+        trip.transport_mode = costs.get("transport_mode", trip.transport_mode)
+        
+        # Update allocation
+        alloc = trip.budget_allocation
+        if alloc:
+            alloc.transport_cost = costs.get("transport_cost", alloc.transport_cost)
+            alloc.hotel_cost = costs.get("hotel_cost", alloc.hotel_cost)
+            alloc.food_cost = costs.get("food_cost", alloc.food_cost)
+            alloc.activities_cost = costs.get("activities_cost", alloc.activities_cost)
+            alloc.local_transport_cost = costs.get("local_transport_cost", alloc.local_transport_cost)
+            alloc.taxes_fees_cost = costs.get("taxes_fees_cost", alloc.taxes_fees_cost)
+            alloc.emergency_reserve = costs.get("emergency_reserve", alloc.emergency_reserve)
+            
+    # Update itinerary
+    itinerary_days = payload.get("itineraries")
+    if itinerary_days:
+        # Delete old itinerary days
+        db.query(models.Itinerary).filter(models.Itinerary.trip_id == trip.id).delete()
+        
+        # Insert new itinerary days
+        for it_day in itinerary_days:
+            db_itinerary = models.Itinerary(
+                trip_id=trip.id,
+                day_number=it_day["day_number"],
+                activities=it_day["activities"],
+                description=it_day.get("description", "")
+            )
+            db.add(db_itinerary)
+            
+    db.commit()
+    return {"status": "success", "message": "Trip updated successfully"}
+
+
 @router.get("/reverse/search", response_model=List[schemas.DestinationSearchScore])
 def reverse_travel_search(
     budget: float = Query(...),

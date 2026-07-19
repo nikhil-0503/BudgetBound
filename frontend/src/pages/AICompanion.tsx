@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { 
-  Sparkles, 
-  MessageSquare, 
-  Compass, 
-  Shuffle, 
-  HelpCircle, 
-  Loader, 
+import {
+  Sparkles,
+  MessageSquare,
+  Compass,
+  Shuffle,
+  HelpCircle,
+  Loader,
   AlertCircle,
   Send,
   User,
@@ -23,6 +24,7 @@ interface SavedTrip {
 }
 
 export const AICompanion: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'chat' | 'planner' | 'regenerator' | 'explain'>('chat');
   const [savedTrips, setSavedTrips] = useState<SavedTrip[]>([]);
 
@@ -43,15 +45,19 @@ export const AICompanion: React.FC = () => {
   const [prefDays, setPrefDays] = useState(5);
   const [prefSpecial, setPrefSpecial] = useState('');
   const [planningLoading, setPlanningLoading] = useState(false);
+  const [plannedResult, setPlannedResult] = useState<any | null>(null);
 
   // 3. Trip Regenerator states
   const [regenTripId, setRegenTripId] = useState('');
   const [regenInstruction, setRegenInstruction] = useState('');
   const [regeneratingLoading, setRegeneratingLoading] = useState(false);
+  const [regeneratedResult, setRegeneratedResult] = useState<any | null>(null);
+  const [applyingRegen, setApplyingRegen] = useState(false);
 
   // 4. Explainability states
   const [explainTripId, setExplainTripId] = useState('');
   const [explainingLoading, setExplainingLoading] = useState(false);
+  const [explanationText, setExplanationText] = useState<string | null>(null);
 
   // Fetch saved trips for dropdowns on mount
   useEffect(() => {
@@ -82,22 +88,22 @@ export const AICompanion: React.FC = () => {
     if (!chatInput.trim() || chatLoading) return;
 
     const userMsg = chatInput;
-    setChatMessages(prev => [...prev, { sender: 'user', text: userMsg }]);
+    const updatedMessages: Array<{ sender: 'user' | 'bot'; text: string }> = [...chatMessages, { sender: 'user', text: userMsg }];
+    setChatMessages(updatedMessages);
     setChatInput('');
     setChatLoading(true);
 
     try {
-      // Calls API which yields 503
-      await api.post('/api/ai/chat', { messages: [{ role: 'user', content: userMsg }] });
+      const apiMessages = updatedMessages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }));
+      const response = await api.post('/api/ai/chat', { messages: apiMessages });
+      setChatMessages(prev => [...prev, { sender: 'bot', text: response.data.reply }]);
     } catch (err: any) {
       console.error(err);
       const errMsg = err.response?.data?.detail || "AI service not connected yet. This feature will be available after API integration.";
-      
-      // Print the warning directly inside the chat dialog as a bot reply
-      setChatMessages(prev => [...prev, { 
-        sender: 'bot', 
-        text: errMsg 
-      }]);
+      setChatMessages(prev => [...prev, { sender: 'bot', text: errMsg }]);
     } finally {
       setChatLoading(false);
     }
@@ -106,8 +112,9 @@ export const AICompanion: React.FC = () => {
   const handlePlannerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPlanningLoading(true);
+    setPlannedResult(null);
     try {
-      await api.post('/api/ai/personalized-plan', {
+      const response = await api.post('/api/ai/personalized-plan', {
         preferences: {
           keywords: prefKeywords,
           budget: prefBudget,
@@ -115,6 +122,7 @@ export const AICompanion: React.FC = () => {
           special: prefSpecial
         }
       });
+      setPlannedResult(response.data);
     } catch (err: any) {
       console.error(err);
       triggerAIError(err.response?.data?.detail || "AI service not connected yet. API integration pending.");
@@ -127,11 +135,13 @@ export const AICompanion: React.FC = () => {
     e.preventDefault();
     if (!regenTripId) return;
     setRegeneratingLoading(true);
+    setRegeneratedResult(null);
     try {
-      await api.post('/api/ai/regenerate', {
+      const response = await api.post('/api/ai/regenerate', {
         trip_id: Number(regenTripId),
         instruction: regenInstruction
       });
+      setRegeneratedResult(response.data);
     } catch (err: any) {
       console.error(err);
       triggerAIError(err.response?.data?.detail || "AI service not connected yet. API integration pending.");
@@ -140,14 +150,33 @@ export const AICompanion: React.FC = () => {
     }
   };
 
+  const handleApplyRegen = async () => {
+    if (!regenTripId || !regeneratedResult) return;
+    setApplyingRegen(true);
+    try {
+      await api.put(`/api/trips/${regenTripId}`, regeneratedResult);
+      alert('Trip schedule and budget regenerated successfully!');
+      setRegeneratedResult(null);
+      setRegenInstruction('');
+      navigate(`/expenses/${regenTripId}`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to apply regeneration update.');
+    } finally {
+      setApplyingRegen(false);
+    }
+  };
+
   const handleExplainSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!explainTripId) return;
     setExplainingLoading(true);
+    setExplanationText(null);
     try {
-      await api.post('/api/ai/explain', {
+      const response = await api.post('/api/ai/explain', {
         trip_id: Number(explainTripId)
       });
+      setExplanationText(response.data.explanation);
     } catch (err: any) {
       console.error(err);
       triggerAIError(err.response?.data?.detail || "AI service not connected yet. API integration pending.");
@@ -158,7 +187,7 @@ export const AICompanion: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8 relative">
-      
+
       {/* Title */}
       <div>
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
@@ -172,14 +201,13 @@ export const AICompanion: React.FC = () => {
 
       {/* Tabs Row */}
       <div className="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto gap-4 scrollbar-thin scrollbar-thumb-slate-200">
-        
+
         <button
           onClick={() => setActiveTab('chat')}
-          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${
-            activeTab === 'chat'
-              ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-              : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'chat'
+            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
+            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            }`}
         >
           <MessageSquare size={16} />
           AI Chat Assistant
@@ -187,11 +215,10 @@ export const AICompanion: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('planner')}
-          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${
-            activeTab === 'planner'
-              ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-              : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'planner'
+            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
+            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            }`}
         >
           <Compass size={16} />
           AI Personalized Planner
@@ -199,11 +226,10 @@ export const AICompanion: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('regenerator')}
-          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${
-            activeTab === 'regenerator'
-              ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-              : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'regenerator'
+            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
+            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            }`}
         >
           <Shuffle size={16} />
           AI Trip Regenerator
@@ -211,11 +237,10 @@ export const AICompanion: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('explain')}
-          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${
-            activeTab === 'explain'
-              ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-              : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'explain'
+            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
+            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            }`}
         >
           <HelpCircle size={16} />
           AI Explainability
@@ -224,32 +249,29 @@ export const AICompanion: React.FC = () => {
 
       {/* Tab Panels */}
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm min-h-[400px] flex flex-col">
-        
+
         {/* Panel 1: Chat Assistant */}
         {activeTab === 'chat' && (
           <div className="flex-1 flex flex-col justify-between h-[500px]">
             {/* Messages Display */}
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 text-xs no-scrollbar">
               {chatMessages.map((msg, idx) => (
-                <div 
-                  key={idx} 
-                  className={`flex items-start gap-3 max-w-[80%] ${
-                    msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
-                  }`}
+                <div
+                  key={idx}
+                  className={`flex items-start gap-3 max-w-[80%] ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                    }`}
                 >
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 font-bold ${
-                    msg.sender === 'user' 
-                      ? 'bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400' 
-                      : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
-                  }`}>
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 font-bold ${msg.sender === 'user'
+                    ? 'bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400'
+                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    }`}>
                     {msg.sender === 'user' ? <User size={14} /> : <Bot size={14} />}
                   </div>
-                  
-                  <div className={`p-4 rounded-2xl leading-relaxed border ${
-                    msg.sender === 'user'
-                      ? 'bg-violet-600 border-violet-600 text-white rounded-tr-none'
-                      : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 rounded-tl-none'
-                  }`}>
+
+                  <div className={`p-4 rounded-2xl leading-relaxed border ${msg.sender === 'user'
+                    ? 'bg-violet-600 border-violet-600 text-white rounded-tr-none'
+                    : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 rounded-tl-none'
+                    }`}>
                     {msg.text}
                   </div>
                 </div>
@@ -269,14 +291,14 @@ export const AICompanion: React.FC = () => {
 
             {/* Input Bar */}
             <form onSubmit={handleChatSubmit} className="border-t border-slate-100 dark:border-slate-700 pt-4 flex gap-3">
-              <input 
+              <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Ask about destination recommendations, hotel buffers or general hacks..."
                 className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
               />
-              <button 
+              <button
                 type="submit"
                 disabled={chatLoading}
                 className="bg-violet-600 hover:bg-violet-500 text-white p-3.5 rounded-xl transition-all shadow-md shadow-violet-500/10 shrink-0"
@@ -301,7 +323,7 @@ export const AICompanion: React.FC = () => {
             <form onSubmit={handlePlannerSubmit} className="flex flex-col gap-4">
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Destination Stays / Keywords</label>
-                <input 
+                <input
                   type="text"
                   required
                   value={prefKeywords}
@@ -314,7 +336,7 @@ export const AICompanion: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Max Budget (INR)</label>
-                  <input 
+                  <input
                     type="number"
                     required
                     value={prefBudget}
@@ -325,7 +347,7 @@ export const AICompanion: React.FC = () => {
 
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Days Limit</label>
-                  <input 
+                  <input
                     type="number"
                     required
                     value={prefDays}
@@ -337,7 +359,7 @@ export const AICompanion: React.FC = () => {
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Special Stays / Dietary Needs</label>
-                <textarea 
+                <textarea
                   value={prefSpecial}
                   onChange={(e) => setPrefSpecial(e.target.value)}
                   placeholder="e.g. Vegetarian food only, wheelchair accessible paths, focus on history museums."
@@ -355,6 +377,36 @@ export const AICompanion: React.FC = () => {
                 Generate Custom Itinerary
               </button>
             </form>
+
+            {plannedResult && (
+              <div className="mt-8 border-t border-slate-150 dark:border-slate-700/60 pt-6 animate-fade-in">
+                <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                  <h4 className="text-lg font-bold text-violet-600 dark:text-violet-400 mb-1">{plannedResult.plan_name}</h4>
+                  <p className="text-xs text-slate-400 mb-4">Estimated Total Expense: <strong className="text-slate-800 dark:text-slate-200">₹{plannedResult.estimated_cost?.toLocaleString()}</strong></p>
+                  <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed mb-6 bg-white dark:bg-slate-850 p-4 rounded-xl border border-slate-150 dark:border-slate-700">{plannedResult.summary}</p>
+
+                  <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Planned Schedule</h5>
+                  <div className="space-y-4">
+                    {plannedResult.days?.map((day: any) => (
+                      <div key={day.day_number} className="bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-700 rounded-xl p-4">
+                        <div className="font-bold text-xs text-slate-805 dark:text-slate-200 mb-2 pb-1 border-b border-slate-100 dark:border-slate-700">
+                          Day {day.day_number} - {day.description}
+                        </div>
+                        <div className="space-y-2">
+                          {day.activities?.map((act: any, aIdx: number) => (
+                            <div key={aIdx} className="flex justify-between items-center text-xs">
+                              <span className="text-slate-400 font-semibold w-16">{act.time}</span>
+                              <span className="text-slate-700 dark:text-slate-300 flex-1 px-2">{act.title}</span>
+                              <span className="text-slate-500 font-bold">₹{act.cost}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -377,7 +429,7 @@ export const AICompanion: React.FC = () => {
               <form onSubmit={handleRegenerateSubmit} className="flex flex-col gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Select Target Trip</label>
-                  <select 
+                  <select
                     value={regenTripId}
                     onChange={(e) => setRegenTripId(e.target.value)}
                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 appearance-none"
@@ -392,7 +444,7 @@ export const AICompanion: React.FC = () => {
 
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Regeneration Prompt / Commands</label>
-                  <textarea 
+                  <textarea
                     required
                     value={regenInstruction}
                     onChange={(e) => setRegenInstruction(e.target.value)}
@@ -411,6 +463,62 @@ export const AICompanion: React.FC = () => {
                   Regenerate Trip Schedule
                 </button>
               </form>
+            )}
+
+            {regeneratedResult && (
+              <div className="mt-8 border-t border-slate-150 dark:border-slate-700/60 pt-6 animate-fade-in font-sans">
+                <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-white mb-4">Proposed Itinerary & Allocation Changes</h4>
+
+                  <div className="grid grid-cols-2 gap-4 mb-6 bg-white dark:bg-slate-850 p-4 rounded-xl border border-slate-150 dark:border-slate-700">
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Estimated Accommodation</p>
+                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">₹{regeneratedResult.costs?.hotel_cost?.toLocaleString()} ({regeneratedResult.costs?.hotel_tier})</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Estimated Transit</p>
+                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">₹{regeneratedResult.costs?.transport_cost?.toLocaleString()} ({regeneratedResult.costs?.transport_mode})</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Activity Cost</p>
+                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">₹{regeneratedResult.costs?.activities_cost?.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">New Total Cost</p>
+                      <p className="text-xs font-bold text-violet-600 dark:text-violet-400">₹{regeneratedResult.costs?.total_estimated_cost?.toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  <h5 className="text-[10px] font-bold text-slate-400 uppercase mb-3">New Proposed Itinerary Days</h5>
+                  <div className="space-y-4 mb-6">
+                    {regeneratedResult.itineraries?.map((day: any) => (
+                      <div key={day.day_number} className="bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-700 rounded-xl p-4">
+                        <div className="font-bold text-xs text-slate-850 dark:text-slate-200 mb-2 pb-1 border-b border-slate-100 dark:border-slate-700">
+                          Day {day.day_number} - {day.description}
+                        </div>
+                        <div className="space-y-2">
+                          {day.activities?.map((act: any, aIdx: number) => (
+                            <div key={aIdx} className="flex justify-between items-center text-xs">
+                              <span className="text-slate-400 font-semibold w-16">{act.time}</span>
+                              <span className="text-slate-700 dark:text-slate-350 flex-1 px-2">{act.title}</span>
+                              <span className="text-slate-505 font-bold">₹{act.cost}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={handleApplyRegen}
+                    disabled={applyingRegen}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-md shadow-emerald-500/10"
+                  >
+                    {applyingRegen ? <Loader size={14} className="animate-spin" /> : null}
+                    Apply Regeneration to Trip
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         )}
@@ -434,7 +542,7 @@ export const AICompanion: React.FC = () => {
               <form onSubmit={handleExplainSubmit} className="flex flex-col gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Select Trip to Analyze</label>
-                  <select 
+                  <select
                     value={explainTripId}
                     onChange={(e) => setExplainTripId(e.target.value)}
                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 appearance-none"
@@ -457,6 +565,17 @@ export const AICompanion: React.FC = () => {
                 </button>
               </form>
             )}
+
+            {explanationText && (
+              <div className="mt-8 border-t border-slate-150 dark:border-slate-700/60 pt-6 animate-fade-in font-sans">
+                <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                  <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-4">Budget Selection Analysis</h4>
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-150 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+                    {explanationText}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -466,16 +585,16 @@ export const AICompanion: React.FC = () => {
       {showAIErrorModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
           <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
-            
+
             <AlertCircle className="h-12 w-12 text-rose-500 mx-auto mb-4 animate-bounce" />
-            
+
             <h3 className="text-base font-extrabold text-slate-900 dark:text-white mb-2">API Connection Pending</h3>
-            
+
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
               {modalMessage}
             </p>
 
-            <button 
+            <button
               onClick={() => setShowAIErrorModal(false)}
               className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold py-2.5 rounded-xl text-xs transition-all"
             >

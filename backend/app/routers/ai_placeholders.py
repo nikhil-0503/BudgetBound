@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
+from sqlalchemy.orm import Session
 
 from app import auth, models
+from app.database import get_db
 from app.services.gemini import gemini_service
 
 router = APIRouter(prefix="/api/ai", tags=["AI Copilot"])
@@ -25,22 +27,42 @@ async def ai_chat(
 async def ai_regenerate(
     payload: Dict[str, Any],
     current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
 ):
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Trip regeneration via natural language is coming soon.",
-    )
+    trip_id = payload.get("trip_id")
+    instruction = payload.get("instruction", "")
+    
+    if not trip_id:
+        raise HTTPException(status_code=400, detail="trip_id is required")
+        
+    trip = db.query(models.Trip).filter(models.Trip.id == trip_id, models.Trip.user_id == current_user.id).first()
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+        
+    try:
+        return await gemini_service.regenerate_trip(trip, instruction)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/explain")
 async def ai_explain(
     payload: Dict[str, Any],
     current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
 ):
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Budget explanation AI is coming soon.",
-    )
+    trip_id = payload.get("trip_id")
+    if not trip_id:
+        raise HTTPException(status_code=400, detail="trip_id is required")
+        
+    trip = db.query(models.Trip).filter(models.Trip.id == trip_id, models.Trip.user_id == current_user.id).first()
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+        
+    try:
+        return await gemini_service.explain_itinerary(trip)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/personalized-plan")
@@ -48,7 +70,13 @@ async def ai_personalized_plan(
     payload: Dict[str, Any],
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Personalized AI planner is coming soon.",
-    )
+    preferences = payload.get("preferences", {})
+    keywords = preferences.get("keywords", "")
+    budget = float(preferences.get("budget", 25000))
+    days = int(preferences.get("days", 5))
+    special = preferences.get("special", "")
+    
+    try:
+        return await gemini_service.generate_personalized_plan(keywords, budget, days, special)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

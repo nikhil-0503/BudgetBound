@@ -120,6 +120,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   const [savedTripId, setSavedTripId] = useState<number | null>(null);
   const [savingTrip, setSavingTrip] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   // Fetch all destinations for select dropdown in Build Itinerary mode
   React.useEffect(() => {
@@ -308,11 +309,26 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     }
   };
 
-  const handleDownloadPDF = () => {
-    if (!savedTripId) return;
-    // Trigger direct browser download
-    const token = localStorage.getItem('token');
-    window.open(`http://localhost:8000/api/trips/${savedTripId}/pdf?token=${token}`, '_blank');
+  const handleDownloadPDF = async () => {
+    if (!savedTripId || !plan) return;
+    setDownloadingPdf(true);
+    try {
+      const response = await api.get(`/api/trips/${savedTripId}/pdf`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `budgetbound_${plan.destination.name.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download PDF:', err);
+    } finally {
+      setDownloadingPdf(false);
+    }
   };
 
   // Health Meter Colors
@@ -748,9 +764,14 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       <>
                         <button
                           onClick={handleDownloadPDF}
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all"
+                          disabled={downloadingPdf}
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
                         >
-                          <Download size={16} />
+                          {downloadingPdf ? (
+                            <Loader size={16} className="animate-spin" />
+                          ) : (
+                            <Download size={16} />
+                          )}
                           Download PDF
                         </button>
                         <button

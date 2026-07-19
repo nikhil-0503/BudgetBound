@@ -3,30 +3,31 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  Legend 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
 } from 'recharts';
-import { 
-  Wallet, 
-  Compass, 
-  TrendingUp, 
-  Trash2, 
-  ArrowRight, 
-  AlertCircle, 
-  Eye, 
-  PlusCircle, 
-  Percent, 
-  Loader 
+import {
+  Wallet,
+  Compass,
+  TrendingUp,
+  Trash2,
+  ArrowRight,
+  AlertCircle,
+  Eye,
+  PlusCircle,
+  Percent,
+  Loader,
+  Download
 } from 'lucide-react';
 
 interface RecentTrip {
@@ -66,10 +67,11 @@ export const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { darkMode } = useTheme();
   const navigate = useNavigate();
-  
+
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloadingTripId, setDownloadingTripId] = useState<number | null>(null);
 
   // Fetch Dashboard Stats on load
   const fetchStats = async () => {
@@ -88,6 +90,27 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchStats();
   }, []);
+
+  const handleDownloadPDF = async (tripId: number, destName: string) => {
+    setDownloadingTripId(tripId);
+    try {
+      const response = await api.get(`/api/trips/${tripId}/pdf`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `budgetbound_${destName.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download PDF:', err);
+    } finally {
+      setDownloadingTripId(null);
+    }
+  };
 
   const handleDeleteTrip = async (tripId: number) => {
     if (!window.confirm('Are you sure you want to delete this trip? All logged expenses and itineraries will be permanently removed.')) {
@@ -130,7 +153,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      
+
       {/* Welcome header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -139,7 +162,7 @@ export const Dashboard: React.FC = () => {
             Welcome Back, {user?.name || 'Explorer'}!
           </h1>
         </div>
-        <Link 
+        <Link
           to="/planner"
           className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-violet-600/15"
         >
@@ -150,7 +173,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Core Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
+
         {/* Total Trips */}
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
           <div className="space-y-1">
@@ -204,7 +227,7 @@ export const Dashboard: React.FC = () => {
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-8 leading-relaxed">
             Create your first travel itinerary using our budget allocator slider tool to map transport, accommodations, and local sights.
           </p>
-          <Link 
+          <Link
             to="/planner"
             className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-violet-600/15"
           >
@@ -215,10 +238,10 @@ export const Dashboard: React.FC = () => {
       ) : (
         /* Charts & Table Columns */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Left Panel: Budget Chart & Trips list */}
           <div className="lg:col-span-8 flex flex-col gap-8">
-            
+
             {/* Chart 1: Budget Usage */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
               <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">Budget vs Cost Comparison</h3>
@@ -228,13 +251,13 @@ export const Dashboard: React.FC = () => {
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
                     <XAxis dataKey="name" stroke="#94a3b8" />
                     <YAxis stroke="#94a3b8" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        background: darkMode ? '#1e293b' : 'rgba(255,255,255,0.9)', 
+                    <Tooltip
+                      contentStyle={{
+                        background: darkMode ? '#1e293b' : 'rgba(255,255,255,0.9)',
                         border: darkMode ? '1px solid #475569' : '1px solid #cbd5e1',
                         color: darkMode ? '#f8fafc' : '#0f172a',
-                        borderRadius: '12px' 
-                      }} 
+                        borderRadius: '12px'
+                      }}
                       itemStyle={{
                         color: darkMode ? '#f8fafc' : '#0f172a'
                       }}
@@ -251,7 +274,7 @@ export const Dashboard: React.FC = () => {
             {/* Recent Trips Table */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
               <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">Recent Travel Plans</h3>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
@@ -283,7 +306,7 @@ export const Dashboard: React.FC = () => {
                         </td>
                         <td className="py-4 text-right">
                           <div className="flex items-center justify-end gap-2.5">
-                            <button 
+                            <button
                               onClick={() => {
                                 // Prefecture prefills to planner
                                 sessionStorage.setItem('prefilled_planner', JSON.stringify({
@@ -302,7 +325,20 @@ export const Dashboard: React.FC = () => {
                               <Eye size={14} />
                             </button>
 
-                            <button 
+                            <button
+                              onClick={() => handleDownloadPDF(trip.id, trip.destination)}
+                              disabled={downloadingTripId === trip.id}
+                              className="p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/20 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 transition-all disabled:opacity-50"
+                              title="Download Itinerary PDF"
+                            >
+                              {downloadingTripId === trip.id ? (
+                                <Loader size={14} className="animate-spin" />
+                              ) : (
+                                <Download size={14} />
+                              )}
+                            </button>
+
+                            <button
                               onClick={() => navigate(`/expenses/${trip.id}`)}
                               className="p-2 rounded-lg bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 text-violet-600 dark:text-violet-400 transition-all font-bold"
                               title="Expenses Tracker"
@@ -310,7 +346,7 @@ export const Dashboard: React.FC = () => {
                               Track
                             </button>
 
-                            <button 
+                            <button
                               onClick={() => navigate(`/optimizer/${trip.id}`)}
                               className="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 transition-all font-bold"
                               title="Optimizer"
@@ -318,7 +354,7 @@ export const Dashboard: React.FC = () => {
                               Optimize
                             </button>
 
-                            <button 
+                            <button
                               onClick={() => handleDeleteTrip(trip.id)}
                               className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-400 transition-all"
                               title="Delete Plan"
@@ -338,11 +374,11 @@ export const Dashboard: React.FC = () => {
 
           {/* Right Panel: Expense Category Breakdown */}
           <div className="lg:col-span-4 flex flex-col gap-8">
-            
+
             {/* Pie Chart: Expense Categories */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
               <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">Expense Distribution</h3>
-              
+
               <div className="h-64 w-full text-xs">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -359,12 +395,12 @@ export const Dashboard: React.FC = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      contentStyle={{ 
-                        background: darkMode ? '#1e293b' : 'rgba(255,255,255,0.9)', 
+                    <Tooltip
+                      contentStyle={{
+                        background: darkMode ? '#1e293b' : 'rgba(255,255,255,0.9)',
                         border: darkMode ? '1px solid #475569' : '1px solid #cbd5e1',
                         color: darkMode ? '#f8fafc' : '#0f172a',
-                        borderRadius: '12px' 
+                        borderRadius: '12px'
                       }}
                       itemStyle={{
                         color: darkMode ? '#f8fafc' : '#0f172a'
