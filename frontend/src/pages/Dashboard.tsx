@@ -5,19 +5,6 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-
 import { BudgetHealthMeter } from '../components/BudgetHealthMeter';
 import { 
   BarChart, 
@@ -196,10 +183,6 @@ export const Dashboard: React.FC = () => {
   const COLORS = ['#6d28d9', '#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
 
   return (
-
-    <div className="flex flex-col gap-8">
-
-
     <motion.div 
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}

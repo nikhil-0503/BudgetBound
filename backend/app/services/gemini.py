@@ -35,7 +35,7 @@ class GroqTravelService:
         return bool(self.api_key)
 
     def _chat(self, prompt: str) -> str:
-        """Send a single-turn chat message and return the response text."""
+        """Send a single-turn chat message with automatic retries for transient socket resets."""
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -47,14 +47,25 @@ class GroqTravelService:
                 "content": prompt
             }],
         }
-        response = httpx.post(
-            GROQ_API_URL,
-            headers=headers,
-            json=payload,
-            timeout=30.0,
-        )
-        response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
+        
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with httpx.Client(timeout=30.0) as client:
+                    response = client.post(
+                        GROQ_API_URL,
+                        headers=headers,
+                        json=payload,
+                    )
+                    response.raise_for_status()
+                    return response.json()["choices"][0]["message"]["content"]
+            except (httpx.ConnectError, httpx.NetworkError, httpx.RemoteProtocolError, OSError) as err:
+                if attempt < max_retries - 1:
+                    import time
+                    time.sleep(0.2 * (attempt + 1))
+                    logger.info("Retrying Groq API connection after transient socket reset (attempt %d/%d): %s", attempt + 1, max_retries, err)
+                    continue
+                raise err
 
     def generate_itinerary(
         self,
@@ -85,36 +96,35 @@ class GroqTravelService:
 
         attractions_str = ", ".join(attractions[:10]) if attractions else "local landmarks"
 
-        prompt = f"""You are a professional Indian travel planner. Generate a detailed day-by-day itinerary for the following trip.
+        prompt = f"""You are a master Indian travel guide. Generate a vivid, detailed, day-by-day itinerary for the following trip.
 
 Trip details:
 - Destination: {destination_name}, {state}
 - Destination category: {category}
 - Travel type preference: {travel_type}
-- Duration: {days} days
+- Duration: EXACTLY {days} days
 - Comfort level: {comfort_label} (score {comfort_score}/100)
 - Known attractions: {attractions_str}
 - Average food cost per meal: INR {avg_food_cost:.0f}
 - Average activity/entry cost: INR {avg_activity_cost:.0f}
 
 Rules:
-1. Day 1 must start with "Arrival & Hotel Check-in" (cost 0) in the Morning slot.
-2. The last day must end with departure. Include souvenir shopping and check-out.
-3. Middle days should include 3 time slots: Morning, Afternoon, Evening.
-4. Activity titles must be specific and vivid — tailored to the travel type ({travel_type}) and comfort level.
-5. Each activity must have an estimated cost in INR (use 0 for free activities).
-6. Use the known attractions naturally — don't just list them mechanically.
-7. Keep descriptions engaging but concise (1-2 sentences per day).
+1. Generate EXACTLY {days} days in the array (day_number 1 through {days}).
+2. Day 1 Morning must start with arrival/check-in.
+3. The last day (Day {days}) must end with check-out and departure back home.
+4. Every activity title MUST be unique, vivid, and action-oriented — tailored to {travel_type} (e.g. "Sunrise photography trek", "Sampling local thali at heritage cafe"). NEVER repeat generic titles like "Sightseeing".
+5. Use known attractions naturally across the days.
+6. Provide estimated cost in INR for each activity (0 for free activities).
 
-Return ONLY a valid JSON array with this exact schema (no markdown, no explanation):
+Return ONLY a valid JSON array matching this exact structure with {days} days (no conversational text):
 [
   {{
     "day_number": 1,
-    "description": "Brief day summary...",
+    "description": "Engaging 1-sentence day summary...",
     "activities": [
-      {{"time": "Morning", "title": "Activity name", "cost": 0.0}},
-      {{"time": "Afternoon", "title": "Activity name", "cost": 500.0}},
-      {{"time": "Evening", "title": "Activity name", "cost": 200.0}}
+      {{"time": "Morning", "title": "Arrival in {destination_name} & Hotel Check-in", "cost": 0.0}},
+      {{"time": "Afternoon", "title": "Specific afternoon activity name", "cost": 300.0}},
+      {{"time": "Evening", "title": "Specific evening activity name", "cost": 150.0}}
     ]
   }}
 ]"""
@@ -122,30 +132,54 @@ Return ONLY a valid JSON array with this exact schema (no markdown, no explanati
         try:
             raw = self._chat(prompt).strip()
 
-            # Strip markdown code fences if present
-            if raw.startswith("```"):
-                raw = raw.split("```")[1]
-                if raw.startswith("json"):
-                    raw = raw[4:]
-                raw = raw.strip()
-
-            itinerary = json.loads(raw)
-
-            # Basic validation — ensure it's a list with the right number of days
-            if not isinstance(itinerary, list) or len(itinerary) != days:
-                logger.warning(
-                    "LLM returned %d days but expected %d. Falling back to templates.",
-                    len(itinerary) if isinstance(itinerary, list) else 0,
-                    days,
-                )
+            # Helper for robust JSON array extraction
+            def extract_json_array(text: str) -> Optional[List[Any]]:
+                text = text.strip()
+                if "```" in text:
+                    for part in text.split("```"):
+                        part_str = part.strip()
+                        if part_str.startswith("json"):
+                            part_str = part_str[4:].strip()
+                        if part_str.startswith("[") and part_str.endswith("]"):
+                            try:
+                                res = json.loads(part_str)
+                                if isinstance(res, list):
+                                    return res
+                            except Exception:
+                                pass
+                start_idx = text.find("[")
+                end_idx = text.rfind("]")
+                if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                    try:
+                        res = json.loads(text[start_idx:end_idx + 1])
+                        if isinstance(res, list):
+                            return res
+                    except Exception:
+                        pass
                 return None
 
-            # Sanitise cost fields to float
-            for day in itinerary:
-                for act in day.get("activities", []):
-                    act["cost"] = float(act.get("cost", 0.0))
+            itinerary = extract_json_array(raw)
 
-            logger.info("AI itinerary generated for %s (%d days)", destination_name, days)
+            if not isinstance(itinerary, list) or len(itinerary) == 0:
+                logger.warning("LLM output could not be parsed as a valid JSON array. Falling back.")
+                return None
+
+            # Adjust days count if slightly mismatched
+            if len(itinerary) > days:
+                itinerary = itinerary[:days]
+
+            # Sanitise cost fields to float and validate day structure
+            for idx, day in enumerate(itinerary, start=1):
+                day["day_number"] = idx
+                if not isinstance(day.get("activities"), list):
+                    day["activities"] = []
+                for act in day.get("activities", []):
+                    try:
+                        act["cost"] = float(act.get("cost", 0.0))
+                    except Exception:
+                        act["cost"] = 0.0
+
+            logger.info("AI itinerary successfully generated for %s (%d days)", destination_name, len(itinerary))
             return itinerary
 
         except httpx.HTTPStatusError as e:

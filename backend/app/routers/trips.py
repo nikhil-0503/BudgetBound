@@ -491,10 +491,10 @@ def calculate_weighted_score(
 
 
 def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: int, travel_type: str = ""):
-    # --- Try Gemini first ---
-    attractions = dest.attractions if isinstance(dest.attractions, list) else []
+    # --- Try AI service first ---
+    attractions = dest.attractions if isinstance(dest.attractions, list) and len(dest.attractions) > 0 else []
     if not attractions:
-        attractions = ["Local Market", "Town Square", "Scenic Viewpoint", "Historical Museum"]
+        attractions = [f"{dest.name} Town Center", "Scenic Viewpoint", "Local Market", "Historical Landmark", "Cultural Center"]
 
     ai_result = gemini_service.generate_itinerary(
         destination_name=dest.name,
@@ -507,70 +507,232 @@ def generate_itinerary_days(dest: models.Destination, days: int, comfort_score: 
         avg_food_cost=dest.avg_food_cost,
         avg_activity_cost=dest.avg_activity_cost,
     )
-    if ai_result is not None:
-        return ai_result
+    if ai_result is not None and len(ai_result) >= days:
+        return ai_result[:days]
 
-    # --- Template fallback (original logic) ---
+    # --- Rich & Dynamic Fallback Itinerary Generator ---
+    cat_lower = (travel_type or dest.category or "").lower()
+    
+    templates_by_category = {
+        "nature": {
+            "Morning": [
+                "Early morning sunrise trek & nature trail walk at {attraction}",
+                "Morning birdwatching & landscape photography session near {attraction}",
+                "Scenic mountain valley walk & pine forest exploration at {attraction}",
+                "Fresh morning air walk & flora sanctuary tour near {attraction}"
+            ],
+            "Afternoon": [
+                "Authentic regional lunch & forest trail exploration near {attraction}",
+                "Lakeside picnic, boat ride & leisure walk at {attraction}",
+                "Alpine meadow walk & mountain stream viewpoint at {attraction}",
+                "Visiting eco-park & local tea gardens near {attraction}"
+            ],
+            "Evening": [
+                "Golden hour sunset photography at {attraction}",
+                "Cozy evening walk through local hill bazaar & herbal tea tasting",
+                "Sunset viewpoint relaxation & twilight valley panorama at {attraction}",
+                "Evening bonfire gathering & stargazing experience"
+            ]
+        },
+        "beach": {
+            "Morning": [
+                "Sunrise coastal walk & morning beach leisure at {attraction}",
+                "Water sports (banana boat / jet ski) & beach volleyball at {attraction}",
+                "Coastal morning boat ride & marine life spotting near {attraction}",
+                "Early morning sea breeze walk & cliffside view at {attraction}"
+            ],
+            "Afternoon": [
+                "Fresh seafood lunch at beach shacks & shaded relaxation at {attraction}",
+                "Exploring historic coastal fort & maritime museum near {attraction}",
+                "Beach hammock leisure, fresh coconut sampling & swimming at {attraction}",
+                "Coastal village walk & local shell handicrafts browsing near {attraction}"
+            ],
+            "Evening": [
+                "Sunset view at {attraction} beach with acoustic music",
+                "Evening beachside promenade walk & night market street food sampling",
+                "Seaside diner dinner under string lights with ocean wave soundscape",
+                "Sunset beach walk & local souvenir shopping at seaside stalls"
+            ]
+        },
+        "adventure": {
+            "Morning": [
+                "Thrilling adventure sport (ziplining/river rafting) at {attraction}",
+                "Early morning hill trek & ridge trail navigation to {attraction}",
+                "Rock climbing & outdoor wilderness adventure activity near {attraction}",
+                "High-rope obstacle course & canopy walk at {attraction}"
+            ],
+            "Afternoon": [
+                "Outdoor camp lunch & wilderness navigation near {attraction}",
+                "Off-road ATV trail ride / mountain biking near {attraction}",
+                "River crossing activity & waterfall trail exploration at {attraction}",
+                "Guided canyon exploration & valley photo tour near {attraction}"
+            ],
+            "Evening": [
+                "Sunset ridge view & campfire gathering with fellow travelers",
+                "Evening rustic BBQ dinner & outdoor storytelling at adventure camp",
+                "Stargazing & night trail walk around camping ridge near {attraction}",
+                "Leisurely evening walk through local adventure hub bazaar"
+            ]
+        },
+        "religious": {
+            "Morning": [
+                "Morning spiritual prayer, temple architecture tour & darshan at {attraction}",
+                "Sacred river ghat sunrise walk & peaceful morning chanting near {attraction}",
+                "Guided heritage pilgrimage walk & ancient temple history tour at {attraction}",
+                "Morning meditation session & spiritual heritage walk near {attraction}"
+            ],
+            "Afternoon": [
+                "Traditional satvik / regional thali lunch at heritage eatery near {attraction}",
+                "Visiting sacred ashram gardens & spiritual library near {attraction}",
+                "Exploring ancient stone carvings & holy water tanks at {attraction}",
+                "Visiting local religious handicraft stalls & brassware bazaars"
+            ],
+            "Evening": [
+                "Mesmerizing evening Aarti ceremony & lamp offering at {attraction}",
+                "Sunset spiritual stroll along sacred riverbanks / temple square",
+                "Peaceful evening bhajan performance & Prasad distribution",
+                "Evening bazaar walk sampling traditional sweets & devotional goods"
+            ]
+        },
+        "cultural": {
+            "Morning": [
+                "Guided heritage walking tour & architectural study at {attraction}",
+                "Visiting royal palace corridors & museum galleries at {attraction}",
+                "Morning artisan workshop tour & traditional handicraft study near {attraction}",
+                "Exploring ancient fort ramparts & panoramic city view at {attraction}"
+            ],
+            "Afternoon": [
+                "Authentic royal heritage thali lunch & local spice market tour",
+                "Visiting textile museum & artisan weaver village near {attraction}",
+                "Exploring historic Haveli courtyards & folk art galleries at {attraction}",
+                "Visiting heritage monument complex & guided history lecture at {attraction}"
+            ],
+            "Evening": [
+                "Vibrant traditional folk dance & puppet show performance at {attraction}",
+                "Evening night market stroll sampling regional street food & spices",
+                "Heritage rooftop dinner overlooking illuminated palace / fort",
+                "Sunset view from historic bastion & handicraft souvenir browsing"
+            ]
+        }
+    }
+
+    default_templates = {
+        "Morning": [
+            "Guided morning sightseeing walk & landmark tour at {attraction}",
+            "Morning photo walk & exploring city gardens near {attraction}",
+            "Breakfast at iconic local eatery & historic square visit at {attraction}",
+            "Morning panorama viewpoint & scenic heritage walk at {attraction}"
+        ],
+        "Afternoon": [
+            "Regional specialty lunch & local museum gallery tour near {attraction}",
+            "Shopping for local specialties & artisan bazaars near {attraction}",
+            "Exploring historic corridors & cultural exhibits at {attraction}",
+            "Relaxed afternoon park stroll & café coffee break near {attraction}"
+        ],
+        "Evening": [
+            "Sunset viewpoint walk & twilight photo session at {attraction}",
+            "Evening night market street food walk & souvenir shopping",
+            "Leisurely dinner at popular local restaurant featuring live music",
+            "Evening promenade stroll & illuminated city landmark view at {attraction}"
+        ]
+    }
+
+    matched_pool = default_templates
+    for key, pool in templates_by_category.items():
+        if key in cat_lower:
+            matched_pool = pool
+            break
+
     itineraries = []
     attr_count = len(attractions)
+    used_titles = set()
 
     for day in range(1, days + 1):
         day_activities = []
         if day == 1:
             day_activities.append({
                 "time": "Morning",
-                "title": "Arrival & Hotel Check-in",
+                "title": f"Arrival in {dest.name}, hotel check-in & welcome drink",
                 "cost": 0.0
             })
             day_activities.append({
                 "time": "Afternoon",
-                "title": f"Explore surrounding area & lunch in {dest.name}",
+                "title": f"Settle in & introductory lunch at local diner in {dest.name}",
                 "cost": round(dest.avg_food_cost * 0.4, 2)
             })
+            attr_first = attractions[0]
             day_activities.append({
                 "time": "Evening",
-                "title": f"Stroll at {attractions[0 % attr_count]}",
+                "title": f"Gentle orientation stroll & sunset view at {attr_first}",
                 "cost": 0.0
             })
-            description = "Welcome to your destination. Check in, unpack, and enjoy a light orientation walk."
+            description = f"Welcome to {dest.name}! Check in to your lodging, unpack, and enjoy a relaxed orientation walk."
         elif day == days:
             day_activities.append({
                 "time": "Morning",
-                "title": "Souvenir Shopping at local bazaars",
+                "title": f"Early morning photo walk & souvenir shopping at local {dest.name} bazaars",
                 "cost": round(dest.avg_activity_cost * 0.5, 2)
             })
             day_activities.append({
                 "time": "Afternoon",
-                "title": "Hotel Check-out & Lunch",
+                "title": f"Pack bags, hotel check-out & farewell regional lunch",
                 "cost": round(dest.avg_food_cost * 0.4, 2)
             })
             day_activities.append({
                 "time": "Evening",
-                "title": "Departure back home",
+                "title": f"Transfer to transit hub & departure back home from {dest.name}",
                 "cost": 0.0
             })
-            description = "Last day of trip. Pick up local souvenirs, pack your bags, check out, and head home."
+            description = f"Final day in {dest.name}. Pick up authentic local souvenirs, check out, and head home with fond memories."
         else:
             activities_per_day = 1 if comfort_score < 30 else (2 if comfort_score <= 70 else 3)
             times = ["Morning", "Afternoon", "Evening"]
-            idx_offset = (day - 2) * 2
 
             for i in range(activities_per_day):
                 time_slot = times[i % 3]
-                attr_name = attractions[(idx_offset + i) % attr_count]
+                attr_idx = ((day - 2) * 3 + i) % attr_count
+                attr_name = attractions[attr_idx]
+
+                slot_templates = matched_pool.get(time_slot, default_templates[time_slot])
+                template_str = slot_templates[(day + i) % len(slot_templates)]
+                title = template_str.format(attraction=attr_name)
+
+                retry_count = 0
+                while title in used_titles and retry_count < 5:
+                    retry_count += 1
+                    alt_attr = attractions[(attr_idx + retry_count) % attr_count]
+                    alt_template = slot_templates[(day + i + retry_count) % len(slot_templates)]
+                    title = alt_template.format(attraction=alt_attr)
+
+                used_titles.add(title)
+
+                if time_slot == "Morning":
+                    act_cost = round(dest.avg_activity_cost * (0.6 if comfort_score < 50 else 1.0), 2)
+                elif time_slot == "Afternoon":
+                    act_cost = round(dest.avg_activity_cost * (0.8 if comfort_score < 50 else 1.2), 2)
+                else:
+                    act_cost = round(dest.avg_activity_cost * 0.5, 2)
+
                 day_activities.append({
                     "time": time_slot,
-                    "title": f"Sightseeing at {attr_name}",
-                    "cost": round(dest.avg_activity_cost * 0.8, 2)
+                    "title": title,
+                    "cost": act_cost
                 })
 
-            description = f"Full day of adventure and sightseeing in {dest.name}. Experiencing major attractions."
+            day_themes = [
+                f"Discovering the famous landmarks and hidden gems of {dest.name}.",
+                f"Immersing in the local culture, cuisine, and scenery of {dest.name}.",
+                f"A full day of exploration, photography, and regional flavors around {dest.name}.",
+                f"Uncovering historical heritage and scenic landscapes in {dest.name}."
+            ]
+            description = day_themes[(day - 2) % len(day_themes)]
 
         itineraries.append({
             "day_number": day,
             "activities": day_activities,
             "description": description
         })
+
     return itineraries
 
 @router.post("/plan")
@@ -995,10 +1157,6 @@ def delete_trip(
     db.delete(trip)
     db.commit()
     return None
-
-
-@router.put("/{trip_id}")
-def update_trip(
 
 @router.get("/{trip_id}/checklist", response_model=List[schemas.PackingItemOut])
 def get_trip_checklist(
