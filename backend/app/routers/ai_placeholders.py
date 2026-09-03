@@ -80,3 +80,29 @@ async def ai_personalized_plan(
         return await gemini_service.generate_personalized_plan(keywords, budget, days, special)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/multistop-plan")
+async def ai_multistop_plan(
+    payload: Dict[str, Any],
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    """Generate an AI-powered multi-stop trip itinerary."""
+    stops = payload.get("stops", [])
+    budget = float(payload.get("budget", 50000))
+    special = payload.get("special", "")
+
+    if not stops or len(stops) < 2:
+        raise HTTPException(status_code=400, detail="At least 2 stops are required.")
+    if len(stops) > 6:
+        raise HTTPException(status_code=400, detail="Maximum 6 stops are allowed.")
+    for s in stops:
+        if not s.get("destination", "").strip():
+            raise HTTPException(status_code=400, detail="Each stop must have a destination name.")
+        if int(s.get("days", 0)) < 1:
+            raise HTTPException(status_code=400, detail="Each stop must have at least 1 day.")
+
+    try:
+        return await gemini_service.generate_multistop_plan(stops, budget, special)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

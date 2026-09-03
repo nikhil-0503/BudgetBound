@@ -1997,3 +1997,69 @@ def reset_trip_allocations(
     db.refresh(trip)
     return trip
 
+# ==========================================
+# MULTI-STOP TRIP ENDPOINTS
+# ==========================================
+
+@router.post("/multistop/save", response_model=schemas.MultiStopTripOut)
+def save_multistop_trip(
+    req: schemas.MultiStopTripCreate,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Saves an AI-generated multi-stop trip to the user's account.
+    Stores the raw JSON result deeply so it can be rehydrated directly on the frontend.
+    """
+    new_ms_trip = models.MultiStopTrip(
+        user_id=current_user.id,
+        trip_name=req.trip_name,
+        total_budget=req.total_budget,
+        total_days=req.total_days,
+        destinations_str=req.destinations_str,
+        raw_json=req.raw_json
+    )
+    db.add(new_ms_trip)
+    
+    # Optional: could create a notification
+    notif = models.Notification(
+        user_id=current_user.id,
+        type="Trip Saved",
+        message=f"Your multi-stop journey '{req.trip_name}' has been securely saved."
+    )
+    db.add(notif)
+    db.commit()
+    db.refresh(new_ms_trip)
+    
+    return new_ms_trip
+
+
+@router.get("/multistop", response_model=List[schemas.MultiStopTripOut])
+def get_user_multistop_trips(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Returns all dynamically saved multi-stop trips for the authenticated user.
+    """
+    trips = db.query(models.MultiStopTrip).filter(models.MultiStopTrip.user_id == current_user.id).order_by(models.MultiStopTrip.created_at.desc()).all()
+    return trips
+
+@router.delete("/multistop/{trip_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_multistop_trip(
+    trip_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    ms_trip = db.query(models.MultiStopTrip).filter(
+        models.MultiStopTrip.id == trip_id,
+        models.MultiStopTrip.user_id == current_user.id
+    ).first()
+    
+    if not ms_trip:
+        raise HTTPException(status_code=404, detail="Multi-stop trip not found")
+        
+    db.delete(ms_trip)
+    db.commit()
+    return None
+

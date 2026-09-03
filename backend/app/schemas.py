@@ -252,3 +252,22 @@ class OptimizationResponse(BaseModel):
     budget: float
     allocations: BudgetAllocationBase
     options: List[OptimizationOption]
+
+# MultiStopTrip Schemas
+class MultiStopTripBase(BaseModel):
+    trip_name: str
+    total_budget: float
+    total_days: int
+    destinations_str: str
+
+class MultiStopTripCreate(MultiStopTripBase):
+    raw_json: Any
+
+class MultiStopTripOut(MultiStopTripBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    raw_json: Any
+
+    class Config:
+        from_attributes = True

@@ -11,7 +11,12 @@ import {
   AlertCircle,
   Send,
   User,
-  Bot
+  Bot,
+  MapPin,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 interface SavedTrip {
@@ -25,7 +30,7 @@ interface SavedTrip {
 
 export const AICompanion: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'chat' | 'planner' | 'regenerator' | 'explain'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'planner' | 'regenerator' | 'explain' | 'multistop'>('chat');
   const [savedTrips, setSavedTrips] = useState<SavedTrip[]>([]);
 
   // Error overlay popup state

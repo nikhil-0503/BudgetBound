@@ -14,6 +14,27 @@ GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 # Free model on Groq — change via GROQ_MODEL env var if needed
 GROQ_MODEL = os.getenv("GROQ_MODEL", "gemma2-9b-it")
 
+# These cover common Indian trip destinations immediately.  Other places are
+# resolved through Nominatim below; importantly, we never fabricate a point
+# from the spelling of a destination.
+KNOWN_DESTINATION_COORDINATES = {
+    "agra": (27.1767, 78.0081), "amritsar": (31.6340, 74.8723),
+    "bangalore": (12.9716, 77.5946), "bengaluru": (12.9716, 77.5946),
+    "bhopal": (23.2599, 77.4126), "chennai": (13.0827, 80.2707),
+    "coorg": (12.3375, 75.8069), "darjeeling": (27.0410, 88.2663),
+    "delhi": (28.6139, 77.2090), "goa": (15.2993, 74.1240),
+    "hyderabad": (17.3850, 78.4867), "jaipur": (26.9124, 75.7873),
+    "jaisalmer": (26.9157, 70.9083), "jodhpur": (26.2389, 73.0243),
+    "kochi": (9.9312, 76.2673), "kozhikode": (11.2588, 75.7804),
+    "leh": (34.1526, 77.5771), "manali": (32.2432, 77.1892),
+    "mumbai": (19.0760, 72.8777), "mysore": (12.2958, 76.6394),
+    "mysuru": (12.2958, 76.6394), "nainital": (29.3803, 79.4636),
+    "ooty": (11.4102, 76.6950), "puducherry": (11.9416, 79.8083),
+    "pondicherry": (11.9416, 79.8083), "rishikesh": (30.0869, 78.2676),
+    "shimla": (31.1048, 77.1734), "srinagar": (34.0837, 74.7973),
+    "udaipur": (24.5854, 73.7125), "varanasi": (25.3176, 82.9739),
+}
+
 
 class GroqTravelService:
     """
@@ -497,6 +518,231 @@ This report breaks down your **INR {trip.budget:,.2f}** budget and the estimated
 * **Transport**: Opt for sleeper trains or overnight buses instead of flights to reduce the transport bill.
 * **Accommodation**: Look into budget homestays, hostels, or guesthouses.
 """
+
+
+    async def generate_multistop_plan(
+        self,
+        stops: List[Dict[str, Any]],
+        budget: float,
+        special: str,
+    ) -> Dict[str, Any]:
+        """
+        Generate a multi-stop travel plan covering several destinations in sequence.
+        Each stop is { destination: str, days: int }.
+        Returns a structured JSON with per-leg itineraries and cost breakdown.
+        """
+        if not self.is_available:
+            return await self._with_resolved_stop_coordinates(
+                self._fallback_multistop_plan(stops, budget, special), stops
+            )
+
+        stops_desc = "\n".join(
+            [f"  - Stop {i+1}: {s['destination']} for {s['days']} day(s)" for i, s in enumerate(stops)]
+        )
+        total_days = sum(s['days'] for s in stops)
+        stop_destinations = " → ".join(s['destination'] for s in stops)
+
+        prompt = f"""You are an expert Indian travel planner. Generate a highly detailed multi-stop trip plan for these consecutive destinations:
+{stops_desc}
+
+Trip Info:
+- Total Budget: INR {budget:.0f}
+- Total Duration: {total_days} days
+- Special Requests / Dietary: {special or 'None'}
+
+Rules:
+1. For EACH leg (stop), generate EXACTLY the specified number of days.
+2. Day 1 of each leg must start with arrival / transit from previous stop.
+3. Last day of EVERY leg (except the final one) must end with transit to the next stop.
+4. Final leg must end with check-out and return home.
+5. Budget per leg should be proportional to its days.
+6. All activity costs must be realistic INR values.
+7. Every activity title must be vivid, specific, and action-oriented — never "Sightseeing" or "Lunch".
+8. Each activity MUST include a 1-sentence 'notes' field with insider tips, timings, or why it is special.
+9. Each leg MUST include:
+   a. 'highlights' — a list of 3-4 must-see/must-do attractions for that destination.
+   b. 'must_try_food' — a list of 2-3 iconic local dishes or street foods.
+   c. 'travel_to_next' — object with 'mode' (Train/Bus/Flight/Road), 'duration' (e.g. '4 hrs'), 'approx_cost' (INR). Omit only for the final leg.
+   d. 'best_time_tip' — one sentence tip about the best time of day or season for this destination.
+   e. 'coordinates' — object with 'lat' and 'lng' float values (approx geographic coordinates of the city).
+10. The root JSON object MUST include a 'packing_list' array containing 8-10 specific categorised string items to pack for this entire journey.
+
+Return ONLY a valid JSON object (no markdown, no explanation):
+{{
+  "trip_name": "{stop_destinations} Multi-Stop Journey",
+  "total_estimated_cost": 45000.0,
+  "packing_list": ["Comfortable trekking shoes", "Light cotton clothing", "Sunscreen (SPF 50)", "Power bank"],
+  "legs": [
+    {{
+      "destination": "First City",
+      "days": 2,
+      "estimated_cost": 18000.0,
+      "best_time_tip": "Visit early morning to avoid crowds at the main temples.",
+      "coordinates": {{"lat": 28.6139, "lng": 77.2090}},
+      "highlights": ["Highlight 1", "Highlight 2", "Highlight 3"],
+      "must_try_food": ["Local Dish 1", "Street Food 2"],
+      "travel_to_next": {{"mode": "Train", "duration": "3 hrs", "approx_cost": 400}},
+      "itinerary": [
+        {{
+          "day_number": 1,
+          "description": "Engaging one-sentence day summary",
+          "activities": [
+            {{"time": "Morning",   "title": "Arrival & Hotel Check-in",          "cost": 0.0,   "notes": "Check in early to freshen up before the day begins."}},
+            {{"time": "Afternoon", "title": "Specific vivid afternoon activity",  "cost": 400.0, "notes": "Insider tip or why this is worth visiting."}},
+            {{"time": "Evening",   "title": "Specific vivid evening activity",    "cost": 200.0, "notes": "Best enjoyed at sunset with a local guide."}}
+          ]
+        }}
+      ]
+    }}
+  ]
+}}
+"""
+        try:
+            raw = self._chat(prompt).strip()
+            if "```" in raw:
+                parts = raw.split("```")
+                for part in parts:
+                    p = part.strip()
+                    if p.startswith("json"):
+                        p = p[4:].strip()
+                    if p.startswith("{"):
+                        raw = p
+                        break
+            data = json.loads(raw)
+            # Normalise numeric fields
+            data["total_estimated_cost"] = float(data.get("total_estimated_cost", 0))
+            for leg in data.get("legs", []):
+                leg["estimated_cost"] = float(leg.get("estimated_cost", 0))
+                for day in leg.get("itinerary", []):
+                    for act in day.get("activities", []):
+                        act["cost"] = float(act.get("cost", 0))
+            return await self._with_resolved_stop_coordinates(data, stops)
+        except Exception as e:
+            logger.warning("Error generating multistop plan via LLM: %s. Using fallback.", e)
+            return await self._with_resolved_stop_coordinates(
+                self._fallback_multistop_plan(stops, budget, special), stops
+            )
+
+    @staticmethod
+    def _normalise_destination(destination: str) -> str:
+        return " ".join("".join(
+            character if character.isalnum() else " " for character in destination.lower()
+        ).split())
+
+    async def _resolve_destination_coordinates(self, destination: str) -> Optional[Dict[str, float]]:
+        """Return an actual map position, or no position when it cannot be verified."""
+        normalized = self._normalise_destination(destination)
+        for name, (lat, lng) in KNOWN_DESTINATION_COORDINATES.items():
+            if normalized == name or normalized.startswith(f"{name} "):
+                return {"lat": lat, "lng": lng}
+
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                response = await client.get(
+                    "https://nominatim.openstreetmap.org/search",
+                    params={"q": f"{destination}, India", "format": "jsonv2", "limit": 1},
+                    headers={"User-Agent": "BudgetBound/1.0 (trip map coordinate lookup)"},
+                )
+                response.raise_for_status()
+                results = response.json()
+            if results:
+                return {"lat": float(results[0]["lat"]), "lng": float(results[0]["lon"])}
+        except (httpx.HTTPError, KeyError, TypeError, ValueError) as error:
+            logger.info("Could not geocode multi-stop destination %r: %s", destination, error)
+        return None
+
+    async def _with_resolved_stop_coordinates(
+        self, data: Dict[str, Any], stops: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Use the submitted stop names as the source of truth for map pins.
+
+        AI-provided coordinates can be hallucinated, so they must not determine
+        where a route is drawn.  A stop with no verified result intentionally
+        has no pin rather than a misleading one.
+        """
+        legs = data.get("legs", [])
+        for index, stop in enumerate(stops):
+            if index >= len(legs):
+                break
+            coordinates = await self._resolve_destination_coordinates(stop["destination"])
+            legs[index]["destination"] = stop["destination"]
+            legs[index]["coordinates"] = coordinates
+        return data
+
+    def _fallback_multistop_plan(self, stops: List[Dict[str, Any]], budget: float, special: str) -> Dict[str, Any]:
+        total_days = sum(s["days"] for s in stops)
+        stop_destinations = " → ".join(s["destination"] for s in stops)
+        legs = []
+        for i, s in enumerate(stops):
+            dest = s["destination"]
+            leg_cost = round((s["days"] / max(total_days, 1)) * budget * 0.85, 2)
+            is_last = i == len(stops) - 1
+            next_dest = stops[i + 1]["destination"] if not is_last else None
+
+            legs.append({
+                "destination": dest,
+                "days": s["days"],
+                "estimated_cost": leg_cost,
+                # Coordinates are filled from the real stop name before this
+                # response is returned to the client.
+                "coordinates": None,
+                "best_time_tip": f"Early mornings are the best time to explore {dest}'s popular spots before the crowds arrive.",
+                "highlights": [
+                    f"Old Quarter & Heritage Walk in {dest}",
+                    f"Local Bazaar & Handicraft Market",
+                    f"Scenic Viewpoint / Waterfront",
+                ],
+                "must_try_food": [
+                    f"Signature regional thali of {dest}",
+                    f"Popular street snack from the local market",
+                ],
+                **({
+                    "travel_to_next": {
+                        "mode": "Train",
+                        "duration": "3-4 hrs",
+                        "approx_cost": round(leg_cost * 0.08, 0)
+                    }
+                } if next_dest else {}),
+                "itinerary": [
+                    {
+                        "day_number": d + 1,
+                        "description": f"{'Arrival day' if d == 0 else 'Explore'} {dest} highlights — Day {d + 1}",
+                        "activities": [
+                            {
+                                "time": "Morning",
+                                "title": f"Arrive & check-in at {dest}" if d == 0 else f"Morning heritage walk through {dest}'s old quarter",
+                                "cost": 0.0,
+                                "notes": f"{'Freshen up and orient yourself around the local neighbourhood.' if d == 0 else 'Start early to catch the market vendors setting up stalls.'}"
+                            },
+                            {
+                                "time": "Afternoon",
+                                "title": f"Local sightseeing & regional lunch in {dest}",
+                                "cost": round(leg_cost / (s["days"] * 3), 2),
+                                "notes": "Try the regional thali at a well-reviewed local eatery for an authentic taste."
+                            },
+                            {
+                                "time": "Evening",
+                                "title": f"Sunset stroll & cultural dinner in {dest}",
+                                "cost": round(leg_cost / (s["days"] * 4), 2),
+                                "notes": "Evenings are lively — look for street performances or local music near the main square."
+                            },
+                        ]
+                    } for d in range(s["days"])
+                ]
+            })
+        return {
+            "trip_name": f"{stop_destinations} Multi-Stop Journey",
+            "total_estimated_cost": round(budget * 0.85, 2),
+            "packing_list": [
+                "Universal Power Adapter & High Capacity Power Bank",
+                "Comfortable walking shoes/sneakers",
+                "Basic First-Aid Kit & personal medications",
+                "Light layers for variable evening temperatures",
+                "Reusable water bottle (stay hydrated!)",
+                "Government ID & Travel Documents folder"
+            ],
+            "legs": legs,
+        }
 
 
 gemini_service = GroqTravelService()

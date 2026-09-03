@@ -24,6 +24,7 @@ class User(Base):
     # Relationships
     trips = relationship("Trip", back_populates="user", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    multistop_trips = relationship("MultiStopTrip", back_populates="user", cascade="all, delete-orphan")
 
 class Destination(Base):
     __tablename__ = "destinations"
@@ -164,3 +165,18 @@ class TravelDocument(Base):
 
     # Relationships
     trip = relationship("Trip", back_populates="documents")
+
+class MultiStopTrip(Base):
+    __tablename__ = "multistop_trips"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    trip_name = Column(String, nullable=False)
+    total_budget = Column(Float, nullable=False)
+    total_days = Column(Integer, nullable=False)
+    destinations_str = Column(String, nullable=False) # e.g. "Delhi -> Agra"
+    raw_json = Column(JSON, nullable=False)           # Stores the exact complex schema from AI
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", back_populates="multistop_trips")
