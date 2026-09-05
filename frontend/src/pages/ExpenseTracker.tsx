@@ -468,7 +468,7 @@ export const ExpenseTracker: React.FC = () => {
                       borderRadius: '12px' 
                     }} 
                     itemStyle={{ color: darkMode ? '#f8fafc' : '#0f172a' }}
-                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, undefined]}
+                    formatter={(value: any) => [`₹${Number(value).toLocaleString()}`, undefined]}
                   />
                   <Legend wrapperStyle={{ paddingTop: '10px', fontSize: '11px' }} />
                   <Bar name="Plan Estimate" dataKey="estimated" fill="#8b5cf6" radius={[3, 3, 0, 0]} />

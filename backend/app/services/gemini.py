@@ -551,10 +551,10 @@ Trip Info:
 - Special Requests / Dietary: {special or 'None'}
 
 Rules:
-1. For EACH leg (stop), generate EXACTLY the specified number of days.
-2. Day 1 of each leg must start with arrival / transit from previous stop.
-3. Last day of EVERY leg (except the final one) must end with transit to the next stop.
-4. Final leg must end with check-out and return home.
+1. For the ENTIRE trip, generate EXACTLY {total_days} consecutive day numbers (1 through {total_days}), NOT per-destination day resets.
+2. Day 1 of the FIRST leg must start with arrival.
+3. On transition days between legs, include travel in the itinerary (morning: final activity in current destination, afternoon/evening: travel).
+4. The final day ({total_days}) must end with check-out and return home.
 5. Budget per leg should be proportional to its days.
 6. All activity costs must be realistic INR values.
 7. Every activity title must be vivid, specific, and action-oriented — never "Sightseeing" or "Lunch".
@@ -585,11 +585,20 @@ Return ONLY a valid JSON object (no markdown, no explanation):
       "itinerary": [
         {{
           "day_number": 1,
-          "description": "Engaging one-sentence day summary",
+          "description": "Day 1: Arrival in First City",
           "activities": [
             {{"time": "Morning",   "title": "Arrival & Hotel Check-in",          "cost": 0.0,   "notes": "Check in early to freshen up before the day begins."}},
             {{"time": "Afternoon", "title": "Specific vivid afternoon activity",  "cost": 400.0, "notes": "Insider tip or why this is worth visiting."}},
             {{"time": "Evening",   "title": "Specific vivid evening activity",    "cost": 200.0, "notes": "Best enjoyed at sunset with a local guide."}}
+          ]
+        }},
+        {{
+          "day_number": 2,
+          "description": "Day 2: Explore and depart First City for Second City",
+          "activities": [
+            {{"time": "Morning",   "title": "Morning activity in First City",    "cost": 300.0, "notes": "Final morning to catch any missed highlights."}},
+            {{"time": "Afternoon", "title": "Travel to Second City",              "cost": 400.0, "notes": "Depart early to reach Second City by evening."}},
+            {{"time": "Evening",   "title": "Arrive & check-in in Second City",   "cost": 0.0,   "notes": "Rest and explore the immediate area around hotel."}}
           ]
         }}
       ]
@@ -611,11 +620,18 @@ Return ONLY a valid JSON object (no markdown, no explanation):
             data = json.loads(raw)
             # Normalise numeric fields
             data["total_estimated_cost"] = float(data.get("total_estimated_cost", 0))
+            
+            # CRITICAL: Convert LLM's per-leg day numbers to global day numbers
+            global_day = 1
             for leg in data.get("legs", []):
                 leg["estimated_cost"] = float(leg.get("estimated_cost", 0))
                 for day in leg.get("itinerary", []):
+                    # Replace day_number with global counter
+                    day["day_number"] = global_day
+                    global_day += 1
                     for act in day.get("activities", []):
                         act["cost"] = float(act.get("cost", 0))
+            
             return await self._with_resolved_stop_coordinates(data, stops)
         except Exception as e:
             logger.warning("Error generating multistop plan via LLM: %s. Using fallback.", e)
@@ -628,6 +644,41 @@ Return ONLY a valid JSON object (no markdown, no explanation):
         return " ".join("".join(
             character if character.isalnum() else " " for character in destination.lower()
         ).split())
+
+    @staticmethod
+    def _calculate_travel_time_hours(coord_from: Optional[Dict[str, float]], coord_to: Optional[Dict[str, float]]) -> float:
+        """
+        Calculate approximate travel time in hours between two coordinates using distance estimation.
+        Uses Haversine formula to estimate distance, then applies speed estimates based on transport mode.
+        Returns hours as float. If coordinates missing, returns default 3.5 hours.
+        """
+        if not coord_from or not coord_to:
+            return 3.5  # Default fallback
+        
+        from math import radians, sin, cos, sqrt, atan2
+        
+        lat1, lon1 = radians(coord_from.get("lat", 0)), radians(coord_from.get("lng", 0))
+        lat2, lon2 = radians(coord_to.get("lat", 0)), radians(coord_to.get("lng", 0))
+        
+        R = 6371  # Earth radius in km
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        distance_km = R * c
+        
+        # Estimate travel time based on distance
+        # Assume mixed transport: 50-60 km/hr average (includes stops, transfers)
+        if distance_km <= 100:
+            travel_hours = distance_km / 60.0  # Short distances, slower
+        elif distance_km <= 500:
+            travel_hours = distance_km / 70.0  # Medium distances
+        else:
+            travel_hours = distance_km / 80.0  # Long distances, faster transport
+        
+        # Round to nearest 0.5 hour for clarity
+        return round(travel_hours * 2) / 2
 
     async def _resolve_destination_coordinates(self, destination: str) -> Optional[Dict[str, float]]:
         """Return an actual map position, or no position when it cannot be verified."""
@@ -659,6 +710,8 @@ Return ONLY a valid JSON object (no markdown, no explanation):
         AI-provided coordinates can be hallucinated, so they must not determine
         where a route is drawn.  A stop with no verified result intentionally
         has no pin rather than a misleading one.
+        
+        Also calculates travel times based on distance between consecutive stops.
         """
         legs = data.get("legs", [])
         for index, stop in enumerate(stops):
@@ -667,24 +720,99 @@ Return ONLY a valid JSON object (no markdown, no explanation):
             coordinates = await self._resolve_destination_coordinates(stop["destination"])
             legs[index]["destination"] = stop["destination"]
             legs[index]["coordinates"] = coordinates
+            
+            # Calculate travel time to next destination if not the last leg
+            if index < len(stops) - 1:
+                next_coords = await self._resolve_destination_coordinates(stops[index + 1]["destination"])
+                travel_hours = self._calculate_travel_time_hours(coordinates, next_coords)
+                
+                # Convert hours to readable format
+                hours = int(travel_hours)
+                mins = int((travel_hours - hours) * 60)
+                if mins == 0:
+                    duration_str = f"{hours} hr" if hours == 1 else f"{hours} hrs"
+                else:
+                    duration_str = f"{hours} hr {mins} min" if hours == 1 else f"{hours} hrs {mins} min"
+                
+                # Update travel_to_next with calculated duration
+                if "travel_to_next" in legs[index]:
+                    legs[index]["travel_to_next"]["duration"] = duration_str
+        
         return data
 
     def _fallback_multistop_plan(self, stops: List[Dict[str, Any]], budget: float, special: str) -> Dict[str, Any]:
         total_days = sum(s["days"] for s in stops)
         stop_destinations = " → ".join(s["destination"] for s in stops)
         legs = []
+        global_day = 1  # Track global day counter across all legs
+        
         for i, s in enumerate(stops):
             dest = s["destination"]
             leg_cost = round((s["days"] / max(total_days, 1)) * budget * 0.85, 2)
             is_last = i == len(stops) - 1
             next_dest = stops[i + 1]["destination"] if not is_last else None
-
+            
+            # Build itinerary for this leg using GLOBAL day numbers
+            leg_itinerary = []
+            for local_day in range(s["days"]):
+                # Create day item with global day number
+                day_item = {
+                    "day_number": global_day,  # GLOBAL day counter, not local
+                    "destination": dest,  # Include destination for context
+                    "description": f"{'Arrival' if local_day == 0 else 'Explore'} {dest} highlights — Day {global_day}",
+                    "activities": []
+                }
+                
+                # First day of leg: arrival activity
+                if local_day == 0:
+                    day_item["activities"].append({
+                        "time": "Morning",
+                        "title": f"Arrive & check-in at {dest}",
+                        "cost": 0.0,
+                        "notes": "Freshen up and orient yourself around the local neighbourhood."
+                    })
+                else:
+                    day_item["activities"].append({
+                        "time": "Morning",
+                        "title": f"Morning heritage walk through {dest}'s old quarter",
+                        "cost": 0.0,
+                        "notes": "Start early to catch the market vendors setting up stalls."
+                    })
+                
+                day_item["activities"].append({
+                    "time": "Afternoon",
+                    "title": f"Local sightseeing & regional lunch in {dest}",
+                    "cost": round(leg_cost / (s["days"] * 3), 2),
+                    "notes": "Try the regional thali at a well-reviewed local eatery for an authentic taste."
+                })
+                
+                # Last day of leg (not final leg): add travel transition note
+                if local_day == s["days"] - 1 and not is_last:
+                    day_item["activities"].append({
+                        "time": "Evening",
+                        "title": f"Depart {dest} for {next_dest}",
+                        "cost": 0.0,
+                        "notes": f"Travel to next destination. Depart early evening to arrive at a reasonable hour."
+                    })
+                else:
+                    day_item["activities"].append({
+                        "time": "Evening",
+                        "title": f"Sunset stroll & cultural dinner in {dest}",
+                        "cost": round(leg_cost / (s["days"] * 4), 2),
+                        "notes": "Evenings are lively — look for street performances or local music near the main square."
+                    })
+                
+                leg_itinerary.append(day_item)
+                global_day += 1  # Increment global day after each day
+            
+            # Calculate travel time to next destination (placeholder, will be based on coordinates)
+            travel_duration = "3-4 hrs"  # Default, will be updated after coordinates are resolved
+            
             legs.append({
                 "destination": dest,
                 "days": s["days"],
                 "estimated_cost": leg_cost,
-                # Coordinates are filled from the real stop name before this
-                # response is returned to the client.
+                # Coordinates are filled from the real stop name before this response is returned to the client.
                 "coordinates": None,
                 "best_time_tip": f"Early mornings are the best time to explore {dest}'s popular spots before the crowds arrive.",
                 "highlights": [
@@ -699,37 +827,13 @@ Return ONLY a valid JSON object (no markdown, no explanation):
                 **({
                     "travel_to_next": {
                         "mode": "Train",
-                        "duration": "3-4 hrs",
+                        "duration": travel_duration,
                         "approx_cost": round(leg_cost * 0.08, 0)
                     }
                 } if next_dest else {}),
-                "itinerary": [
-                    {
-                        "day_number": d + 1,
-                        "description": f"{'Arrival day' if d == 0 else 'Explore'} {dest} highlights — Day {d + 1}",
-                        "activities": [
-                            {
-                                "time": "Morning",
-                                "title": f"Arrive & check-in at {dest}" if d == 0 else f"Morning heritage walk through {dest}'s old quarter",
-                                "cost": 0.0,
-                                "notes": f"{'Freshen up and orient yourself around the local neighbourhood.' if d == 0 else 'Start early to catch the market vendors setting up stalls.'}"
-                            },
-                            {
-                                "time": "Afternoon",
-                                "title": f"Local sightseeing & regional lunch in {dest}",
-                                "cost": round(leg_cost / (s["days"] * 3), 2),
-                                "notes": "Try the regional thali at a well-reviewed local eatery for an authentic taste."
-                            },
-                            {
-                                "time": "Evening",
-                                "title": f"Sunset stroll & cultural dinner in {dest}",
-                                "cost": round(leg_cost / (s["days"] * 4), 2),
-                                "notes": "Evenings are lively — look for street performances or local music near the main square."
-                            },
-                        ]
-                    } for d in range(s["days"])
-                ]
+                "itinerary": leg_itinerary
             })
+        
         return {
             "trip_name": f"{stop_destinations} Multi-Stop Journey",
             "total_estimated_cost": round(budget * 0.85, 2),

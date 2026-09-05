@@ -125,7 +125,6 @@ export const DestinationExplorer: React.FC = () => {
         eyebrow="Browse the catalog first"
         title="Destination Explorer shows the seeded travel catalog"
         description="These are predefined destinations stored in the database. Use search and filters to explore what exists today, then open one destination or jump into planner from its detail page."
-        ctaLabel="Open any destination"
         steps={[
           { title: 'Search the database', description: 'Filter by name, state, category, or cost to narrow the list.' },
           { title: 'Open the detail view', description: 'Read costs, attractions, and a sample itinerary for that destination.' },

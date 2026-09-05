@@ -39,6 +39,7 @@ interface RecentTrip {
   state: string;
   budget: number;
   estimated_cost: number;
+  actual_expenses: number;
   days: number;
   category: string;
   date: string;
@@ -436,6 +437,7 @@ export const Dashboard: React.FC = () => {
                       <th className="pb-4">Destination</th>
                       <th className="pb-4">Budget</th>
                       <th className="pb-4">Est. Cost</th>
+                      <th className="pb-4">Actual Spend</th>
                       <th className="pb-4">Duration</th>
                       <th className="pb-4">Category</th>
                       <th className="pb-4 text-right">Actions</th>
@@ -452,6 +454,7 @@ export const Dashboard: React.FC = () => {
                         </td>
                         <td className="py-4 text-slate-600 dark:text-slate-300">₹{trip.budget.toLocaleString()}</td>
                         <td className="py-4 text-slate-900 dark:text-white font-semibold">₹{trip.estimated_cost.toLocaleString()}</td>
+                        <td className="py-4 text-red-600 dark:text-red-400 font-semibold">₹{trip.actual_expenses.toLocaleString()}</td>
                         <td className="py-4 text-slate-500 dark:text-slate-400">{trip.days} Days</td>
                         <td className="py-4">
                           <span className="bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -462,16 +465,9 @@ export const Dashboard: React.FC = () => {
                           <div className="flex items-center justify-end gap-2.5">
                             <button
                               onClick={() => {
-                                // Prefecture prefills to planner
-                                sessionStorage.setItem('prefilled_planner', JSON.stringify({
-                                  startingCity: 'Your City',
-                                  budget: trip.budget,
-                                  days: trip.days,
-                                  travelType: trip.category,
-                                  travelersCount: 1,
-                                  destName: trip.destination
-                                }));
-                                navigate('/planner');
+                                // FIX #1: Use tripId query param instead of sessionStorage prefill
+                                // This ensures BudgetPlanner fetches the persisted trip via API
+                                navigate(`/planner?tripId=${trip.id}`);
                               }}
                               className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-700/40 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all"
                               title="View Details / Re-simulate"
@@ -531,7 +527,7 @@ export const Dashboard: React.FC = () => {
 
             {/* Pie Chart: Expense Categories */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">Expense Distribution</h3>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">Actual Expense Distribution</h3>
 
               <div className="h-64 w-full text-xs">
                 <ResponsiveContainer width="100%" height="100%">

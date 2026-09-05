@@ -12,7 +12,6 @@ import {
   TrendingDown, 
   Download, 
   Trash2, 
-  Copy, 
   Edit3, 
   Eye, 
   AlertCircle, 
@@ -77,6 +76,7 @@ export const SavedTrips: React.FC = () => {
   const [editComfort, setEditComfort] = useState(50);
   const [updating, setUpdating] = useState(false);
   const [activeShareTrip, setActiveShareTrip] = useState<Trip | null>(null);
+  const [downloadingTripId, setDownloadingTripId] = useState<number | null>(null);
 
   const fetchTrips = async () => {
     try {
@@ -108,21 +108,26 @@ export const SavedTrips: React.FC = () => {
     }
   };
 
-  const handleDuplicate = async (tripId: number) => {
+  const handleDownloadPDF = async (tripId: number, destName: string) => {
     try {
-      setLoading(true);
-      await api.post(`/api/trips/${tripId}/duplicate`);
-      await fetchTrips();
+      setDownloadingTripId(tripId);
+      const response = await api.get(`/api/trips/${tripId}/pdf`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `budgetbound_${destName.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error(err);
-      alert('Failed to duplicate trip.');
-      setLoading(false);
+      console.error('Failed to download PDF:', err);
+      alert('Unable to download trip PDF. Please try again.');
+    } finally {
+      setDownloadingTripId(null);
     }
-  };
-
-  const handleDownloadPDF = (tripId: number, destName: string) => {
-    const token = localStorage.getItem('token');
-    window.open(`http://localhost:8000/api/trips/${tripId}/pdf?token=${token}`, '_blank');
   };
 
   const openEditModal = (trip: Trip) => {
@@ -238,7 +243,7 @@ export const SavedTrips: React.FC = () => {
           <span className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest">Travel History</span>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">My Saved Trips</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            View, duplicate, edit, or track expenses for all your finalized travel plans.
+            View, edit, share, or track expenses for all your finalized travel plans.
           </p>
         </div>
         <Link 
@@ -392,13 +397,6 @@ export const SavedTrips: React.FC = () => {
                       <Edit3 size={13} />
                     </button>
                     <button
-                      onClick={() => handleDuplicate(trip.id)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
-                      title="Duplicate Trip"
-                    >
-                      <Copy size={13} />
-                    </button>
-                    <button
                       onClick={() => setActiveShareTrip(trip)}
                       className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
                       title="Share Trip Plan"
@@ -407,10 +405,15 @@ export const SavedTrips: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleDownloadPDF(trip.id, trip.destination.name)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      disabled={downloadingTripId === trip.id}
+                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650 disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Download PDF"
                     >
-                      <Download size={13} />
+                      {downloadingTripId === trip.id ? (
+                        <Loader size={13} className="animate-spin" />
+                      ) : (
+                        <Download size={13} />
+                      )}
                     </button>
                   </div>
 

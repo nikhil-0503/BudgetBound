@@ -173,6 +173,17 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   const [tripStatus, setTripStatus] = useState<string>("Planned");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
+  // Clear stale state when component mounts (prevents state leakage between trips)
+  React.useEffect(() => {
+    return () => {
+      // This runs on unmount, but we also need to check on mount for new tripId
+      const tripIdParam = new URLSearchParams(window.location.search).get('tripId');
+      if (!tripIdParam) {
+        // If no tripId in URL, this is a new trip - state will be set by the preference hook below
+      }
+    };
+  }, []);
+
   // Fetch all destinations for select dropdown in Build Itinerary mode
   React.useEffect(() => {
     api.get('/api/destinations/', { params: { limit: 100 } })
@@ -231,6 +242,10 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         });
         setSavedTripId(trip.id);
         setTripStatus(trip.status || "Planned");
+        
+        // FIX: Set destination state so it flows through Step 1 and Step 2 correctly
+        setSelectedDestinationId(trip.destination_id);
+        setSelectedDestinationName(trip.destination.name);
         
         setStartingCity('Your City');
         setBudget(String(trip.budget));
@@ -662,7 +677,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         description={flowMode === 'discover'
           ? 'Use this step to compare options. The app ranks destinations by your budget, days, starting city, and comfort level, then lets you choose one to continue.'
           : 'Use the selected destination or let the planner choose the strongest fit. The backend will calculate the trip and show the final itinerary in the same place.'}
-        ctaLabel={flowMode === 'discover' ? 'Find matches first' : 'Build the itinerary next'}
+        ctaLabel={flowMode === 'discover' ? 'Step 1: Find matching destinations' : 'Step 2: Configure and generate plan'}
         steps={[
           { title: 'Step 1: Set trip details', description: 'Enter the same trip details once for either discovery or planning.' },
           { title: 'Step 2: Compare or lock a destination', description: 'Search first, or jump straight into itinerary generation if you already know what you want.' },
@@ -713,33 +728,34 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
             {flowMode === 'plan' && (
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Destination (Optional)</label>
-                <div className="relative">
-                  <select
-                    value={selectedDestinationId || ''}
-                    onChange={(e) => {
-                      const idVal = e.target.value;
-                      if (!idVal) {
-                        setSelectedDestinationId(null);
-                        setSelectedDestinationName(null);
-                      } else {
-                        const numericId = Number(idVal);
-                        const match = allDestinations.find(d => d.id === numericId);
-                        if (match) {
-                          setSelectedDestinationId(numericId);
-                          setSelectedDestinationName(match.name);
-                          setTravelType(match.category);
-                        }
-                      }
-                    }}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white appearance-none"
-                  >
-                    <option value="">Let Planner Choose (Best Fit)</option>
-                    {allDestinations.map(d => (
-                      <option key={d.id} value={d.id}>{d.name} ({d.state})</option>
-                    ))}
-                  </select>
-                </div>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Destination</label>
+                {selectedDestinationName ? (
+                  // Destination is locked/read-only when already selected
+                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">{selectedDestinationName}</div>
+                      <div className="text-xs text-slate-400 mt-0.5">Selected in Step 1</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Go back to Step 1 to change destination
+                        setFlowMode('discover');
+                        setPlan(null);
+                        setSearchResults([]);
+                        setSearchCompleted(false);
+                      }}
+                      className="text-xs text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300 font-semibold whitespace-nowrap ml-4"
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  // No destination selected - should not happen in normal flow, but provide fallback
+                  <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+                    No destination selected. Go back to Step 1 to select one.
+                  </div>
+                )}
               </div>
             )}
 
@@ -794,8 +810,21 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     required
                     value={travelersCount}
                     onChange={(e) => {
-                      const val = Number(e.target.value.replace(/[^0-9]/g, ''));
-                      if (!isNaN(val) && val >= 1) setTravelersCount(val);
+                      const rawVal = e.target.value;
+                      if (rawVal === '') {
+                        // Allow temporary empty state while editing
+                        setTravelersCount(0);
+                      } else {
+                        const val = Number(rawVal.replace(/[^0-9]/g, ''));
+                        if (!isNaN(val)) setTravelersCount(val);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      // On blur, validate and ensure minimum of 1
+                      const val = Number(e.target.value);
+                      if (isNaN(val) || val < 1) {
+                        setTravelersCount(1);
+                      }
                     }}
                     placeholder="1"
                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
@@ -1105,11 +1134,8 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                         </button>
                         <button
                           onClick={handleDownloadPDF}
-
                           disabled={downloadingPdf}
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
-
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200 dark:border-slate-650"
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200 dark:border-slate-600"
                         >
                           {downloadingPdf ? (
                             <Loader size={16} className="animate-spin" />

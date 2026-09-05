@@ -71,6 +71,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     }
   };
 
+  // FIX #1: Reset scroll position when route changes (location.pathname)
+  useEffect(() => {
+    // Find and scroll the main scrollable container to top
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.scrollTop = 0;
+    }
+  }, [location.pathname]); // Trigger only when pathname changes, not on every location update
+
   useEffect(() => {
     if (user) {
       fetchUnreadCount();

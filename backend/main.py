@@ -209,12 +209,14 @@ def get_dashboard_stats(
     # Sort trips by created_at desc
     sorted_trips = sorted(trips_list, key=lambda x: x.created_at, reverse=True)[:5]
     for t in sorted_trips:
+        trip_expenses = [e.amount for e in all_expenses if e.trip_id == t.id]
         recent_trips.append({
             "id": t.id,
             "destination": t.destination.name,
             "state": t.destination.state,
             "budget": t.budget,
             "estimated_cost": t.total_estimated_cost,
+            "actual_expenses": sum(trip_expenses),
             "days": t.days,
             "category": t.travel_type,
             "date": t.created_at.strftime("%Y-%m-%d"),

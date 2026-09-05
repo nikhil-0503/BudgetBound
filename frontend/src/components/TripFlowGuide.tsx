@@ -1,5 +1,4 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
 
 interface GuideStep {
   title: string;
@@ -41,7 +40,6 @@ export const TripFlowGuide: React.FC<TripFlowGuideProps> = ({
           {ctaLabel ? (
             <div className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-slate-900/10 dark:bg-violet-600 dark:shadow-violet-900/20">
               {ctaLabel}
-              <ArrowRight size={14} />
             </div>
           ) : null}
         </div>
