@@ -119,12 +119,12 @@ export const SharedTripView: React.FC = () => {
       return 'from-amber-400 via-orange-500 to-blue-600';
     }
     if (cat.includes('nature') || cat.includes('hills')) {
-      return 'from-emerald-400 via-teal-500 to-indigo-650';
+      return 'from-emerald-400 via-teal-500 to-petrol-700';
     }
     if (cat.includes('religious') || cat.includes('temple')) {
       return 'from-orange-400 via-red-500 to-amber-600';
     }
-    return 'from-violet-500 via-purple-600 to-indigo-700';
+    return 'from-marigold-500 via-berry-600 to-petrol-700';
   };
 
   const getWeatherRatingBadgeClass = (rating: string) => {
@@ -138,24 +138,24 @@ export const SharedTripView: React.FC = () => {
       case 'Avoid':
         return 'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900/30';
       default:
-        return 'bg-slate-100 text-slate-700';
+        return 'bg-paper-100 text-paper-700';
     }
   };
 
   const getCarbonBadgeClass = (rating: string) => {
     if (rating === 'Eco Friendly') {
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-250';
+      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-300';
     }
     if (rating === 'Moderate') {
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-250';
+      return 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-300';
     }
-    return 'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-250';
+    return 'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-300';
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center text-slate-500 gap-4">
-        <Loader className="h-10 w-10 text-violet-500 animate-spin" />
+      <div className="min-h-screen bg-paper-50 dark:bg-paper-900 flex flex-col items-center justify-center text-paper-500 gap-4">
+        <Loader className="h-10 w-10 text-marigold-500 animate-spin" />
         <span className="text-sm font-semibold">Retrieving shared travel plan...</span>
       </div>
     );
@@ -163,17 +163,17 @@ export const SharedTripView: React.FC = () => {
 
   if (error || !trip) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl space-y-4">
+      <div className="min-h-screen bg-paper-50 dark:bg-paper-900 flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md bg-paper-50 dark:bg-paper-800 p-8 rounded-3xl border border-paper-200 dark:border-paper-700 shadow-xl space-y-4">
           <AlertCircle className="h-14 w-14 text-rose-500 mx-auto" />
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Plan Access Denied</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          <h2 className="text-xl font-extrabold text-paper-900 dark:text-white">Plan Access Denied</h2>
+          <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed">
             {error || 'This itinerary is currently private. Please ask the owner to enable public sharing.'}
           </p>
           <div className="pt-2">
             <Link 
               to="/dashboard" 
-              className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all shadow-md"
+              className="inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all shadow-md"
             >
               Back to Dashboard
             </Link>
@@ -189,23 +189,23 @@ export const SharedTripView: React.FC = () => {
   const alloc = trip.budget_allocation;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-850 dark:text-slate-100 flex flex-col items-center pb-12">
+    <div className="min-h-screen bg-paper-50 dark:bg-paper-900 text-paper-900 dark:text-paper-100 flex flex-col items-center pb-12">
       
       {/* Category Gradient Header Banner */}
       <div className={`w-full h-64 bg-gradient-to-r ${getCategoryGradient(destination.category)} relative overflow-hidden flex flex-col justify-end p-8 text-white shadow`}>
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-paper-50/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-5xl w-full mx-auto space-y-2 relative z-10">
           <div className="flex gap-2 items-center">
-            <span className="text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">
+            <span className="text-[10px] bg-paper-50/20 backdrop-blur-md px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">
               {destination.category}
             </span>
-            <span className="text-[10px] bg-violet-600/60 backdrop-blur-md px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">
+            <span className="text-[10px] bg-marigold-600/60 backdrop-blur-md px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">
               Public Shared Plan
             </span>
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-200 block">{destination.state}</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-paper-200 block">{destination.state}</span>
           <h1 className="text-4xl font-extrabold tracking-tight drop-shadow-md">{destination.name}</h1>
-          <p className="text-xs text-slate-100/90 max-w-xl font-medium leading-relaxed drop-shadow-sm">
+          <p className="text-xs text-paper-100/90 max-w-xl font-medium leading-relaxed drop-shadow-sm">
             {destination.description}
           </p>
         </div>
@@ -217,12 +217,12 @@ export const SharedTripView: React.FC = () => {
         {/* Left column: Itinerary */}
         <div className="lg:col-span-7 space-y-6">
           
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm">
-            <h2 className="text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <Compass className="text-violet-500" size={18} />
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4.5 rounded-2xl shadow-sm">
+            <h2 className="text-base font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Compass className="text-marigold-500" size={18} />
               Travel Schedule Itinerary
             </h2>
-            <p className="text-[11px] text-slate-400 mt-0.5">Explore the daily chronological travel agenda details</p>
+            <p className="text-[11px] text-paper-400 mt-0.5">Explore the daily chronological travel agenda details</p>
           </div>
 
           <TimelineItinerary
@@ -237,27 +237,27 @@ export const SharedTripView: React.FC = () => {
         <div className="lg:col-span-5 space-y-6">
           
           {/* Metadata Card */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm grid grid-cols-3 gap-4 text-center">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm grid grid-cols-3 gap-4 text-center">
             <div className="space-y-1">
-              <span className="text-[10px] text-slate-400 font-bold uppercase block">Budget</span>
-              <span className="font-extrabold text-slate-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
+              <span className="text-[10px] text-paper-400 font-bold uppercase block">Budget</span>
+              <span className="font-extrabold text-paper-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
             </div>
-            <div className="space-y-1 border-x border-slate-100 dark:border-slate-700">
-              <span className="text-[10px] text-slate-400 font-bold uppercase block">Days</span>
-              <span className="font-extrabold text-slate-800 dark:text-white">{trip.days} Days</span>
+            <div className="space-y-1 border-x border-paper-100 dark:border-paper-700">
+              <span className="text-[10px] text-paper-400 font-bold uppercase block">Days</span>
+              <span className="font-extrabold text-paper-800 dark:text-white">{trip.days} Days</span>
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] text-slate-400 font-bold uppercase block">Travelers</span>
-              <span className="font-extrabold text-slate-800 dark:text-white">{trip.travelers_count} People</span>
+              <span className="text-[10px] text-paper-400 font-bold uppercase block">Travelers</span>
+              <span className="font-extrabold text-paper-800 dark:text-white">{trip.travelers_count} People</span>
             </div>
           </div>
 
           {/* Weather Intelligence Widget */}
           {weather && (
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4">
+            <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                  <CloudSun size={16} className="text-violet-500" />
+                <h3 className="text-sm font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <CloudSun size={16} className="text-marigold-500" />
                   Weather & Season Intelligence
                 </h3>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getWeatherRatingBadgeClass(weather.season_rating)}`}>
@@ -265,26 +265,26 @@ export const SharedTripView: React.FC = () => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-4 text-xs bg-paper-50 dark:bg-paper-900/40 p-3 rounded-xl border border-paper-100 dark:border-paper-800">
                 <div className="space-y-0.5">
-                  <span className="text-slate-400 font-semibold block">Current Season</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{weather.current_season}</span>
+                  <span className="text-paper-400 font-semibold block">Current Season</span>
+                  <span className="font-bold text-paper-800 dark:text-white">{weather.current_season}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-slate-400 font-semibold block">Temp Range</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{weather.temperature_range}</span>
+                  <span className="text-paper-400 font-semibold block">Temp Range</span>
+                  <span className="font-bold text-paper-800 dark:text-white">{weather.temperature_range}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-slate-400 font-semibold block">Crowd Level</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{weather.crowd_level}</span>
+                  <span className="text-paper-400 font-semibold block">Crowd Level</span>
+                  <span className="font-bold text-paper-800 dark:text-white">{weather.crowd_level}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-slate-400 font-semibold block">Rain Probability</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{weather.rain_probability}</span>
+                  <span className="text-paper-400 font-semibold block">Rain Probability</span>
+                  <span className="font-bold text-paper-800 dark:text-white">{weather.rain_probability}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed italic border-l-2 border-violet-400 pl-3">
+              <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed italic border-l-2 border-marigold-400 pl-3">
                 {weather.recommendation}
               </p>
             </div>
@@ -292,9 +292,9 @@ export const SharedTripView: React.FC = () => {
 
           {/* Carbon Footprint Widget */}
           {carbon && (
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4">
+            <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <h3 className="text-sm font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                   <Leaf size={16} className="text-emerald-500" />
                   Carbon Footprint Impact
                 </h3>
@@ -303,19 +303,19 @@ export const SharedTripView: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl">
+              <div className="flex items-center justify-between p-3.5 bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-800 rounded-xl">
                 <div className="flex items-center gap-2.5">
                   {carbon.transport_mode === 'Flight' ? <Plane size={16} className="text-rose-500" /> : <Train size={16} className="text-emerald-500" />}
-                  <span className="text-xs font-bold text-slate-750 dark:text-slate-250">
+                  <span className="text-xs font-bold text-paper-800 dark:text-paper-300">
                     CO₂ Impact ({carbon.transport_mode})
                   </span>
                 </div>
-                <span className="text-sm font-extrabold text-slate-900 dark:text-white">
+                <span className="text-sm font-extrabold text-paper-900 dark:text-white">
                   {carbon.co2_emissions} kg
                 </span>
               </div>
 
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal flex items-start gap-2 bg-emerald-50/20 dark:bg-emerald-950/10 border border-emerald-100/40 p-3 rounded-xl">
+              <div className="text-[11px] text-paper-500 dark:text-paper-400 leading-normal flex items-start gap-2 bg-emerald-50/20 dark:bg-emerald-950/10 border border-emerald-100/40 p-3 rounded-xl">
                 <Leaf size={14} className="text-emerald-500 shrink-0 mt-0.5" fill="currentColor" />
                 <span>
                   {carbon.transport_mode === 'Flight' 
@@ -329,34 +329,34 @@ export const SharedTripView: React.FC = () => {
 
           {/* Budget Breakdown Summary */}
           {alloc && (
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <Wallet size={16} className="text-violet-500" />
+            <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4">
+              <h3 className="text-sm font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <Wallet size={16} className="text-marigold-500" />
                 Allocated Budget Breakdown
               </h3>
 
-              <div className="flex flex-col gap-3 text-xs text-slate-650 dark:text-slate-350">
+              <div className="flex flex-col gap-3 text-xs text-paper-700 dark:text-paper-400">
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2"><Plane size={14} /> Transportation</span>
-                  <span className="font-bold text-slate-800 dark:text-white">₹{alloc.transport_cost.toLocaleString()}</span>
+                  <span className="font-bold text-paper-800 dark:text-white">₹{alloc.transport_cost.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2"><Building size={14} /> Accommodations</span>
-                  <span className="font-bold text-slate-800 dark:text-white">₹{alloc.hotel_cost.toLocaleString()}</span>
+                  <span className="font-bold text-paper-800 dark:text-white">₹{alloc.hotel_cost.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2"><Utensils size={14} /> Food & Dining</span>
-                  <span className="font-bold text-slate-800 dark:text-white">₹{alloc.food_cost.toLocaleString()}</span>
+                  <span className="font-bold text-paper-800 dark:text-white">₹{alloc.food_cost.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2"><Camera size={14} /> Sightseeing / Sights</span>
-                  <span className="font-bold text-slate-800 dark:text-white">₹{alloc.activities_cost.toLocaleString()}</span>
+                  <span className="font-bold text-paper-800 dark:text-white">₹{alloc.activities_cost.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2"><Percent size={14} /> Taxes & Booking Fees</span>
-                  <span className="font-bold text-slate-800 dark:text-white">₹{alloc.taxes_fees_cost.toLocaleString()}</span>
+                  <span className="font-bold text-paper-800 dark:text-white">₹{alloc.taxes_fees_cost.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-2 font-bold text-slate-800 dark:text-white">
+                <div className="flex justify-between border-t border-paper-100 dark:border-paper-700 pt-2 font-bold text-paper-800 dark:text-white">
                   <span className="flex items-center gap-2"><LifeBuoy size={14} /> Total Estimated Cost</span>
                   <span>₹{trip.total_estimated_cost.toLocaleString()}</span>
                 </div>
@@ -378,3 +378,6 @@ export const SharedTripView: React.FC = () => {
     </div>
   );
 };
+
+
+

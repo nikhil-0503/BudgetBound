@@ -421,7 +421,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
   const getComfortLabel = (score: number) => {
     if (score < 30) return { label: 'Budget Traveler', desc: 'Sleeper Trains, local homestays & street eats.', color: 'text-emerald-500' };
-    if (score <= 70) return { label: 'Mid-Range Comfort', desc: 'AC Trains / Flights, 3-star hotels & dining.', color: 'text-violet-500' };
+    if (score <= 70) return { label: 'Mid-Range Comfort', desc: 'AC Trains / Flights, 3-star hotels & dining.', color: 'text-marigold-500' };
     return { label: 'Luxury Stays', desc: 'Premium Flights, 4/5-star resorts & fine dining.', color: 'text-amber-500' };
   };
 
@@ -542,7 +542,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     setPlan(null);
     setLoading(true);
 
-    // Build payload immediately using the local values — don't wait for state to flush
+    // Build payload immediately using the local values "” don't wait for state to flush
     const payload = {
       starting_city: startingCity || 'Bangalore',
       budget: Number(budget),
@@ -621,22 +621,22 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       {/* Title */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <Compass className="text-violet-600" />
+          <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white flex items-center gap-2">
+            <Compass className="text-marigold-600" />
             Trip Flow
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-3xl mt-1">
+          <p className="text-sm text-paper-500 dark:text-paper-400 max-w-3xl mt-1">
             Start by finding good destinations if you are unsure, then continue into the planner to generate the final itinerary. It is the same inputs, but one guided path.
           </p>
         </div>
 
-        <div className="inline-flex rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1 shadow-sm self-start">
+        <div className="inline-flex rounded-2xl border border-paper-200 dark:border-paper-700 bg-paper-50 dark:bg-paper-800 p-1 shadow-sm self-start">
           <button
             type="button"
             onClick={() => setFlowMode('discover')}
             className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${flowMode === 'discover'
-              ? 'bg-violet-600 text-white shadow-md shadow-violet-600/10'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              ? 'bg-marigold-600 text-white shadow-md shadow-marigold-600/10'
+              : 'text-paper-500 dark:text-paper-400 hover:text-paper-900 dark:hover:text-white'
               }`}
           >
             1. Find destinations
@@ -645,8 +645,8 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             type="button"
             onClick={() => setFlowMode('plan')}
             className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${flowMode === 'plan'
-              ? 'bg-violet-600 text-white shadow-md shadow-violet-600/10'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              ? 'bg-marigold-600 text-white shadow-md shadow-marigold-600/10'
+              : 'text-paper-500 dark:text-paper-400 hover:text-paper-900 dark:hover:text-white'
               }`}
           >
             2. Build itinerary
@@ -671,7 +671,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       />
 
       {selectedDestinationName ? (
-        <div className="inline-flex items-center gap-2 self-start rounded-full border border-violet-200 dark:border-violet-900/40 bg-violet-50 dark:bg-violet-950/30 px-4 py-2 text-xs font-bold text-violet-700 dark:text-violet-300">
+        <div className="inline-flex items-center gap-2 self-start rounded-full border border-marigold-200 dark:border-marigold-900/40 bg-marigold-50 dark:bg-marigold-950/30 px-4 py-2 text-xs font-bold text-marigold-700 dark:text-marigold-300">
           Locked destination: {selectedDestinationName}
         </div>
       ) : null}
@@ -679,31 +679,31 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
         {/* Left Column: Form Controls */}
-        <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-            <Sliders className="text-violet-500" size={18} />
+        <div className="lg:col-span-4 bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-paper-800 dark:text-white mb-6 flex items-center gap-2">
+            <Sliders className="text-marigold-500" size={18} />
             Trip Settings
           </h2>
 
           <form onSubmit={handlePrimaryAction} className="flex flex-col gap-5">
             <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Starting Location</label>
+              <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Starting Location</label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <MapPin className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <MapPin className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
                     type="text"
                     required
                     value={startingCity}
                     onChange={(e) => setStartingCity(e.target.value)}
                     placeholder="e.g. Bangalore, Delhi"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsMapModalOpen(true)}
-                  className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center"
+                  className="bg-paper-100 hover:bg-paper-200 dark:bg-paper-800 dark:hover:bg-paper-700 text-paper-700 dark:text-paper-300 px-4 rounded-xl border border-paper-200 dark:border-paper-700 transition-colors flex items-center justify-center"
                   title="Pick on map"
                 >
                   <Map size={18} />
@@ -713,7 +713,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
             {flowMode === 'plan' && (
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Destination (Optional)</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Destination (Optional)</label>
                 <div className="relative">
                   <select
                     value={selectedDestinationId || ''}
@@ -732,7 +732,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                         }
                       }
                     }}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white appearance-none"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white appearance-none"
                   >
                     <option value="">Let Planner Choose (Best Fit)</option>
                     {allDestinations.map(d => (
@@ -745,9 +745,9 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Budget (INR)</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Budget (INR)</label>
                 <div className="relative">
-                  <Wallet className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <Wallet className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
                     type="number"
                     required
@@ -756,15 +756,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
                     placeholder="20000"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Duration (Days)</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Duration (Days)</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <Calendar className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
                     type="text"
                     inputMode="numeric"
@@ -776,7 +776,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       if (!isNaN(val)) setDays(val);
                     }}
                     placeholder="4"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -784,9 +784,9 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Travelers Count</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Travelers Count</label>
                 <div className="relative">
-                  <Users className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <Users className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
                     type="text"
                     inputMode="numeric"
@@ -798,17 +798,17 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       if (!isNaN(val) && val >= 1) setTravelersCount(val);
                     }}
                     placeholder="1"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Trip Category</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Trip Category</label>
                 <select
                   value={travelType}
                   onChange={(e) => setTravelType(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white appearance-none"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white appearance-none"
                 >
                   {travelTypes.map(t => (
                     <option key={t} value={t}>{t}</option>
@@ -818,10 +818,10 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             </div>
 
             {/* Comfort vs Budget Slider */}
-            <div className="border-t border-slate-100 dark:border-slate-700 pt-4 mt-2">
+            <div className="border-t border-paper-100 dark:border-paper-700 pt-4 mt-2">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Comfort vs Budget</span>
-                <span className="text-sm font-bold text-violet-600 dark:text-violet-400">{comfortScore}/100</span>
+                <span className="text-xs font-bold text-paper-500 dark:text-paper-400 uppercase">Comfort vs Budget</span>
+                <span className="text-sm font-bold text-marigold-600 dark:text-marigold-400">{comfortScore}/100</span>
               </div>
               <input
                 type="range"
@@ -829,24 +829,24 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 max="100"
                 value={comfortScore}
                 onChange={(e) => setComfortScore(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600 focus:outline-none"
+                className="w-full h-2 bg-paper-200 dark:bg-paper-700 rounded-lg appearance-none cursor-pointer accent-marigold-600 focus:outline-none"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase mt-1">
+              <div className="flex justify-between text-[10px] text-paper-400 font-bold uppercase mt-1">
                 <span>Maximum Savings</span>
                 <span>Premium Quality</span>
               </div>
 
               {/* Dynamic slider details */}
-              <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 text-xs">
+              <div className="mt-4 p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl border border-paper-100 dark:border-paper-800 text-xs">
                 <span className={`font-bold block ${comfortInfo.color} mb-1`}>{comfortInfo.label}</span>
-                <span className="text-slate-500 dark:text-slate-400 leading-normal">{comfortInfo.desc}</span>
+                <span className="text-paper-500 dark:text-paper-400 leading-normal">{comfortInfo.desc}</span>
               </div>
             </div>
 
 
 
             {flowMode === 'discover' && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-3 rounded-xl">
+              <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed bg-paper-50 dark:bg-paper-900/50 border border-paper-200 dark:border-paper-700 p-3 rounded-xl">
                 This step only compares destinations. Pick one result to continue into the itinerary builder automatically.
               </p>
             )}
@@ -854,7 +854,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             <button
               type="submit"
               disabled={loading || searchLoading}
-              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-md shadow-violet-500/10 disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-md shadow-marigold-500/10 disabled:opacity-50"
             >
               {flowMode === 'discover' ? (
                 searchLoading ? (
@@ -885,7 +885,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
         {/* Right Column: Generated Plans */}
         <div className="lg:col-span-8">
-          {/* Error banner — shown in results area so it appears where destination cards would be */}
+          {/* Error banner "” shown in results area so it appears where destination cards would be */}
               {error && (
                 <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 rounded-2xl p-6 flex items-start gap-4">
                   <div className="h-10 w-10 rounded-xl bg-rose-100 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center shrink-0">
@@ -908,32 +908,32 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
           {flowMode === 'discover' && (
             <div className="flex flex-col gap-6">
               {!searchCompleted && !searchLoading && !error && (
-                <div className="bg-slate-100 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
-                  <Search className="h-16 w-16 text-slate-300 dark:text-slate-600 mb-4 animate-pulse" />
-                  <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">Search for matching destinations</h3>
-                  <p className="text-sm text-slate-400 max-w-sm">
+                <div className="bg-paper-100 dark:bg-paper-800/40 border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
+                  <Search className="h-16 w-16 text-paper-300 dark:text-paper-600 mb-4 animate-pulse" />
+                  <h3 className="text-lg font-bold text-paper-700 dark:text-paper-300 mb-2">Search for matching destinations</h3>
+                  <p className="text-sm text-paper-400 max-w-sm">
                     Use the same trip inputs to compare options first. The strongest matches will appear here.
                   </p>
                 </div>
               )}
 
               {searchLoading && (
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm space-y-6 animate-pulse">
-                  <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
-                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+                <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm space-y-6 animate-pulse">
+                  <div className="h-8 bg-paper-200 dark:bg-paper-700 rounded w-1/2" />
+                  <div className="h-4 bg-paper-200 dark:bg-paper-700 rounded w-2/3" />
                   <div className="space-y-3">
-                    <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded" />
-                    <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded" />
-                    <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded" />
+                    <div className="h-24 bg-paper-200 dark:bg-paper-700 rounded" />
+                    <div className="h-24 bg-paper-200 dark:bg-paper-700 rounded" />
+                    <div className="h-24 bg-paper-200 dark:bg-paper-700 rounded" />
                   </div>
                 </div>
               )}
 
               {searchCompleted && searchResults.length === 0 && (
-                <div className="bg-slate-100 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
-                  <AlertTriangle className="h-16 w-16 text-slate-300 dark:text-slate-600 mb-4" />
-                  <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">No matches found</h3>
-                  <p className="text-sm text-slate-400 max-w-sm">
+                <div className="bg-paper-100 dark:bg-paper-800/40 border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
+                  <AlertTriangle className="h-16 w-16 text-paper-300 dark:text-paper-600 mb-4" />
+                  <h3 className="text-lg font-bold text-paper-700 dark:text-paper-300 mb-2">No matches found</h3>
+                  <p className="text-sm text-paper-400 max-w-sm">
                     Try adjusting the budget, duration, or trip type, then search again.
                   </p>
                 </div>
@@ -942,8 +942,8 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               {searchCompleted && searchResults.length > 0 && (
                 <div className="flex flex-col gap-4">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-white">Top destination matches</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <h3 className="text-lg font-bold text-paper-800 dark:text-white">Top destination matches</h3>
+                    <p className="text-xs text-paper-500 dark:text-paper-400 mt-1">
                       Pick a destination below to lock it into the itinerary builder.
                     </p>
                   </div>
@@ -953,45 +953,45 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     return (
                       <div
                         key={res.destination.id}
-                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col hover:border-violet-500/40 transition-all gap-4"
+                        className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm flex flex-col hover:border-marigold-500/40 transition-all gap-4"
                       >
                         <div className="flex flex-col md:flex-row gap-5 items-start justify-between w-full">
                           <div className="space-y-3 flex-1">
                             <div className="flex items-center gap-3 flex-wrap">
-                              <div className="h-6 w-6 rounded-full bg-violet-600/10 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-extrabold text-[10px] flex items-center justify-center">
+                              <div className="h-6 w-6 rounded-full bg-marigold-600/10 dark:bg-marigold-950/40 text-marigold-600 dark:text-marigold-400 font-extrabold text-[10px] flex items-center justify-center">
                                 #{index + 1}
                               </div>
-                              <h4 className="font-extrabold text-lg text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                              <h4 className="font-extrabold text-lg text-paper-900 dark:text-white hover:text-marigold-600 dark:hover:text-marigold-400 transition-colors">
                                 {res.destination.name}
                               </h4>
-                              <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                              <span className="bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                                 {res.destination.category}
                               </span>
                             </div>
 
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                              <MapPin size={11} className="text-slate-400 shrink-0" />
+                            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                              <MapPin size={11} className="text-paper-400 shrink-0" />
                               {res.destination.state}
                             </span>
 
-                            <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed max-w-xl line-clamp-2">
+                            <p className="text-paper-500 dark:text-paper-400 text-xs leading-relaxed max-w-xl line-clamp-2">
                               {res.destination.description}
                             </p>
 
-                            <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400 pt-1">
+                            <div className="flex items-center gap-4 text-xs font-semibold text-paper-600 dark:text-paper-400 pt-1">
                               <div className="flex items-center gap-0.5 text-amber-500">
                                 <Star size={13} fill="currentColor" />
-                                <span className="font-bold text-slate-800 dark:text-white">{res.destination.rating}</span>
+                                <span className="font-bold text-paper-800 dark:text-white">{res.destination.rating}</span>
                               </div>
                               <span>Best season: {res.destination.best_season}</span>
                             </div>
                           </div>
 
-                          <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-slate-100 md:dark:border-slate-700/60 md:pl-6 shrink-0 w-full md:w-auto">
+                          <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-paper-100 md:dark:border-paper-700/60 md:pl-6 shrink-0 w-full md:w-auto">
                             <div className="flex flex-col md:items-end">
-                              <span className="text-[9px] text-slate-400 font-bold uppercase">Estimated Cost</span>
-                              <span className="text-lg font-extrabold text-slate-900 dark:text-white">INR {res.estimated_cost.toLocaleString()}</span>
-                              <span className="text-[9px] text-slate-400 font-medium">({res.budget_fit}% of budget)</span>
+                              <span className="text-[9px] text-paper-400 font-bold uppercase">Estimated Cost</span>
+                              <span className="text-lg font-extrabold text-paper-900 dark:text-white">INR {res.estimated_cost.toLocaleString()}</span>
+                              <span className="text-[9px] text-paper-400 font-medium">({res.budget_fit}% of budget)</span>
                             </div>
 
                             <div className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase ${getValueScoreColor(res.value_score)}`}>
@@ -1002,13 +1002,13 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                               <button
                                 type="button"
                                 onClick={() => setExpandedSearchIdx(isExpanded ? null : index)}
-                                className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-slate-200 dark:border-slate-600"
+                                className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-paper-100 hover:bg-paper-200 dark:bg-paper-700 dark:hover:bg-paper-600 text-paper-800 dark:text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-paper-200 dark:border-paper-600"
                               >
                                 {isExpanded ? 'Hide Match' : 'Show Match'}
                               </button>
                               <button
                                 onClick={() => handleSelectDestination(res)}
-                                className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-slate-900/10"
+                                className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-paper-900 hover:bg-paper-800 dark:bg-paper-700 dark:hover:bg-paper-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-paper-900/10"
                               >
                                 Use this destination
                                 <ArrowRight size={13} />
@@ -1022,7 +1022,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                             destinationName={res.destination.name}
                             overallScore={res.value_score}
                             breakdown={res.breakdown}
-                            className="w-full mt-2 border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/10"
+                            className="w-full mt-2 border border-paper-100 dark:border-paper-700 bg-paper-50/50 dark:bg-paper-900/10"
                           />
                         )}
                       </div>
@@ -1034,25 +1034,25 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
           )}
 
           {flowMode === 'plan' && !plan && !loading && !error && (
-            <div className="bg-slate-100 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
-              <Compass className="h-16 w-16 text-slate-300 dark:text-slate-600 mb-4 animate-pulse" />
-              <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">No Plan Generated Yet</h3>
-              <p className="text-sm text-slate-400 max-w-sm">
+            <div className="bg-paper-100 dark:bg-paper-800/40 border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
+              <Compass className="h-16 w-16 text-paper-300 dark:text-paper-600 mb-4 animate-pulse" />
+              <h3 className="text-lg font-bold text-paper-700 dark:text-paper-300 mb-2">No Plan Generated Yet</h3>
+              <p className="text-sm text-paper-400 max-w-sm">
                 Enter your details on the left and hit generate to compute the itinerary.
               </p>
             </div>
           )}
 
           {flowMode === 'plan' && loading && (
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm space-y-6 animate-pulse">
-              <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/3" />
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+            <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm space-y-6 animate-pulse">
+              <div className="h-8 bg-paper-200 dark:bg-paper-700 rounded w-1/3" />
+              <div className="h-4 bg-paper-200 dark:bg-paper-700 rounded w-2/3" />
               <div className="grid grid-cols-3 gap-4">
-                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded" />
-                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded" />
-                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded" />
+                <div className="h-20 bg-paper-200 dark:bg-paper-700 rounded" />
+                <div className="h-20 bg-paper-200 dark:bg-paper-700 rounded" />
+                <div className="h-20 bg-paper-200 dark:bg-paper-700 rounded" />
               </div>
-              <div className="h-40 bg-slate-200 dark:bg-slate-700 rounded" />
+              <div className="h-40 bg-paper-200 dark:bg-paper-700 rounded" />
             </div>
           )}
 
@@ -1060,18 +1060,18 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             <div className="flex flex-col gap-6">
 
               {/* Plan Header Card */}
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-violet-600 text-white text-xs font-semibold px-4 py-1.5 rounded-bl-2xl">
+              <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-marigold-600 text-white text-xs font-semibold px-4 py-1.5 rounded-bl-2xl">
                   {plan.destination.category}
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                   <div>
-                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">{plan.destination.state}</span>
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">{plan.destination.name}</h2>
+                    <span className="text-xs text-paper-400 font-bold uppercase tracking-wider">{plan.destination.state}</span>
+                    <h2 className="text-2xl font-extrabold text-paper-900 dark:text-white">{plan.destination.name}</h2>
                     {savedTripId && (
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs text-slate-400 font-semibold">Status:</span>
+                        <span className="text-xs text-paper-400 font-semibold">Status:</span>
                         <select
                           value={tripStatus}
                           onChange={async (e) => {
@@ -1084,7 +1084,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                               alert('Failed to update trip status.');
                             }
                           }}
-                          className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-600 focus:outline-none"
+                          className="bg-paper-50 dark:bg-paper-700 text-paper-700 dark:text-paper-200 text-xs font-bold px-2.5 py-1 rounded-lg border border-paper-200 dark:border-paper-600 focus:outline-none"
                         >
                           {["Draft", "Planned", "In Progress", "Completed", "Cancelled"].map((st) => (
                             <option key={st} value={st}>{st}</option>
@@ -1098,18 +1098,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       <>
                         <button
                           onClick={() => setIsShareModalOpen(true)}
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200 dark:border-slate-600"
+                          className="inline-flex items-center gap-1.5 bg-paper-100 hover:bg-paper-200 dark:bg-paper-700 dark:hover:bg-paper-600 text-paper-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-paper-200 dark:border-paper-600"
                         >
                           <Share2 size={16} />
                           Share Plan
                         </button>
                         <button
                           onClick={handleDownloadPDF}
-
                           disabled={downloadingPdf}
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
-
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200 dark:border-slate-650"
+                          className="inline-flex items-center gap-1.5 bg-paper-100 hover:bg-paper-200 dark:bg-ink-700 dark:hover:bg-ink-600 text-ink-900 dark:text-paper-50 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-paper-200 dark:border-ink-600 disabled:opacity-50"
                         >
                           {downloadingPdf ? (
                             <Loader size={16} className="animate-spin" />
@@ -1120,7 +1117,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                         </button>
                         <button
                           onClick={() => navigate(`/expenses/${savedTripId}`)}
-                          className="inline-flex items-center gap-1 bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md shadow-violet-600/10"
+                          className="inline-flex items-center gap-1 bg-marigold-600 hover:bg-marigold-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md shadow-marigold-600/10"
                         >
                           Manage Expenses
                           <ArrowRight size={14} />
@@ -1130,7 +1127,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       <button
                         onClick={handleSaveTrip}
                         disabled={savingTrip}
-                        className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-violet-600/10"
+                        className="inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-marigold-600/10"
                       >
                         {savingTrip ? <Loader size={16} className="animate-spin" /> : <Check size={16} />}
                         Save Travel Plan
@@ -1139,27 +1136,27 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                   </div>
                 </div>
 
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                <p className="text-paper-600 dark:text-paper-400 text-sm leading-relaxed mb-6">
                   {plan.destination.description}
                 </p>
 
                 {/* Seeding attributes */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-slate-100 dark:border-slate-700 pt-6">
-                  <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase mb-1">Trip Duration</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-white">{plan.days} Days</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-paper-100 dark:border-paper-700 pt-6">
+                  <div className="p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl">
+                    <span className="text-[10px] text-paper-400 font-bold block uppercase mb-1">Trip Duration</span>
+                    <span className="text-sm font-bold text-paper-800 dark:text-white">{plan.days} Days</span>
                   </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase mb-1">Hotel Tier</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-white">{plan.costs.hotel_tier}</span>
+                  <div className="p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl">
+                    <span className="text-[10px] text-paper-400 font-bold block uppercase mb-1">Hotel Tier</span>
+                    <span className="text-sm font-bold text-paper-800 dark:text-white">{plan.costs.hotel_tier}</span>
                   </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase mb-1">Transport</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-white">{plan.costs.transport_mode}</span>
+                  <div className="p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl">
+                    <span className="text-[10px] text-paper-400 font-bold block uppercase mb-1">Transport</span>
+                    <span className="text-sm font-bold text-paper-800 dark:text-white">{plan.costs.transport_mode}</span>
                   </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase mb-1">Best Season</span>
-                    <span className="text-xs font-bold text-slate-800 dark:text-white truncate block">{plan.destination.best_season}</span>
+                  <div className="p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl">
+                    <span className="text-[10px] text-paper-400 font-bold block uppercase mb-1">Best Season</span>
+                    <span className="text-xs font-bold text-paper-800 dark:text-white truncate block">{plan.destination.best_season}</span>
                   </div>
                 </div>
               </div>
@@ -1176,10 +1173,10 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
               {/* Weather & Season Intelligence */}
               {plan.destination.weather_intelligence && (
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3.5">
+                <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm space-y-3.5">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
-                      <CloudSun size={15} className="text-violet-500" />
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-paper-800 dark:text-white flex items-center gap-1.5">
+                      <CloudSun size={15} className="text-marigold-500" />
                       Weather & Season Intelligence
                     </h3>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -1191,25 +1188,25 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       {plan.destination.weather_intelligence.season_rating}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold bg-paper-50 dark:bg-paper-900/50 p-3 rounded-xl">
                     <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-400 block uppercase">Current Season</span>
-                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.current_season}</span>
+                      <span className="text-[10px] text-paper-400 block uppercase">Current Season</span>
+                      <span className="text-paper-700 dark:text-paper-400">{plan.destination.weather_intelligence.current_season}</span>
                     </div>
                     <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-400 block uppercase">Expected Temp</span>
-                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.temperature_range}</span>
+                      <span className="text-[10px] text-paper-400 block uppercase">Expected Temp</span>
+                      <span className="text-paper-700 dark:text-paper-400">{plan.destination.weather_intelligence.temperature_range}</span>
                     </div>
                     <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-400 block uppercase">Rain Prob</span>
-                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.rain_probability}</span>
+                      <span className="text-[10px] text-paper-400 block uppercase">Rain Prob</span>
+                      <span className="text-paper-700 dark:text-paper-400">{plan.destination.weather_intelligence.rain_probability}</span>
                     </div>
                     <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-400 block uppercase">Crowd Level</span>
-                      <span className="text-slate-700 dark:text-slate-350">{plan.destination.weather_intelligence.crowd_level}</span>
+                      <span className="text-[10px] text-paper-400 block uppercase">Crowd Level</span>
+                      <span className="text-paper-700 dark:text-paper-400">{plan.destination.weather_intelligence.crowd_level}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed italic border-l-2 border-violet-450 pl-3">
+                  <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed italic border-l-2 border-marigold-500 pl-3">
                     {plan.destination.weather_intelligence.recommendation}
                   </p>
                 </div>
@@ -1219,7 +1216,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               <BudgetHealthMeter
                 budget={plan.budget}
                 estimatedCost={plan.costs.total_estimated_cost}
-                className="w-full text-slate-800 dark:text-white"
+                className="w-full text-paper-800 dark:text-white"
               />
 
               {/* Two Column Cost Breakdown & Daily Itinerary */}
@@ -1229,64 +1226,64 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 <div className="lg:col-span-5 flex flex-col gap-6">
                   
                   {/* Cost Breakdown Module */}
-                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-                    <h3 className="text-base font-bold text-slate-800 dark:text-white mb-4">Cost Breakdown</h3>
+                  <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm">
+                    <h3 className="text-base font-bold text-paper-800 dark:text-white mb-4">Cost Breakdown</h3>
 
-                    <div className="flex flex-col gap-3.5 text-xs text-slate-600 dark:text-slate-300">
+                    <div className="flex flex-col gap-3.5 text-xs text-paper-600 dark:text-paper-300">
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                          {plan.costs.transport_mode === 'Flight' ? <Plane size={15} className="text-violet-500" /> : <Train size={15} className="text-violet-500" />}
+                          {plan.costs.transport_mode === 'Flight' ? <Plane size={15} className="text-marigold-500" /> : <Train size={15} className="text-marigold-500" />}
                           Transportation
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.transport_cost.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.transport_cost.toLocaleString()}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                          <Building size={15} className="text-violet-500" />
+                          <Building size={15} className="text-marigold-500" />
                           Accommodation
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.hotel_cost.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.hotel_cost.toLocaleString()}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                          <Utensils size={15} className="text-violet-500" />
+                          <Utensils size={15} className="text-marigold-500" />
                           Food & Dining
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.food_cost.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.food_cost.toLocaleString()}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                          <Camera size={15} className="text-violet-500" />
+                          <Camera size={15} className="text-marigold-500" />
                           Activities
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.activities_cost.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.activities_cost.toLocaleString()}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                          <MapPin size={15} className="text-violet-500" />
+                          <MapPin size={15} className="text-marigold-500" />
                           Local Transport
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.local_transport_cost.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.local_transport_cost.toLocaleString()}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                          <Percent size={15} className="text-violet-500" />
+                          <Percent size={15} className="text-marigold-500" />
                           Taxes & Booking Fees
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.taxes_fees_cost.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.taxes_fees_cost.toLocaleString()}</span>
                       </div>
 
-                      <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
+                      <div className="flex items-center justify-between border-t border-paper-100 dark:border-paper-700 pt-3">
                         <span className="flex items-center gap-2">
-                          <LifeBuoy size={15} className="text-violet-500" />
+                          <LifeBuoy size={15} className="text-marigold-500" />
                           Emergency Reserve
                         </span>
-                        <span className="font-bold text-slate-800 dark:text-white">INR {plan.costs.emergency_reserve.toLocaleString()}</span>
+                        <span className="font-bold text-paper-800 dark:text-white">INR {plan.costs.emergency_reserve.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -1301,29 +1298,29 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                   />
 
                   {/* Hidden Cost Prediction Module */}
-                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-6">
-                    <h4 className="text-xs font-bold flex items-center gap-1.5 mb-3 text-violet-600 dark:text-violet-400 uppercase tracking-wide">
+                  <div className="bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl p-4 mt-6">
+                    <h4 className="text-xs font-bold flex items-center gap-1.5 mb-3 text-marigold-600 dark:text-marigold-400 uppercase tracking-wide">
                       <LifeBuoy size={14} />
                       Hidden Cost Prediction
                     </h4>
-                    <div className="flex flex-col gap-2.5 text-[11px] text-slate-500 dark:text-slate-400">
+                    <div className="flex flex-col gap-2.5 text-[11px] text-paper-500 dark:text-paper-400">
                       <div className="flex justify-between">
                         <span>Local Auto / Cab Pool</span>
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">INR {Math.round(plan.costs.local_transport_cost * 0.6).toLocaleString()}</span>
+                        <span className="font-semibold text-paper-700 dark:text-paper-300">INR {Math.round(plan.costs.local_transport_cost * 0.6).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Attraction Toll / Parking</span>
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">INR {Math.round(plan.costs.local_transport_cost * 0.15).toLocaleString()}</span>
+                        <span className="font-semibold text-paper-700 dark:text-paper-300">INR {Math.round(plan.costs.local_transport_cost * 0.15).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Booking Convenience Tax</span>
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">INR {Math.round(plan.costs.taxes_fees_cost * 0.65).toLocaleString()}</span>
+                        <span className="font-semibold text-paper-700 dark:text-paper-300">INR {Math.round(plan.costs.taxes_fees_cost * 0.65).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Miscellaneous Contingency</span>
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">INR {plan.costs.emergency_reserve.toLocaleString()}</span>
+                        <span className="font-semibold text-paper-700 dark:text-paper-300">INR {plan.costs.emergency_reserve.toLocaleString()}</span>
                       </div>
-                      <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-bold text-slate-800 dark:text-white">
+                      <div className="border-t border-paper-200 dark:border-paper-700 pt-2 flex justify-between font-bold text-paper-800 dark:text-white">
                         <span>Total Buffer Needed</span>
                         <span>INR {(Math.round(plan.costs.local_transport_cost * 0.75) + Math.round(plan.costs.taxes_fees_cost * 0.65) + plan.costs.emergency_reserve).toLocaleString()}</span>
                       </div>
@@ -1332,30 +1329,30 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
                   {/* Carbon Footprint Estimator */}
                   {plan.carbon_footprint && (
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3.5 mt-6">
+                    <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm space-y-3.5 mt-6">
                       <div className="flex justify-between items-center">
-                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-paper-800 dark:text-white flex items-center gap-1.5">
                           <Leaf size={15} className="text-emerald-500" />
                           Carbon Footprint Impact
                         </h4>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           plan.carbon_footprint.carbon_rating === 'Eco Friendly' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/30' :
                           plan.carbon_footprint.carbon_rating === 'Moderate' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200/30' :
-                          'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-250/30'
+                          'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-300/30'
                         }`}>
                           {plan.carbon_footprint.carbon_rating}
                         </span>
                       </div>
                       
-                      <div className="flex justify-between items-center p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl text-xs font-bold border border-slate-100 dark:border-slate-800">
-                        <span className="text-slate-500 flex items-center gap-2">
+                      <div className="flex justify-between items-center p-3.5 bg-paper-50 dark:bg-paper-900 rounded-xl text-xs font-bold border border-paper-100 dark:border-paper-800">
+                        <span className="text-paper-500 flex items-center gap-2">
                           {plan.carbon_footprint.transport_mode === 'Flight' ? <Plane size={15} className="text-rose-500" /> : <Train size={15} className="text-emerald-500" />}
                           CO₂ Emissions ({plan.carbon_footprint.transport_mode})
                         </span>
-                        <span className="text-slate-800 dark:text-white">{plan.carbon_footprint.co2_emissions} kg</span>
+                        <span className="text-paper-800 dark:text-white">{plan.carbon_footprint.co2_emissions} kg</span>
                       </div>
                       
-                      <div className="text-[10px] text-slate-550 dark:text-slate-400 leading-relaxed bg-emerald-50/20 dark:bg-emerald-950/10 p-3 rounded-xl border border-emerald-100/40 flex items-start gap-2">
+                      <div className="text-[10px] text-paper-600 dark:text-paper-400 leading-relaxed bg-emerald-50/20 dark:bg-emerald-950/10 p-3 rounded-xl border border-emerald-100/40 flex items-start gap-2">
                         <Leaf size={13} className="text-emerald-500 mt-0.5 shrink-0" fill="currentColor" />
                         <span>
                           {plan.carbon_footprint.transport_mode === 'Flight'
@@ -1384,10 +1381,10 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
                 {/* Timeline-Based Itinerary */}
                 <div className="md:col-span-7 flex flex-col gap-4">
-                  <div className="flex justify-between items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm">
+                  <div className="flex justify-between items-center bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4.5 rounded-2xl shadow-sm">
                     <div>
-                      <h3 className="text-base font-bold text-slate-800 dark:text-white">Smart Chronological Itinerary</h3>
-                      <p className="text-[11px] text-slate-400 mt-0.5">Chronologically organized daily travel timeline</p>
+                      <h3 className="text-base font-bold text-paper-800 dark:text-white">Smart Chronological Itinerary</h3>
+                      <p className="text-[11px] text-paper-400 mt-0.5">Chronologically organized daily travel timeline</p>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -1399,15 +1396,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                            }, {} as Record<number, boolean>);
                            setExpandedDays(allExpanded);
                          }}
-                         className="text-[10px] font-bold text-violet-600 hover:text-violet-500 uppercase"
+                         className="text-[10px] font-bold text-marigold-600 hover:text-marigold-500 uppercase"
                        >
                          Expand All
                        </button>
-                       <span className="text-slate-300">|</span>
+                       <span className="text-paper-300">|</span>
                        <button
                          type="button"
                          onClick={() => setExpandedDays({})}
-                         className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase"
+                         className="text-[10px] font-bold text-paper-400 hover:text-paper-600 uppercase"
                        >
                          Collapse All
                        </button>
@@ -1459,3 +1456,6 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     </motion.div>
   );
 };
+
+
+

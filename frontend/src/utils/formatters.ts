@@ -24,7 +24,7 @@ export const formatBytes = (bytes: number): string => {
  * Formats a standard YYYY-MM-DD date string into a friendly localized display.
  */
 export const formatDate = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return '—';
+  if (!dateStr) return '"”';
   try {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
@@ -37,3 +37,5 @@ export const formatDate = (dateStr: string | null | undefined): string => {
     return dateStr;
   }
 };
+
+

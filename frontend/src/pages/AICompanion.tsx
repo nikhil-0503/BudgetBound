@@ -195,23 +195,23 @@ export const AICompanion: React.FC = () => {
 
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <Sparkles className="text-violet-600" />
+        <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white flex items-center gap-2">
+          <Sparkles className="text-marigold-600" />
           AI Copilot Workspace
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-paper-500 dark:text-paper-400">
           Supercharge your travel planning with our LLM modules. Explore personalized planners, chat buddies, and itinerary explainers.
         </p>
       </div>
 
       {/* Tabs Row */}
-      <div className="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto gap-4 scrollbar-thin scrollbar-thumb-slate-200">
+      <div className="flex border-b border-paper-200 dark:border-paper-700 overflow-x-auto gap-4 scrollbar-thin scrollbar-thumb-paper-200">
 
         <button
           onClick={() => setActiveTab('chat')}
           className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'chat'
-            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            ? 'border-marigold-600 text-marigold-600 dark:text-marigold-400 dark:border-marigold-400'
+            : 'border-transparent text-paper-400 hover:text-paper-600 dark:hover:text-paper-200'
             }`}
         >
           <MessageSquare size={16} />
@@ -221,8 +221,8 @@ export const AICompanion: React.FC = () => {
         <button
           onClick={() => setActiveTab('planner')}
           className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'planner'
-            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            ? 'border-marigold-600 text-marigold-600 dark:text-marigold-400 dark:border-marigold-400'
+            : 'border-transparent text-paper-400 hover:text-paper-600 dark:hover:text-paper-200'
             }`}
         >
           <Compass size={16} />
@@ -232,8 +232,8 @@ export const AICompanion: React.FC = () => {
         <button
           onClick={() => setActiveTab('regenerator')}
           className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'regenerator'
-            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            ? 'border-marigold-600 text-marigold-600 dark:text-marigold-400 dark:border-marigold-400'
+            : 'border-transparent text-paper-400 hover:text-paper-600 dark:hover:text-paper-200'
             }`}
         >
           <Shuffle size={16} />
@@ -243,8 +243,8 @@ export const AICompanion: React.FC = () => {
         <button
           onClick={() => setActiveTab('explain')}
           className={`flex items-center gap-2 pb-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all focus:outline-none shrink-0 ${activeTab === 'explain'
-            ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400'
-            : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            ? 'border-marigold-600 text-marigold-600 dark:text-marigold-400 dark:border-marigold-400'
+            : 'border-transparent text-paper-400 hover:text-paper-600 dark:hover:text-paper-200'
             }`}
         >
           <HelpCircle size={16} />
@@ -253,7 +253,7 @@ export const AICompanion: React.FC = () => {
       </div>
 
       {/* Tab Panels */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm min-h-[400px] flex flex-col">
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm min-h-[400px] flex flex-col">
 
         {/* Panel 1: Chat Assistant */}
         {activeTab === 'chat' && (
@@ -267,15 +267,15 @@ export const AICompanion: React.FC = () => {
                     }`}
                 >
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 font-bold ${msg.sender === 'user'
-                    ? 'bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    ? 'bg-marigold-100 dark:bg-marigold-950 text-marigold-600 dark:text-marigold-400'
+                    : 'bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400'
                     }`}>
                     {msg.sender === 'user' ? <User size={14} /> : <Bot size={14} />}
                   </div>
 
                   <div className={`p-4 rounded-2xl leading-relaxed border ${msg.sender === 'user'
-                    ? 'bg-violet-600 border-violet-600 text-white rounded-tr-none'
-                    : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 rounded-tl-none'
+                    ? 'bg-marigold-600 border-marigold-600 text-white rounded-tr-none'
+                    : 'bg-paper-50 dark:bg-paper-900/60 border-paper-200 dark:border-paper-700/60 text-paper-700 dark:text-paper-300 rounded-tl-none'
                     }`}>
                     {msg.text}
                   </div>
@@ -284,10 +284,10 @@ export const AICompanion: React.FC = () => {
 
               {chatLoading && (
                 <div className="flex items-start gap-3 mr-auto max-w-[80%]">
-                  <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-full bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400 flex items-center justify-center shrink-0">
                     <Loader size={14} className="animate-spin" />
                   </div>
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 text-slate-400 rounded-tl-none">
+                  <div className="p-4 rounded-2xl bg-paper-50 dark:bg-paper-900/60 border border-paper-200 dark:border-paper-700/60 text-paper-400 rounded-tl-none">
                     Analyzing routes...
                   </div>
                 </div>
@@ -295,18 +295,18 @@ export const AICompanion: React.FC = () => {
             </div>
 
             {/* Input Bar */}
-            <form onSubmit={handleChatSubmit} className="border-t border-slate-100 dark:border-slate-700 pt-4 flex gap-3">
+            <form onSubmit={handleChatSubmit} className="border-t border-paper-100 dark:border-paper-700 pt-4 flex gap-3">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Ask about destination recommendations, hotel buffers or general hacks..."
-                className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                className="flex-1 bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3.5 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
               />
               <button
                 type="submit"
                 disabled={chatLoading}
-                className="bg-violet-600 hover:bg-violet-500 text-white p-3.5 rounded-xl transition-all shadow-md shadow-violet-500/10 shrink-0"
+                className="bg-marigold-600 hover:bg-marigold-500 text-white p-3.5 rounded-xl transition-all shadow-md shadow-marigold-500/10 shrink-0"
               >
                 <Send size={16} />
               </button>
@@ -318,65 +318,65 @@ export const AICompanion: React.FC = () => {
         {activeTab === 'planner' && (
           <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full py-4 justify-center">
             <div className="text-center mb-8">
-              <Compass className="h-10 w-10 text-violet-500 mx-auto mb-2 animate-bounce" />
-              <h3 className="text-base font-bold text-slate-800 dark:text-white">Custom OpenAI Personalized Planner</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 leading-normal">
+              <Compass className="h-10 w-10 text-marigold-500 mx-auto mb-2 animate-bounce" />
+              <h3 className="text-base font-bold text-paper-800 dark:text-white">Custom OpenAI Personalized Planner</h3>
+              <p className="text-xs text-paper-400 max-w-sm mx-auto mt-1 leading-normal">
                 Bypass database seeding limits and ask our AI to create custom schedules for anywhere in the world.
               </p>
             </div>
 
             <form onSubmit={handlePlannerSubmit} className="flex flex-col gap-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Destination Stays / Keywords</label>
+                <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Destination Stays / Keywords</label>
                 <input
                   type="text"
                   required
                   value={prefKeywords}
                   onChange={(e) => setPrefKeywords(e.target.value)}
                   placeholder="e.g. Kashmir, Backwaters, Ladakh glaciers"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Max Budget (INR)</label>
+                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Max Budget (INR)</label>
                   <input
                     type="number"
                     required
                     value={prefBudget}
                     onChange={(e) => setPrefBudget(Number(e.target.value))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Days Limit</label>
+                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Days Limit</label>
                   <input
                     type="number"
                     required
                     value={prefDays}
                     onChange={(e) => setPrefDays(Number(e.target.value))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Special Stays / Dietary Needs</label>
+                <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Special Stays / Dietary Needs</label>
                 <textarea
                   value={prefSpecial}
                   onChange={(e) => setPrefSpecial(e.target.value)}
                   placeholder="e.g. Vegetarian food only, wheelchair accessible paths, focus on history museums."
                   rows={3}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 resize-none leading-relaxed"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 resize-none leading-relaxed"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={planningLoading}
-                className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-violet-500/10"
+                className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
               >
                 {planningLoading ? <Loader size={16} className="animate-spin" /> : null}
                 Generate Custom Itinerary
@@ -384,25 +384,25 @@ export const AICompanion: React.FC = () => {
             </form>
 
             {plannedResult && (
-              <div className="mt-8 border-t border-slate-150 dark:border-slate-700/60 pt-6 animate-fade-in">
-                <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
-                  <h4 className="text-lg font-bold text-violet-600 dark:text-violet-400 mb-1">{plannedResult.plan_name}</h4>
-                  <p className="text-xs text-slate-400 mb-4">Estimated Total Expense: <strong className="text-slate-800 dark:text-slate-200">₹{plannedResult.estimated_cost?.toLocaleString()}</strong></p>
-                  <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed mb-6 bg-white dark:bg-slate-850 p-4 rounded-xl border border-slate-150 dark:border-slate-700">{plannedResult.summary}</p>
+              <div className="mt-8 border-t border-paper-200 dark:border-paper-700/60 pt-6 animate-fade-in">
+                <div className="bg-paper-50 dark:bg-paper-900/30 border border-paper-200 dark:border-paper-700 rounded-2xl p-6">
+                  <h4 className="text-lg font-bold text-marigold-600 dark:text-marigold-400 mb-1">{plannedResult.plan_name}</h4>
+                  <p className="text-xs text-paper-400 mb-4">Estimated Total Expense: <strong className="text-paper-800 dark:text-paper-200">₹{plannedResult.estimated_cost?.toLocaleString()}</strong></p>
+                  <p className="text-xs text-paper-600 dark:text-paper-400 leading-relaxed mb-6 bg-paper-50 dark:bg-paper-900 p-4 rounded-xl border border-paper-200 dark:border-paper-700">{plannedResult.summary}</p>
 
-                  <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Planned Schedule</h5>
+                  <h5 className="text-xs font-bold text-paper-400 uppercase tracking-wider mb-3">Planned Schedule</h5>
                   <div className="space-y-4">
                     {plannedResult.days?.map((day: any) => (
-                      <div key={day.day_number} className="bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-700 rounded-xl p-4">
-                        <div className="font-bold text-xs text-slate-805 dark:text-slate-200 mb-2 pb-1 border-b border-slate-100 dark:border-slate-700">
+                      <div key={day.day_number} className="bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl p-4">
+                        <div className="font-bold text-xs text-paper-800 dark:text-paper-200 mb-2 pb-1 border-b border-paper-100 dark:border-paper-700">
                           Day {day.day_number} - {day.description}
                         </div>
                         <div className="space-y-2">
                           {day.activities?.map((act: any, aIdx: number) => (
                             <div key={aIdx} className="flex justify-between items-center text-xs">
-                              <span className="text-slate-400 font-semibold w-16">{act.time}</span>
-                              <span className="text-slate-700 dark:text-slate-300 flex-1 px-2">{act.title}</span>
-                              <span className="text-slate-500 font-bold">₹{act.cost}</span>
+                              <span className="text-paper-400 font-semibold w-16">{act.time}</span>
+                              <span className="text-paper-700 dark:text-paper-300 flex-1 px-2">{act.title}</span>
+                              <span className="text-paper-500 font-bold">₹{act.cost}</span>
                             </div>
                           ))}
                         </div>
@@ -419,50 +419,50 @@ export const AICompanion: React.FC = () => {
         {activeTab === 'regenerator' && (
           <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full py-4 justify-center">
             <div className="text-center mb-8">
-              <Shuffle className="h-10 w-10 text-violet-500 mx-auto mb-2 animate-spin-slow" />
-              <h3 className="text-base font-bold text-slate-800 dark:text-white">AI Trip Regenerator</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 leading-normal">
+              <Shuffle className="h-10 w-10 text-marigold-500 mx-auto mb-2 animate-spin-slow" />
+              <h3 className="text-base font-bold text-paper-800 dark:text-white">AI Trip Regenerator</h3>
+              <p className="text-xs text-paper-400 max-w-sm mx-auto mt-1 leading-normal">
                 Optimize or completely reschedule an existing trip using natural language commands.
               </p>
             </div>
 
             {savedTrips.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-900/35 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6">
+              <div className="text-center py-6 text-xs text-paper-400 font-medium bg-paper-50 dark:bg-paper-900/35 border border-dashed border-paper-200 dark:border-paper-700 rounded-xl p-6">
                 No trips logged in history. Plan a trip before simulating regeneration.
               </div>
             ) : (
               <form onSubmit={handleRegenerateSubmit} className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Select Target Trip</label>
+                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Select Target Trip</label>
                   <select
                     value={regenTripId}
                     onChange={(e) => setRegenTripId(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 appearance-none"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 appearance-none"
                   >
                     {savedTrips.map(t => (
                       <option key={t.id} value={t.id}>
-                        {t.destination.name} (Budget: ₹{t.budget.toLocaleString()} — Cost: ₹{t.total_estimated_cost.toLocaleString()})
+                        {t.destination.name} (Budget: ₹{t.budget.toLocaleString()} "” Cost: ₹{t.total_estimated_cost.toLocaleString()})
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Regeneration Prompt / Commands</label>
+                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Regeneration Prompt / Commands</label>
                   <textarea
                     required
                     value={regenInstruction}
                     onChange={(e) => setRegenInstruction(e.target.value)}
                     placeholder="e.g. Make it nature-heavy. Replace flights with trains to save money. Add a free trekking activity on Day 3."
                     rows={4}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 resize-none leading-relaxed"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 resize-none leading-relaxed"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={regeneratingLoading}
-                  className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-violet-500/10"
+                  className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
                 >
                   {regeneratingLoading ? <Loader size={16} className="animate-spin" /> : null}
                   Regenerate Trip Schedule
@@ -471,42 +471,42 @@ export const AICompanion: React.FC = () => {
             )}
 
             {regeneratedResult && (
-              <div className="mt-8 border-t border-slate-150 dark:border-slate-700/60 pt-6 animate-fade-in font-sans">
-                <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-white mb-4">Proposed Itinerary & Allocation Changes</h4>
+              <div className="mt-8 border-t border-paper-200 dark:border-paper-700/60 pt-6 animate-fade-in font-sans">
+                <div className="bg-paper-50 dark:bg-paper-900/30 border border-paper-200 dark:border-paper-700 rounded-2xl p-6">
+                  <h4 className="text-xs font-bold text-paper-800 dark:text-white mb-4">Proposed Itinerary & Allocation Changes</h4>
 
-                  <div className="grid grid-cols-2 gap-4 mb-6 bg-white dark:bg-slate-850 p-4 rounded-xl border border-slate-150 dark:border-slate-700">
+                  <div className="grid grid-cols-2 gap-4 mb-6 bg-paper-50 dark:bg-paper-900 p-4 rounded-xl border border-paper-200 dark:border-paper-700">
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Estimated Accommodation</p>
-                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">₹{regeneratedResult.costs?.hotel_cost?.toLocaleString()} ({regeneratedResult.costs?.hotel_tier})</p>
+                      <p className="text-[10px] text-paper-400 font-bold uppercase">Estimated Accommodation</p>
+                      <p className="text-xs font-bold text-paper-800 dark:text-paper-200">₹{regeneratedResult.costs?.hotel_cost?.toLocaleString()} ({regeneratedResult.costs?.hotel_tier})</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Estimated Transit</p>
-                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">₹{regeneratedResult.costs?.transport_cost?.toLocaleString()} ({regeneratedResult.costs?.transport_mode})</p>
+                      <p className="text-[10px] text-paper-400 font-bold uppercase">Estimated Transit</p>
+                      <p className="text-xs font-bold text-paper-800 dark:text-paper-200">₹{regeneratedResult.costs?.transport_cost?.toLocaleString()} ({regeneratedResult.costs?.transport_mode})</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Activity Cost</p>
-                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">₹{regeneratedResult.costs?.activities_cost?.toLocaleString()}</p>
+                      <p className="text-[10px] text-paper-400 font-bold uppercase">Activity Cost</p>
+                      <p className="text-xs font-bold text-paper-800 dark:text-paper-200">₹{regeneratedResult.costs?.activities_cost?.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">New Total Cost</p>
-                      <p className="text-xs font-bold text-violet-600 dark:text-violet-400">₹{regeneratedResult.costs?.total_estimated_cost?.toLocaleString()}</p>
+                      <p className="text-[10px] text-paper-400 font-bold uppercase">New Total Cost</p>
+                      <p className="text-xs font-bold text-marigold-600 dark:text-marigold-400">₹{regeneratedResult.costs?.total_estimated_cost?.toLocaleString()}</p>
                     </div>
                   </div>
 
-                  <h5 className="text-[10px] font-bold text-slate-400 uppercase mb-3">New Proposed Itinerary Days</h5>
+                  <h5 className="text-[10px] font-bold text-paper-400 uppercase mb-3">New Proposed Itinerary Days</h5>
                   <div className="space-y-4 mb-6">
                     {regeneratedResult.itineraries?.map((day: any) => (
-                      <div key={day.day_number} className="bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-700 rounded-xl p-4">
-                        <div className="font-bold text-xs text-slate-850 dark:text-slate-200 mb-2 pb-1 border-b border-slate-100 dark:border-slate-700">
+                      <div key={day.day_number} className="bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl p-4">
+                        <div className="font-bold text-xs text-paper-900 dark:text-paper-200 mb-2 pb-1 border-b border-paper-100 dark:border-paper-700">
                           Day {day.day_number} - {day.description}
                         </div>
                         <div className="space-y-2">
                           {day.activities?.map((act: any, aIdx: number) => (
                             <div key={aIdx} className="flex justify-between items-center text-xs">
-                              <span className="text-slate-400 font-semibold w-16">{act.time}</span>
-                              <span className="text-slate-700 dark:text-slate-350 flex-1 px-2">{act.title}</span>
-                              <span className="text-slate-505 font-bold">₹{act.cost}</span>
+                              <span className="text-paper-400 font-semibold w-16">{act.time}</span>
+                              <span className="text-paper-700 dark:text-paper-400 flex-1 px-2">{act.title}</span>
+                              <span className="text-paper-500 font-bold">₹{act.cost}</span>
                             </div>
                           ))}
                         </div>
@@ -532,25 +532,25 @@ export const AICompanion: React.FC = () => {
         {activeTab === 'explain' && (
           <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full py-4 justify-center">
             <div className="text-center mb-8">
-              <HelpCircle className="h-10 w-10 text-violet-500 mx-auto mb-2 animate-pulse" />
-              <h3 className="text-base font-bold text-slate-800 dark:text-white">AI Itinerary Explainability</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 leading-normal">
+              <HelpCircle className="h-10 w-10 text-marigold-500 mx-auto mb-2 animate-pulse" />
+              <h3 className="text-base font-bold text-paper-800 dark:text-white">AI Itinerary Explainability</h3>
+              <p className="text-xs text-paper-400 max-w-sm mx-auto mt-1 leading-normal">
                 Want to know why the engine selected a certain resort tier, dining budget or local transit mode? Ask our AI for transparency.
               </p>
             </div>
 
             {savedTrips.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-900/35 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6">
+              <div className="text-center py-6 text-xs text-paper-400 font-medium bg-paper-50 dark:bg-paper-900/35 border border-dashed border-paper-200 dark:border-paper-700 rounded-xl p-6">
                 No trips logged in history. Plan a trip before simulating budget explanation.
               </div>
             ) : (
               <form onSubmit={handleExplainSubmit} className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Select Trip to Analyze</label>
+                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Select Trip to Analyze</label>
                   <select
                     value={explainTripId}
                     onChange={(e) => setExplainTripId(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 appearance-none"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 appearance-none"
                   >
                     {savedTrips.map(t => (
                       <option key={t.id} value={t.id}>
@@ -563,7 +563,7 @@ export const AICompanion: React.FC = () => {
                 <button
                   type="submit"
                   disabled={explainingLoading}
-                  className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-violet-500/10"
+                  className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
                 >
                   {explainingLoading ? <Loader size={16} className="animate-spin" /> : null}
                   Analyze Budget Selections
@@ -572,10 +572,10 @@ export const AICompanion: React.FC = () => {
             )}
 
             {explanationText && (
-              <div className="mt-8 border-t border-slate-150 dark:border-slate-700/60 pt-6 animate-fade-in font-sans">
-                <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-4">Budget Selection Analysis</h4>
-                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-150 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+              <div className="mt-8 border-t border-paper-200 dark:border-paper-700/60 pt-6 animate-fade-in font-sans">
+                <div className="bg-paper-50 dark:bg-paper-900/30 border border-paper-200 dark:border-paper-700 rounded-2xl p-6">
+                  <h4 className="text-sm font-bold text-paper-800 dark:text-white mb-4">Budget Selection Analysis</h4>
+                  <div className="bg-paper-50 dark:bg-paper-800 p-6 rounded-xl border border-paper-200 dark:border-paper-700 text-xs text-paper-700 dark:text-paper-300 leading-relaxed whitespace-pre-wrap font-sans">
                     {explanationText}
                   </div>
                 </div>
@@ -588,20 +588,20 @@ export const AICompanion: React.FC = () => {
 
       {/* Floating Error Dialog Overlay for AI integration placeholders */}
       {showAIErrorModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
+        <div className="fixed inset-0 bg-paper-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
 
             <AlertCircle className="h-12 w-12 text-rose-500 mx-auto mb-4 animate-bounce" />
 
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white mb-2">API Connection Pending</h3>
+            <h3 className="text-base font-extrabold text-paper-900 dark:text-white mb-2">API Connection Pending</h3>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+            <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed mb-6">
               {modalMessage}
             </p>
 
             <button
               onClick={() => setShowAIErrorModal(false)}
-              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold py-2.5 rounded-xl text-xs transition-all"
+              className="w-full bg-paper-900 hover:bg-paper-800 dark:bg-paper-700 dark:hover:bg-paper-600 text-white font-bold py-2.5 rounded-xl text-xs transition-all"
             >
               Acknowledge
             </button>
@@ -612,3 +612,6 @@ export const AICompanion: React.FC = () => {
     </div>
   );
 };
+
+
+

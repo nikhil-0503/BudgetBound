@@ -73,7 +73,7 @@ export const AdminAnalyticsPage: React.FC = () => {
     }
   }, [filter, user]);
 
-  // Guard clause for admin authentication — placed AFTER all hook declarations
+  // Guard clause for admin authentication "” placed AFTER all hook declarations
   if (!user || !user.is_admin) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -101,8 +101,8 @@ export const AdminAnalyticsPage: React.FC = () => {
 
   if (loading && !data) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-slate-400 gap-3">
-        <Loader className="animate-spin text-violet-500 h-8 w-8" />
+      <div className="flex flex-col items-center justify-center py-24 text-paper-400 gap-3">
+        <Loader className="animate-spin text-marigold-500 h-8 w-8" />
         <span className="text-xs font-semibold">Compiling global travel reports...</span>
       </div>
     );
@@ -117,13 +117,13 @@ export const AdminAnalyticsPage: React.FC = () => {
     >
       
       {/* Header controls card */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <ShieldAlert size={20} className="text-violet-500" />
+          <h2 className="text-xl font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <ShieldAlert size={20} className="text-marigold-500" />
             Admin Analytics Control Dashboard
           </h2>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-[11px] text-paper-400 mt-0.5">
             Evaluate global creation metrics, destinations popularity, and aggregate user savings
           </p>
         </div>
@@ -134,7 +134,7 @@ export const AdminAnalyticsPage: React.FC = () => {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             aria-label="Filter timeline results"
-            className="px-3.5 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 text-xs font-bold focus:outline-none dark:text-white"
+            className="px-3.5 py-2 border border-paper-200 dark:border-paper-700 rounded-xl bg-paper-50 dark:bg-paper-900 text-xs font-bold focus:outline-none dark:text-white"
           >
             <option value="all">All Time</option>
             <option value="6months">Last 6 Months</option>
@@ -145,7 +145,7 @@ export const AdminAnalyticsPage: React.FC = () => {
             onClick={handleCsvExport}
             disabled={exporting}
             aria-label="Export reports as CSV spreadsheet"
-            className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-[10px] px-4.5 py-2.5 rounded-xl uppercase transition-all shadow-md shrink-0"
+            className="inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 text-white font-extrabold text-[10px] px-4.5 py-2.5 rounded-xl uppercase transition-all shadow-md shrink-0"
           >
             {exporting ? <Loader size={12} className="animate-spin" /> : <Download size={12} />}
             Export CSV
@@ -157,29 +157,29 @@ export const AdminAnalyticsPage: React.FC = () => {
       {data && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-semibold">
           
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-1">
-            <Users size={18} className="text-violet-500" />
-            <span className="text-[9px] text-slate-405 dark:text-slate-400 uppercase font-bold block">Total Accounts</span>
-            <span className="text-2xl font-extrabold text-slate-800 dark:text-white block">{data.total_users} Users</span>
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-1">
+            <Users size={18} className="text-marigold-500" />
+            <span className="text-[9px] text-paper-400 dark:text-paper-400 uppercase font-bold block">Total Accounts</span>
+            <span className="text-2xl font-extrabold text-paper-800 dark:text-white block">{data.total_users} Users</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-1">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-1">
             <Map size={18} className="text-sky-500" />
-            <span className="text-[9px] text-slate-405 dark:text-slate-400 uppercase font-bold block">Total Trips Saved</span>
-            <span className="text-2xl font-extrabold text-slate-800 dark:text-white block">
+            <span className="text-[9px] text-paper-400 dark:text-paper-400 uppercase font-bold block">Total Trips Saved</span>
+            <span className="text-2xl font-extrabold text-paper-800 dark:text-white block">
               {data.total_trips} Trips <span className="text-[10px] text-emerald-500 font-bold">({data.completed_trips} Done)</span>
             </span>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-1">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-1">
             <Wallet size={18} className="text-emerald-500" />
-            <span className="text-[9px] text-slate-405 dark:text-slate-400 uppercase font-bold block">Average Segment Budget</span>
-            <span className="text-2xl font-extrabold text-slate-800 dark:text-white block">₹{data.avg_budget.toLocaleString()}</span>
+            <span className="text-[9px] text-paper-400 dark:text-paper-400 uppercase font-bold block">Average Segment Budget</span>
+            <span className="text-2xl font-extrabold text-paper-800 dark:text-white block">₹{data.avg_budget.toLocaleString()}</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-1">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-1">
             <TrendingUp size={18} className="text-rose-500" />
-            <span className="text-[9px] text-slate-405 dark:text-slate-400 uppercase font-bold block">Average Savings</span>
+            <span className="text-[9px] text-paper-400 dark:text-paper-400 uppercase font-bold block">Average Savings</span>
             <span className="text-2xl font-extrabold text-emerald-500 block">₹{data.avg_savings.toLocaleString()}</span>
           </div>
 
@@ -191,14 +191,14 @@ export const AdminAnalyticsPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* Monthly creations area chart */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4">
             <div>
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white">Trip Creation Velocity</h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Global itinerary generation rates grouped by month</p>
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-paper-800 dark:text-white">Trip Creation Velocity</h3>
+              <p className="text-[10px] text-paper-400 mt-0.5">Global itinerary generation rates grouped by month</p>
             </div>
             <div className="h-64">
               {data.monthly_creation.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400 italic">No trip history yet.</div>
+                <div className="h-full flex items-center justify-center text-xs text-paper-400 italic">No trip history yet.</div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.monthly_creation}>
@@ -220,14 +220,14 @@ export const AdminAnalyticsPage: React.FC = () => {
           </div>
 
           {/* Monthly expenditures bar chart */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4">
             <div>
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white">Monthly Expenditure Trajectory</h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Sum of aggregate actual logged expense costs by month</p>
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-paper-800 dark:text-white">Monthly Expenditure Trajectory</h3>
+              <p className="text-[10px] text-paper-400 mt-0.5">Sum of aggregate actual logged expense costs by month</p>
             </div>
             <div className="h-64">
               {data.monthly_expenses.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400 italic">No expenditures logged.</div>
+                <div className="h-full flex items-center justify-center text-xs text-paper-400 italic">No expenditures logged.</div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.monthly_expenses}>
@@ -243,14 +243,14 @@ export const AdminAnalyticsPage: React.FC = () => {
           </div>
 
           {/* Popular destinations list bar chart */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4 lg:col-span-2">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4 lg:col-span-2">
             <div>
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white">Popularity Matrix (Top 10 Locations)</h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Distribution count of total travel plans generated by destination</p>
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-paper-800 dark:text-white">Popularity Matrix (Top 10 Locations)</h3>
+              <p className="text-[10px] text-paper-400 mt-0.5">Distribution count of total travel plans generated by destination</p>
             </div>
             <div className="h-72">
               {data.top_destinations.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400 italic">No plans generated.</div>
+                <div className="h-full flex items-center justify-center text-xs text-paper-400 italic">No plans generated.</div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.top_destinations} layout="vertical" margin={{ left: 20 }}>
@@ -270,24 +270,24 @@ export const AdminAnalyticsPage: React.FC = () => {
 
       {/* Overview stats table */}
       {data && (
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow-sm space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-white">Overview Distributions</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs bg-slate-50 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-bold">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-5 rounded-2xl shadow-sm space-y-4">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-paper-800 dark:text-white">Overview Distributions</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs bg-paper-50 dark:bg-paper-900/40 p-4 rounded-xl border border-paper-100 dark:border-paper-800 font-bold">
             <div className="space-y-0.5">
-              <span className="text-[10px] text-slate-400 block uppercase">Most Popular Target</span>
-              <span className="text-slate-800 dark:text-white">{data.popular_destination}</span>
+              <span className="text-[10px] text-paper-400 block uppercase">Most Popular Target</span>
+              <span className="text-paper-800 dark:text-white">{data.popular_destination}</span>
             </div>
             <div className="space-y-0.5">
-              <span className="text-[10px] text-slate-400 block uppercase">Most Popular Category</span>
-              <span className="text-slate-800 dark:text-white">{data.popular_category}</span>
+              <span className="text-[10px] text-paper-400 block uppercase">Most Popular Category</span>
+              <span className="text-paper-800 dark:text-white">{data.popular_category}</span>
             </div>
             <div className="space-y-0.5">
-              <span className="text-[10px] text-slate-400 block uppercase">Average Comfort standard</span>
-              <span className="text-slate-800 dark:text-white">{data.avg_comfort}% Preference</span>
+              <span className="text-[10px] text-paper-400 block uppercase">Average Comfort standard</span>
+              <span className="text-paper-800 dark:text-white">{data.avg_comfort}% Preference</span>
             </div>
             <div className="space-y-0.5">
-              <span className="text-[10px] text-slate-400 block uppercase">Total Trips Logged</span>
-              <span className="text-slate-800 dark:text-white">{data.total_trips} Plans</span>
+              <span className="text-[10px] text-paper-400 block uppercase">Total Trips Logged</span>
+              <span className="text-paper-800 dark:text-white">{data.total_trips} Plans</span>
             </div>
           </div>
         </div>
@@ -296,3 +296,6 @@ export const AdminAnalyticsPage: React.FC = () => {
     </motion.div>
   );
 };
+
+
+

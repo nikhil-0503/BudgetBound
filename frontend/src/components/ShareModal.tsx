@@ -53,7 +53,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           width: 180,
           margin: 1.5,
           color: {
-            dark: '#1e1b4b', // Deep indigo
+            dark: '#1e1b4b', // Deep petrol
             light: '#ffffff'
           }
         },
@@ -98,23 +98,23 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+    <div className="fixed inset-0 bg-paper-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-650 dark:hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-paper-400 hover:text-paper-700 dark:hover:text-white transition-colors"
         >
           <X size={18} />
         </button>
 
         {/* Modal Header */}
         <div className="mb-6">
-          <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-            <QrCode className="text-violet-500" size={18} />
+          <h3 className="font-extrabold text-base text-paper-900 dark:text-white flex items-center gap-2">
+            <QrCode className="text-marigold-500" size={18} />
             Share Travel Plan
           </h3>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-[11px] text-paper-400 mt-0.5">
             Generate read-only shared links and QR codes to share with friends.
           </p>
         </div>
@@ -122,16 +122,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         {/* Sharing Settings Toggle Panel */}
         <div className="space-y-6">
           {/* Status Row */}
-          <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-150 dark:border-slate-750 rounded-xl">
+          <div className="flex items-center justify-between p-4 bg-paper-50 dark:bg-paper-900/40 border border-paper-200 dark:border-paper-800 rounded-xl">
             <div className="flex items-center gap-3">
-              <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${isPublic ? 'bg-emerald-105 text-emerald-600 dark:bg-emerald-950/20' : 'bg-slate-100 text-slate-500 dark:bg-slate-900'}`}>
+              <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${isPublic ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/20' : 'bg-paper-100 text-paper-500 dark:bg-paper-900'}`}>
                 {isPublic ? <Globe size={18} /> : <Lock size={18} />}
               </div>
               <div className="text-xs">
-                <span className="font-bold text-slate-800 dark:text-white block">
+                <span className="font-bold text-paper-800 dark:text-white block">
                   {isPublic ? 'Public View Enabled' : 'Private Travel Plan'}
                 </span>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-paper-400">
                   {isPublic ? 'Accessible by anyone with the link' : 'Owner authentication required'}
                 </span>
               </div>
@@ -143,7 +143,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all shadow-sm ${
                 isPublic 
                   ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/20 dark:hover:bg-rose-900/30' 
-                  : 'bg-violet-600 hover:bg-violet-500 text-white'
+                  : 'bg-marigold-600 hover:bg-marigold-500 text-white'
               }`}
             >
               {toggling ? <Loader size={12} className="animate-spin" /> : (isPublic ? 'Make Private' : 'Publish')}
@@ -156,15 +156,15 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               
               {/* Copy URL Row */}
               <div className="space-y-1.5">
-                <label className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Public Sharing Link</label>
+                <label className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Public Sharing Link</label>
                 <div className="flex gap-2">
-                  <div className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate select-all flex items-center gap-1.5">
-                    <Link2 size={12} className="text-slate-400 shrink-0" />
+                  <div className="flex-1 bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 px-3.5 py-2.5 rounded-xl text-[11px] font-bold text-paper-700 dark:text-paper-300 truncate select-all flex items-center gap-1.5">
+                    <Link2 size={12} className="text-paper-400 shrink-0" />
                     {shareUrl}
                   </div>
                   <button
                     onClick={handleCopyLink}
-                    className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white p-2.5 rounded-xl transition-all shadow-sm border border-slate-200 dark:border-slate-600 shrink-0"
+                    className="bg-paper-100 hover:bg-paper-200 dark:bg-paper-700 dark:hover:bg-paper-600 text-paper-700 dark:text-white p-2.5 rounded-xl transition-all shadow-sm border border-paper-200 dark:border-paper-600 shrink-0"
                     title="Copy Link"
                   >
                     {copied ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
@@ -173,13 +173,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               </div>
 
               {/* QR Code Canvas Card */}
-              <div className="flex flex-col items-center justify-center p-5 border border-slate-150 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-900/10 rounded-2xl gap-4">
-                <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex flex-col items-center justify-center p-5 border border-paper-200 dark:border-paper-800 bg-paper-50/50 dark:bg-paper-900/10 rounded-2xl gap-4">
+                <div className="bg-paper-50 p-2 rounded-xl border border-paper-200 shadow-sm">
                   <canvas ref={canvasRef} />
                 </div>
                 <button
                   onClick={handleDownloadQR}
-                  className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-[10px] px-4 py-2 rounded-xl uppercase transition-all shadow-md shadow-violet-600/10"
+                  className="inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 text-white font-extrabold text-[10px] px-4 py-2 rounded-xl uppercase transition-all shadow-md shadow-marigold-600/10"
                 >
                   <Download size={12} />
                   Download QR Code
@@ -188,8 +188,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
             </div>
           ) : (
-            <div className="text-center py-6 text-slate-400 dark:text-slate-550 text-xs italic flex flex-col items-center gap-2">
-              <Lock size={20} className="text-slate-350" />
+            <div className="text-center py-6 text-paper-400 dark:text-paper-600 text-xs italic flex flex-col items-center gap-2">
+              <Lock size={20} className="text-paper-400" />
               <span>Enable public sharing mode to generate QR codes and reader links.</span>
             </div>
           )}
@@ -198,3 +198,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     </div>
   );
 };
+
+
+

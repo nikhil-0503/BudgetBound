@@ -168,24 +168,24 @@ export const BudgetAllocationEditor: React.FC<BudgetAllocationEditorProps> = ({
     }
   };
 
-  const sliderClass = "w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600 focus:outline-none disabled:opacity-50";
+  const sliderClass = "w-full h-2 bg-paper-200 dark:bg-paper-700 rounded-lg appearance-none cursor-pointer accent-marigold-600 focus:outline-none disabled:opacity-50";
 
   return (
-    <div className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col gap-6 ${className}`}>
+    <div className={`bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm flex flex-col gap-6 ${className}`}>
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-paper-100 dark:border-paper-700 pb-4">
         <div>
-          <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-            <Sliders className="text-violet-500" size={18} />
+          <h3 className="font-extrabold text-paper-900 dark:text-white flex items-center gap-1.5">
+            <Sliders className="text-marigold-500" size={18} />
             Budget Allocation Editor
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-paper-500 dark:text-paper-400 mt-0.5">
             Manually customize how your trip budget is distributed
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400 font-bold uppercase">
+          <span className="text-[10px] text-paper-400 font-bold uppercase">
             Mode:
           </span>
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -202,17 +202,17 @@ export const BudgetAllocationEditor: React.FC<BudgetAllocationEditorProps> = ({
       <div className="space-y-4">
         {[
           { key: 'transport', label: 'Transportation', value: transportPercent, cost: previewTransport, color: 'accent-blue-500' },
-          { key: 'accommodation', label: 'Accommodation', value: accommodationPercent, cost: previewAccommodation, color: 'accent-violet-500' },
+          { key: 'accommodation', label: 'Accommodation', value: accommodationPercent, cost: previewAccommodation, color: 'accent-marigold-500' },
           { key: 'food', label: 'Food & Dining', value: foodPercent, cost: previewFood, color: 'accent-emerald-500' },
           { key: 'activities', label: 'Activities', value: activitiesPercent, cost: previewActivities, color: 'accent-pink-500' },
           { key: 'emergency', label: 'Emergency Reserve', value: emergencyPercent, cost: previewEmergency, color: 'accent-amber-500' },
         ].map((slider) => (
           <div key={slider.key} className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+            <div className="flex items-center justify-between text-xs font-bold text-paper-600 dark:text-paper-300">
               <span>{slider.label}</span>
               <div className="flex items-center gap-2">
-                <span className="text-slate-400 dark:text-slate-500">{slider.value.toFixed(1)}%</span>
-                <span className="text-slate-800 dark:text-white">₹{slider.cost.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                <span className="text-paper-400 dark:text-paper-500">{slider.value.toFixed(1)}%</span>
+                <span className="text-paper-800 dark:text-white">₹{slider.cost.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
               </div>
             </div>
             <input
@@ -235,13 +235,13 @@ export const BudgetAllocationEditor: React.FC<BudgetAllocationEditorProps> = ({
       </div>
 
       {/* Total Verification */}
-      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold">
-        <span className="text-slate-500 dark:text-slate-400">Total Allocations</span>
+      <div className="flex justify-between items-center bg-paper-50 dark:bg-paper-900/50 p-3.5 rounded-xl border border-paper-100 dark:border-paper-800 text-xs font-bold">
+        <span className="text-paper-500 dark:text-paper-400">Total Allocations</span>
         <div className="flex items-center gap-3">
           <span className={Math.abs(currentSumPercent - 100) < 0.1 ? "text-emerald-500" : "text-rose-500"}>
             {currentSumPercent.toFixed(0)}%
           </span>
-          <span className="text-slate-900 dark:text-white">
+          <span className="text-paper-900 dark:text-white">
             ₹{currentTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </span>
         </div>
@@ -253,7 +253,7 @@ export const BudgetAllocationEditor: React.FC<BudgetAllocationEditorProps> = ({
           type="button"
           onClick={handleResetClick}
           disabled={!isCustomMode}
-          className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white disabled:opacity-40 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-bold text-paper-500 hover:text-paper-800 dark:text-paper-400 dark:hover:text-white disabled:opacity-40 transition-colors"
         >
           <RefreshCw size={13} />
           Reset to Recommended
@@ -263,7 +263,7 @@ export const BudgetAllocationEditor: React.FC<BudgetAllocationEditorProps> = ({
           type="button"
           onClick={handleSave}
           disabled={isSaving || (isCustomMode && Math.abs(currentSumPercent - 100) > 0.5)}
-          className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all disabled:opacity-50"
         >
           {isSaving ? (
             'Saving...'
@@ -284,3 +284,6 @@ export const BudgetAllocationEditor: React.FC<BudgetAllocationEditorProps> = ({
     </div>
   );
 };
+
+
+

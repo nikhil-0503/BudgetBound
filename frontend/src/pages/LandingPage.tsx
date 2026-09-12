@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { 
-  Compass, 
-  MapPin, 
-  Sparkles, 
-  TrendingUp, 
-  Wallet, 
-  ShieldCheck, 
+import {
+  Compass,
+  MapPin,
+  TrendingUp,
+  Wallet,
+  ShieldCheck,
   ArrowRight,
   Star,
   Sun,
@@ -50,127 +49,140 @@ export const LandingPage: React.FC = () => {
     }
   ];
 
+  const receiptLines = [
+    { label: 'Sleeper train, Bengaluru → Munnar', amount: 1450 },
+    { label: 'Homestay, 3 nights', amount: 5100 },
+    { label: 'Local transit & tea-estate entry', amount: 1800 },
+    { label: 'Meals, 4 days', amount: 2600 },
+    { label: 'Emergency reserve (hidden costs)', amount: 1100 },
+  ];
+  const receiptTotal = receiptLines.reduce((s, l) => s + l.amount, 0);
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-x-hidden selection:bg-violet-500 selection:text-white transition-colors duration-200">
-      
+    <div className="min-h-screen bg-paper-100 dark:bg-ink-950 text-ink-900 dark:text-paper-100 overflow-x-hidden selection:bg-marigold-400 selection:text-ink-950 transition-colors duration-200">
+
       {/* Navigation */}
-      <nav className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between z-10 relative">
+      <nav className="w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between relative">
         <div className="flex items-center gap-2">
-          <Wallet className="h-8 w-8 text-violet-600" />
-          <span className="font-bold text-2xl tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+          <Wallet className="h-7 w-7 text-marigold-600" />
+          <span className="font-display font-semibold text-2xl tracking-tight text-ink-900 dark:text-paper-50">
             BudgetBound
           </span>
         </div>
         <div className="flex items-center gap-4 md:gap-6">
-          <button 
+          <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            className="p-2.5 rounded-full border border-paper-300 dark:border-ink-700 bg-paper-50 dark:bg-ink-900 text-paper-600 dark:text-paper-300 hover:bg-paper-200 dark:hover:bg-ink-800 transition-colors"
             title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
-          <Link to="/login" className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition-colors">
-            Login
+          <Link to="/login" className="text-sm font-medium text-paper-700 dark:text-paper-300 hover:text-ink-950 dark:hover:text-white transition-colors">
+            Log in
           </Link>
-          <Link 
-            to="/register" 
-            className="text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white px-5 py-2.5 rounded-full transition-all duration-200 shadow-lg shadow-violet-600/20 hover:scale-105"
+          <Link
+            to="/register"
+            className="text-sm font-semibold bg-marigold-500 hover:bg-marigold-400 text-ink-950 px-5 py-2.5 rounded-full transition-all duration-200"
           >
-            Start Planning
+            Start planning
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center relative">
-        {/* Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none -z-10" />
-        <div className="absolute top-20 left-1/3 w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none -z-10" />
+      <section className="max-w-6xl mx-auto px-6 pt-16 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <p className="eyebrow-rule text-marigold-700 dark:text-marigold-400 text-sm font-semibold mb-6">
+            A trip planner that starts with your wallet
+          </p>
+          <h1 className="font-display text-4xl md:text-5xl font-semibold leading-[1.1] text-ink-900 dark:text-paper-50 mb-6">
+            Tell us what you can spend. We'll tell you where that takes you.
+          </h1>
+          <p className="text-base md:text-lg text-paper-700 dark:text-paper-300 max-w-lg mb-10 leading-relaxed">
+            Most planners ask where you want to go, then break the news about the cost. BudgetBound works the other way: give us a budget, a starting city, and how many days you have, and we build the itinerary — lodging, transit, food, and the hidden costs — to fit inside it.
+          </p>
 
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold tracking-wide mb-8 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer">
-          <Sparkles className="h-4 w-4 text-violet-500" />
-          Budget-First Travel Planner
-        </div>
-
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight max-w-4xl mx-auto mb-6">
-          Stop asking <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">where</span>.<br />
-          Start asking <span className="bg-gradient-to-r from-cyan-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">how much</span>.
-        </h1>
-
-        <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Input your budget, starting location, and days. BudgetBound automatically calculates lodging, transport, activities, and generates the ultimate itinerary.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link 
-            to="/register" 
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold px-8 py-4 rounded-full transition-all shadow-xl shadow-violet-600/35 hover:scale-105"
-          >
-            Create Your Plan
-            <ArrowRight size={18} />
-          </Link>
-          <a 
-            href="#how-it-works"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-8 py-4 rounded-full transition-all shadow-sm"
-          >
-            How it works
-          </a>
-        </div>
-
-        {/* Demo Preview Mockup */}
-        <div className="mt-16 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 rounded-2xl p-4 shadow-2xl relative max-w-5xl mx-auto overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 pointer-events-none" />
-          <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
-            <div className="w-3 h-3 rounded-full bg-rose-500" />
-            <div className="w-3 h-3 rounded-full bg-amber-500" />
-            <div className="w-3 h-3 rounded-full bg-emerald-500" />
-            <div className="h-6 w-60 rounded-md bg-slate-100 dark:bg-slate-800 mx-auto text-[10px] text-slate-500 flex items-center justify-center">
-              https://budgetbound.com/planner
-            </div>
+          <div className="flex flex-col sm:flex-row items-start gap-4 mb-10">
+            <Link
+              to="/register"
+              className="inline-flex items-center justify-center gap-2 bg-marigold-500 hover:bg-marigold-400 text-ink-950 font-semibold px-7 py-3.5 rounded-full transition-all"
+            >
+              Plan your first trip
+              <ArrowRight size={18} />
+            </Link>
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center justify-center gap-2 border border-paper-300 dark:border-ink-600 text-paper-700 dark:text-paper-200 font-semibold px-7 py-3.5 rounded-full hover:bg-paper-200/60 dark:hover:bg-ink-800 transition-all"
+            >
+              See how it works
+            </a>
           </div>
-          <div className="h-64 sm:h-96 w-full bg-slate-50/40 dark:bg-slate-950/40 rounded-lg flex flex-col items-center justify-center relative">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:16px_16px]" />
-            <div className="relative z-10 text-center px-6">
-              <Compass className="h-16 w-16 text-violet-600 mx-auto animate-bounce mb-4" />
-              <h3 className="text-xl font-bold text-slate-850 dark:text-white mb-2">Deterministic Travel Engine</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md">
-                Analyzing 50+ locations, calculating seasonal accommodations, rail / flight pricing, and daily dining to maximize your travel savings.
-              </p>
+
+          <div className="flex items-center gap-2 text-amber-500">
+            {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="currentColor" />)}
+            <span className="text-xs text-paper-600 dark:text-paper-400 font-medium ml-1">Rated 4.7 by budget travelers across India</span>
+          </div>
+        </div>
+
+        {/* Receipt mockup — the product's core idea, made literal */}
+        <div className="relative mx-auto w-full max-w-sm">
+          <div className="absolute -inset-x-4 top-6 h-full bg-petrol-600/10 dark:bg-petrol-500/10 rounded-2xl -z-10 rotate-2" />
+          <div className="ticket p-0 shadow-lg">
+            <div className="px-6 pt-6 pb-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-paper-500 dark:text-paper-400">Munnar, Kerala</span>
+                <span className="text-xs font-num text-paper-500 dark:text-paper-400">4 days</span>
+              </div>
+              <h3 className="font-display text-lg font-semibold text-ink-900 dark:text-paper-50">Trip cost breakdown</h3>
+            </div>
+            <div className="ticket-perforation" />
+            <div className="px-6 py-5 flex flex-col gap-3">
+              {receiptLines.map((line) => (
+                <div key={line.label} className="flex items-baseline justify-between gap-4 text-sm">
+                  <span className="text-paper-700 dark:text-paper-300">{line.label}</span>
+                  <span className="font-num text-ink-800 dark:text-paper-100 shrink-0">₹{line.amount.toLocaleString('en-IN')}</span>
+                </div>
+              ))}
+            </div>
+            <div className="ticket-perforation" />
+            <div className="px-6 py-5 flex items-center justify-between">
+              <span className="text-sm font-semibold text-ink-900 dark:text-paper-50">Total, within budget</span>
+              <span className="font-num text-xl font-semibold text-petrol-700 dark:text-petrol-400">₹{receiptTotal.toLocaleString('en-IN')}</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="bg-slate-100/50 dark:bg-slate-950/60 py-24 border-t border-b border-slate-200 dark:border-slate-800 transition-colors">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">How BudgetBound Works</h2>
-            <p className="text-slate-600 dark:text-slate-400">Three easy steps to discover trips that match your wallet, not just your bucket list.</p>
+      <section id="how-it-works" className="bg-paper-50 dark:bg-ink-900 py-24 border-t border-b border-paper-300 dark:border-ink-700 transition-colors">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-2xl mb-16">
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-900 dark:text-paper-50 mb-4">Three steps, in order</h2>
+            <p className="text-paper-700 dark:text-paper-400">No mood boards, no browsing — just the constraints that decide a real trip.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-2xl hover:border-violet-500/50 transition-all shadow-sm">
-              <div className="h-12 w-12 rounded-xl bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-xl mb-6">1</div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Define Limits</h3>
-              <p className="text-slate-655 dark:text-slate-400 text-sm leading-relaxed">
-                Input your maximum budget, starting location, travel duration, and trip category (Beach, Adventure, Nature, etc.).
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-paper-300 dark:bg-ink-700 rounded-2xl overflow-hidden border border-paper-300 dark:border-ink-700">
+            <div className="bg-paper-50 dark:bg-ink-900 p-8">
+              <span className="font-display text-3xl text-marigold-600 dark:text-marigold-400">01</span>
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-paper-50 mt-4 mb-3">Set your limits</h3>
+              <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">
+                Your maximum budget, starting city, how many days you have, and the kind of trip — beach, adventure, nature, religious, and more.
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-2xl hover:border-violet-500/50 transition-all shadow-sm">
-              <div className="h-12 w-12 rounded-xl bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-xl mb-6">2</div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Slide to Comfort</h3>
-              <p className="text-slate-655 dark:text-slate-400 text-sm leading-relaxed">
-                Use the slider to balance comfort and savings. BudgetBound adjusts transport modes (Flights vs Trains) and hotels instantly.
+            <div className="bg-paper-50 dark:bg-ink-900 p-8">
+              <span className="font-display text-3xl text-marigold-600 dark:text-marigold-400">02</span>
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-paper-50 mt-4 mb-3">Slide toward comfort</h3>
+              <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">
+                One slider trades savings for comfort. Move it and watch trains become flights, and homestays become hotels, instantly.
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-2xl hover:border-violet-500/50 transition-all shadow-sm">
-              <div className="h-12 w-12 rounded-xl bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-xl mb-6">3</div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Get Custom Plan</h3>
-              <p className="text-slate-655 dark:text-slate-400 text-sm leading-relaxed">
-                Review complete cost breakdowns, pre-calculated hidden expenses, and get a generated daily itinerary in seconds.
+            <div className="bg-paper-50 dark:bg-ink-900 p-8">
+              <span className="font-display text-3xl text-marigold-600 dark:text-marigold-400">03</span>
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-paper-50 mt-4 mb-3">Get your plan</h3>
+              <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">
+                A full cost breakdown, hidden expenses accounted for, and a day-by-day itinerary — ready to save or take offline as a PDF.
               </p>
             </div>
           </div>
@@ -178,89 +190,82 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 max-w-7xl mx-auto px-6">
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Engineered for Smart Travelers</h2>
-          <p className="text-slate-600 dark:text-slate-400">Everything you need to plan and track travel expenses under a single unified dashboard.</p>
+      <section className="py-24 max-w-6xl mx-auto px-6">
+        <div className="max-w-2xl mb-16">
+          <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-900 dark:text-paper-50 mb-4">What's actually in the tool</h2>
+          <p className="text-paper-700 dark:text-paper-400">Everything needed to plan a trip and keep it on budget once you're there.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col gap-4">
-            <div className="h-12 w-12 rounded-lg bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-              <TrendingUp size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Interactive Budget Sliders</h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Adjust lodging tiers, transportation modes, and activities dynamically with real-time math.</p>
+            <TrendingUp size={22} className="text-marigold-600 dark:text-marigold-400" />
+            <h3 className="text-base font-semibold text-ink-900 dark:text-paper-50">Live budget sliders</h3>
+            <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">Adjust lodging tier, transport mode, and activities, and see the total update in real time.</p>
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="h-12 w-12 rounded-lg bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-              <Compass size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Reverse Search Engine</h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Submit your budget and receive the top 5 locations in India sorted by custom value and rating algorithms.</p>
+            <Compass size={22} className="text-marigold-600 dark:text-marigold-400" />
+            <h3 className="text-base font-semibold text-ink-900 dark:text-paper-50">Reverse search</h3>
+            <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">Enter your budget alone and get back the five Indian destinations that fit it best.</p>
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="h-12 w-12 rounded-lg bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-              <ShieldCheck size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Budget Optimizer</h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Identify expensive line items and switch from luxury stays or flights to save 30% to 50% instantly.</p>
+            <ShieldCheck size={22} className="text-marigold-600 dark:text-marigold-400" />
+            <h3 className="text-base font-semibold text-ink-900 dark:text-paper-50">Budget optimizer</h3>
+            <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">Flags the most expensive line items and suggests swaps that can cut 30–50% off the total.</p>
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="h-12 w-12 rounded-lg bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-              <MapPin size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Daily Itinerary & PDF</h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Generate complete day-by-day sightseeing programs and download high-quality PDF reports for offline viewing.</p>
+            <MapPin size={22} className="text-marigold-600 dark:text-marigold-400" />
+            <h3 className="text-base font-semibold text-ink-900 dark:text-paper-50">Day-by-day PDF</h3>
+            <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">A full sightseeing schedule you can download and carry with you, no signal required.</p>
           </div>
         </div>
       </section>
 
       {/* Sample Plans Section */}
-      <section className="bg-slate-100/50 dark:bg-slate-950/60 py-24 border-t border-slate-200 dark:border-slate-800 transition-colors">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
+      <section className="bg-paper-50 dark:bg-ink-900 py-24 border-t border-paper-300 dark:border-ink-700 transition-colors">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Sample Trip Packages</h2>
-              <p className="text-slate-600 dark:text-slate-400 font-medium">Sneak peek at what BudgetBound creates for different categories.</p>
+              <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-900 dark:text-paper-50 mb-4">A few sample trips</h2>
+              <p className="text-paper-700 dark:text-paper-400">What BudgetBound builds for a few different budgets and trip styles.</p>
             </div>
-            <Link to="/register" className="mt-4 md:mt-0 text-violet-600 dark:text-violet-400 hover:text-violet-500 font-semibold inline-flex items-center gap-2">
-              Explore 50+ Indian Destinations
+            <Link to="/register" className="text-marigold-700 dark:text-marigold-400 hover:text-marigold-600 font-semibold inline-flex items-center gap-2 shrink-0">
+              See 50+ Indian destinations
               <ArrowRight size={16} />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {samplePlans.map((plan, idx) => (
-              <div key={idx} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden group hover:border-slate-350 dark:hover:border-slate-700 transition-all duration-300 shadow-sm">
-                <div className="h-48 overflow-hidden relative">
-                  <img 
-                    src={plan.img} 
-                    alt={plan.name} 
+              <div key={idx} className="ticket p-0 overflow-hidden group">
+                <div className="h-44 overflow-hidden relative">
+                  <img
+                    src={plan.img}
+                    alt={plan.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                   />
-                  <span className="absolute top-4 left-4 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                  <span className="absolute top-4 left-4 bg-marigold-500 text-ink-950 text-xs font-semibold px-2.5 py-1 rounded-full">
                     {plan.tag}
                   </span>
-                  <span className="absolute bottom-4 right-4 bg-slate-950/80 backdrop-blur text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                  <span className="absolute bottom-4 right-4 bg-ink-950/80 backdrop-blur text-white text-xs font-semibold px-2.5 py-1 rounded-md">
                     {plan.category}
                   </span>
                 </div>
+                <div className="ticket-perforation" />
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">{plan.state}</span>
+                    <span className="text-xs text-paper-500 dark:text-paper-400 font-semibold">{plan.state}</span>
                     <div className="flex items-center gap-1 text-amber-500">
                       <Star size={14} fill="currentColor" />
-                      <span className="text-xs font-extrabold">{plan.rating}</span>
+                      <span className="text-xs font-num font-semibold">{plan.rating}</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{plan.name}</h3>
-                  <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 mt-4">
-                    <span className="text-slate-550 dark:text-slate-400 text-xs">{plan.days} Days / Person</span>
-                    <span className="text-violet-600 dark:text-violet-400 font-extrabold text-lg">{plan.cost}</span>
+                  <h3 className="text-lg font-semibold text-ink-900 dark:text-paper-50 mb-3">{plan.name}</h3>
+                  <div className="flex items-center justify-between pt-3 border-t border-paper-200 dark:border-ink-700">
+                    <span className="text-paper-600 dark:text-paper-400 text-xs">{plan.days} days / person</span>
+                    <span className="font-num text-petrol-700 dark:text-petrol-400 font-semibold text-lg">{plan.cost}</span>
                   </div>
                 </div>
               </div>
@@ -270,87 +275,58 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 max-w-7xl mx-auto px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">What Smart Travelers Say</h2>
-          <p className="text-slate-655 dark:text-slate-400 font-medium">Loved by budget explorers, family planners, and solo adventurers.</p>
+      <section className="py-24 max-w-6xl mx-auto px-6">
+        <div className="max-w-2xl mb-16">
+          <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-900 dark:text-paper-50 mb-4">From people who've used it</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-sm">
-            <div className="flex items-center gap-1 text-amber-500 mb-4">
-              {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
-              "BudgetBound saved me hours of spreadsheets! I entered ₹15,000 for my Munnar trip, and the engine correctly recommended trains and standard homestays that fit exactly."
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-extrabold text-xs">NK</div>
-              <div>
-                <h4 className="text-slate-900 dark:text-white text-sm font-bold">Nikhil Kumar</h4>
-                <span className="text-xs text-slate-500">Solo Explorer</span>
+          {[
+            { quote: "I entered ₹15,000 for a Munnar trip and the engine correctly recommended trains and homestays that fit exactly. Saved me hours of spreadsheets.", name: 'Nikhil Kumar', role: 'Solo explorer', initials: 'NK' },
+            { quote: "We wanted a family trip under ₹40,000. It suggested South Goa with a full itinerary and flight costs that actually fit our budget.", name: 'Priya Sharma', role: 'Family planner', initials: 'PR' },
+            { quote: "The hidden-cost predictions — local cabs, tolls — are accurate. I log expenses as I go and compare them against the estimate instantly.", name: 'Amit Sen', role: 'Weekend trekker', initials: 'AS' },
+          ].map((t) => (
+            <div key={t.name} className="ticket p-6">
+              <div className="flex items-center gap-1 text-amber-500 mb-4">
+                {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="currentColor" />)}
+              </div>
+              <p className="text-paper-700 dark:text-paper-300 text-sm leading-relaxed mb-6">{t.quote}</p>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-marigold-100 dark:bg-marigold-950/50 text-marigold-700 dark:text-marigold-400 flex items-center justify-center font-display font-semibold text-xs">{t.initials}</div>
+                <div>
+                  <h4 className="text-ink-900 dark:text-paper-50 text-sm font-semibold">{t.name}</h4>
+                  <span className="text-xs text-paper-500">{t.role}</span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-sm">
-            <div className="flex items-center gap-1 text-amber-500 mb-4">
-              {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
-              "We wanted a family trip within ₹40,000. BudgetBound recommended South Goa with full daily itineraries and flight cost adjustments that fit. Absolutely fantastic!"
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-extrabold text-xs">PR</div>
-              <div>
-                <h4 className="text-slate-900 dark:text-white text-sm font-bold">Priya Sharma</h4>
-                <span className="text-xs text-slate-500">Family Planner</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-sm">
-            <div className="flex items-center gap-1 text-amber-500 mb-4">
-              {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
-              "The cost breakdown and prediction of hidden costs (local cabs, tolls) are highly accurate. I can log my live expenses and cross-reference estimated vs actual instantly."
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-violet-600/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-extrabold text-xs">AS</div>
-              <div>
-                <h4 className="text-slate-900 dark:text-white text-sm font-bold">Amit Sen</h4>
-                <span className="text-xs text-slate-500">Weekend Trekker</span>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-violet-900 via-indigo-900 to-slate-950 py-20 border-t border-slate-850 dark:border-slate-800 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000010_1px,transparent_1px),linear-gradient(to_bottom,#00000010_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">Ready to Travel Within Limits?</h2>
-          <p className="text-slate-300 max-w-xl mx-auto mb-8 text-sm md:text-base">
-            Create a free account, outline your budget, and download a professional travel itinerary in less than two minutes.
+      <section className="bg-ink-900 dark:bg-ink-950 py-20 border-t border-ink-800 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="max-w-3xl mx-auto px-6 relative z-10">
+          <h2 className="font-display text-3xl md:text-5xl font-semibold text-paper-50 mb-6">Ready to travel within limits?</h2>
+          <p className="text-paper-300 max-w-xl mx-auto mb-8 text-sm md:text-base">
+            Create a free account, set a budget, and have a full itinerary in under two minutes.
           </p>
-          <Link 
-            to="/register" 
-            className="inline-flex items-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-full hover:bg-slate-100 transition-all shadow-lg hover:scale-105"
+          <Link
+            to="/register"
+            className="inline-flex items-center gap-2 bg-marigold-500 hover:bg-marigold-400 text-ink-950 font-semibold px-8 py-4 rounded-full transition-all"
           >
-            Start Planning Now
+            Start planning now
             <ArrowRight size={18} />
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800/80 py-12 text-center text-xs text-slate-500 transition-colors">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      <footer className="bg-paper-50 dark:bg-ink-950 border-t border-paper-300 dark:border-ink-800 py-12 text-center text-xs text-paper-500 transition-colors">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-violet-600" />
-            <span className="font-bold text-base text-slate-800 dark:text-white tracking-tight">BudgetBound</span>
+            <Wallet className="h-5 w-5 text-marigold-600" />
+            <span className="font-display font-semibold text-base text-ink-800 dark:text-paper-50 tracking-tight">BudgetBound</span>
           </div>
           <p>© 2026 BudgetBound Travel Technology. All rights reserved.</p>
         </div>

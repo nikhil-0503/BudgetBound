@@ -138,38 +138,38 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
 
   const getCategoryColor = (cat: string) => {
     switch (cat) {
-      case 'Hotel Booking': return 'bg-sky-100 text-sky-850 dark:bg-sky-950/40 dark:text-sky-400 border-sky-200';
-      case 'Flight Ticket': return 'bg-violet-100 text-violet-850 dark:bg-violet-950/40 dark:text-violet-400 border-violet-200';
-      case 'Train Ticket': return 'bg-emerald-105 text-emerald-850 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200';
-      case 'Passport': return 'bg-amber-100 text-amber-850 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200';
-      case 'Visa': return 'bg-rose-100 text-rose-850 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200';
-      case 'Insurance': return 'bg-indigo-100 text-indigo-850 dark:bg-indigo-950/40 dark:text-indigo-400 border-indigo-200';
-      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200';
+      case 'Hotel Booking': return 'bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-400 border-sky-200';
+      case 'Flight Ticket': return 'bg-marigold-100 text-marigold-900 dark:bg-marigold-950/40 dark:text-marigold-400 border-marigold-200';
+      case 'Train Ticket': return 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200';
+      case 'Passport': return 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200';
+      case 'Visa': return 'bg-rose-100 text-rose-900 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200';
+      case 'Insurance': return 'bg-petrol-100 text-petrol-900 dark:bg-petrol-950/40 dark:text-petrol-400 border-petrol-200';
+      default: return 'bg-paper-100 text-paper-700 dark:bg-paper-800 dark:text-paper-300 border-paper-200';
     }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+    <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-          <FolderOpen size={16} className="text-violet-500" />
+        <h3 className="text-sm font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+          <FolderOpen size={16} className="text-marigold-500" />
           Trip Document Manager
         </h3>
-        <span className="text-[10px] font-bold text-slate-400 uppercase">
+        <span className="text-[10px] font-bold text-paper-400 uppercase">
           {documents.length} Attachments
         </span>
       </div>
 
       {/* Upload Box */}
-      <form onSubmit={handleUploadSubmit} className="p-4 bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-750 rounded-xl space-y-3">
+      <form onSubmit={handleUploadSubmit} className="p-4 bg-paper-50 dark:bg-paper-900 border border-dashed border-paper-200 dark:border-paper-800 rounded-xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div className="space-y-1">
-            <label className="block text-slate-400 font-bold uppercase tracking-wide text-[9px]">Document Category</label>
+            <label className="block text-paper-400 font-bold uppercase tracking-wide text-[9px]">Document Category</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white focus:outline-none"
+              className="w-full px-3 py-2 border border-paper-200 dark:border-paper-700 rounded-lg bg-paper-50 dark:bg-paper-800 dark:text-white focus:outline-none"
             >
               {["Hotel Booking", "Train Ticket", "Flight Ticket", "Bus Ticket", "Passport", "Visa", "Insurance", "Other"].map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -178,12 +178,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
           </div>
 
           <div className="space-y-1">
-            <label className="block text-slate-400 font-bold uppercase tracking-wide text-[9px]">Upload File Attachment</label>
+            <label className="block text-paper-400 font-bold uppercase tracking-wide text-[9px]">Upload File Attachment</label>
             <input
               type="file"
               id="document-file-input"
               onChange={handleFileChange}
-              className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-violet-50 file:text-violet-600 dark:file:bg-violet-950/40 dark:file:text-violet-400 hover:file:bg-violet-100"
+              className="w-full text-xs text-paper-500 dark:text-paper-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-marigold-50 file:text-marigold-600 dark:file:bg-marigold-950/40 dark:file:text-marigold-400 hover:file:bg-marigold-100"
             />
           </div>
         </div>
@@ -191,7 +191,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
         <button
           type="submit"
           disabled={uploading || !selectedFile}
-          className="w-full bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-[10px] uppercase py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 disabled:opacity-50"
+          className="w-full bg-marigold-600 hover:bg-marigold-500 text-white font-extrabold text-[10px] uppercase py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 disabled:opacity-50"
         >
           {uploading ? <Loader size={12} className="animate-spin" /> : <Upload size={12} />}
           {uploading ? 'Uploading File...' : 'Upload Document'}
@@ -200,12 +200,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
 
       {/* Attachments list */}
       {loading && documents.length === 0 ? (
-        <div className="flex items-center justify-center py-6 text-slate-400 gap-2 text-xs">
-          <Loader size={14} className="animate-spin text-violet-500" />
+        <div className="flex items-center justify-center py-6 text-paper-400 gap-2 text-xs">
+          <Loader size={14} className="animate-spin text-marigold-500" />
           <span>Syncing files...</span>
         </div>
       ) : documents.length === 0 ? (
-        <div className="text-center py-8 text-slate-400 text-xs italic">
+        <div className="text-center py-8 text-paper-400 text-xs italic">
           No files attached to this trip yet.
         </div>
       ) : (
@@ -213,17 +213,17 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
           {documents.map((doc) => (
             <div 
               key={doc.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-slate-100 dark:border-slate-700/60 p-3 rounded-xl hover:border-slate-200 dark:hover:border-slate-600 transition-all text-xs"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-paper-100 dark:border-paper-700/60 p-3 rounded-xl hover:border-paper-200 dark:hover:border-paper-600 transition-all text-xs"
             >
               <div className="flex items-start gap-3 min-w-0">
-                <div className="h-8 w-8 rounded-lg bg-violet-50 dark:bg-violet-950/40 flex items-center justify-center text-violet-500 shrink-0 mt-0.5">
+                <div className="h-8 w-8 rounded-lg bg-marigold-50 dark:bg-marigold-950/40 flex items-center justify-center text-marigold-500 shrink-0 mt-0.5">
                   <FileText size={16} />
                 </div>
                 <div className="min-w-0">
-                  <span className="font-bold text-slate-800 dark:text-slate-200 block truncate" title={doc.filename}>
+                  <span className="font-bold text-paper-800 dark:text-paper-200 block truncate" title={doc.filename}>
                     {doc.filename}
                   </span>
-                  <div className="flex flex-wrap gap-2 items-center mt-1 text-[10px] text-slate-400 font-semibold">
+                  <div className="flex flex-wrap gap-2 items-center mt-1 text-[10px] text-paper-400 font-semibold">
                     <span className={`px-1.5 py-0.5 rounded border text-[8px] font-extrabold uppercase shrink-0 ${getCategoryColor(doc.category)}`}>
                       {doc.category}
                     </span>
@@ -234,17 +234,17 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
               </div>
 
               {/* Actions row */}
-              <div className="flex items-center gap-1.5 shrink-0 justify-end sm:border-0 border-t border-slate-50 dark:border-slate-800 pt-2 sm:pt-0">
+              <div className="flex items-center gap-1.5 shrink-0 justify-end sm:border-0 border-t border-paper-50 dark:border-paper-800 pt-2 sm:pt-0">
                 <button
                   onClick={() => handleRename(doc)}
-                  className="p-1.5 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 text-slate-500 dark:text-slate-350 transition-colors"
+                  className="p-1.5 bg-paper-50 dark:bg-paper-700 rounded-lg hover:bg-paper-100 text-paper-500 dark:text-paper-400 transition-colors"
                   title="Rename File"
                 >
                   <Edit3 size={13} />
                 </button>
                 <button
                   onClick={() => handleDownload(doc)}
-                  className="p-1.5 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 text-slate-555 dark:text-slate-350 transition-colors"
+                  className="p-1.5 bg-paper-50 dark:bg-paper-700 rounded-lg hover:bg-paper-100 text-paper-600 dark:text-paper-400 transition-colors"
                   title="Download / View"
                 >
                   <Download size={13} />
@@ -264,3 +264,6 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({ tripId }) => {
     </div>
   );
 };
+
+
+

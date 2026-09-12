@@ -114,9 +114,9 @@ export const ReverseSearch: React.FC = () => {
   };
 
   const getValueScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-505 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-    if (score >= 50) return 'text-amber-505 dark:text-amber-400 bg-amber-500/10 border-amber-500/20';
-    return 'text-rose-505 dark:text-rose-400 bg-rose-500/10 border-rose-500/20';
+    if (score >= 80) return 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+    if (score >= 50) return 'text-amber-500 dark:text-amber-400 bg-amber-500/10 border-amber-500/20';
+    return 'text-rose-500 dark:text-rose-400 bg-rose-500/10 border-rose-500/20';
   };
 
   return (
@@ -124,11 +124,11 @@ export const ReverseSearch: React.FC = () => {
 
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <Search className="text-violet-600" />
+        <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white flex items-center gap-2">
+          <Search className="text-marigold-600" />
           Reverse Travel Search
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-paper-500 dark:text-paper-400">
           Enter your budget constraints, starting city and comfort choices. We rank the entire destination database dynamically to match.
         </p>
       </div>
@@ -148,31 +148,31 @@ export const ReverseSearch: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
         {/* Form panel */}
-        <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-            <Sliders className="text-violet-500" size={18} />
+        <div className="lg:col-span-4 bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-paper-800 dark:text-white mb-6 flex items-center gap-2">
+            <Sliders className="text-marigold-500" size={18} />
             Search Constraints
           </h2>
 
           <form onSubmit={handleSearch} className="flex flex-col gap-5">
             <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Starting From</label>
+              <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Starting From</label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <MapPin className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <MapPin className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
                     type="text"
                     required
                     value={startingCity}
                     onChange={(e) => setStartingCity(e.target.value)}
                     placeholder="e.g. Bangalore, Delhi"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsMapModalOpen(true)}
-                  className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center"
+                  className="bg-paper-100 hover:bg-paper-200 dark:bg-paper-800 dark:hover:bg-paper-700 text-paper-700 dark:text-paper-300 px-4 rounded-xl border border-paper-200 dark:border-paper-700 transition-colors flex items-center justify-center"
                   title="Pick on map"
                 >
                   <Map size={18} />
@@ -181,9 +181,9 @@ export const ReverseSearch: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Total Budget (INR)</label>
+              <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Total Budget (INR)</label>
               <div className="relative">
-                <Wallet className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                <Wallet className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                 <input
                   type="number"
                   required
@@ -191,16 +191,16 @@ export const ReverseSearch: React.FC = () => {
                   value={budget}
                   onChange={(e) => setBudget(Number(e.target.value))}
                   placeholder="25000"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Duration (Days)</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Duration (Days)</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                  <Calendar className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
                     type="number"
                     required
@@ -209,30 +209,30 @@ export const ReverseSearch: React.FC = () => {
                     value={days}
                     onChange={(e) => setDays(Number(e.target.value))}
                     placeholder="5"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Travelers</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Travelers</label>
                 <input
                   type="number"
                   required
                   min={1}
                   value={travelersCount}
                   onChange={(e) => setTravelersCount(Number(e.target.value))}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Trip Category</label>
+              <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Trip Category</label>
               <select
                 value={travelType}
                 onChange={(e) => setTravelType(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white appearance-none"
+                className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white appearance-none"
               >
                 {travelTypes.map(t => (
                   <option key={t} value={t}>{t}</option>
@@ -241,9 +241,9 @@ export const ReverseSearch: React.FC = () => {
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">
+              <div className="flex justify-between text-xs font-semibold text-paper-500 dark:text-paper-400 mb-2">
                 <span className="uppercase tracking-wider">Comfort vs Savings</span>
-                <span className="text-violet-600 font-bold">{comfortScore}%</span>
+                <span className="text-marigold-600 font-bold">{comfortScore}%</span>
               </div>
               <input
                 type="range"
@@ -251,9 +251,9 @@ export const ReverseSearch: React.FC = () => {
                 max="100"
                 value={comfortScore}
                 onChange={(e) => setComfortScore(Number(e.target.value))}
-                className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600"
+                className="w-full h-1.5 bg-paper-100 dark:bg-paper-700 rounded-lg appearance-none cursor-pointer accent-marigold-600"
               />
-              <div className="flex justify-between text-[9px] text-slate-400 font-bold mt-1 uppercase">
+              <div className="flex justify-between text-[9px] text-paper-400 font-bold mt-1 uppercase">
                 <span>Save Money</span>
                 <span>Max Comfort</span>
               </div>
@@ -269,7 +269,7 @@ export const ReverseSearch: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-violet-500/10 inline-flex items-center justify-center gap-2"
+              className="w-full bg-marigold-600 hover:bg-marigold-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10 inline-flex items-center justify-center gap-2"
             >
               {loading ? <Loader size={16} className="animate-spin" /> : <Search size={16} />}
               Find Matching Trips
@@ -280,30 +280,30 @@ export const ReverseSearch: React.FC = () => {
         {/* Results panel */}
         <div className="lg:col-span-8 space-y-6">
           {loading && (
-            <div className="border border-slate-200 dark:border-slate-700 rounded-2xl h-80 flex flex-col items-center justify-center text-center p-6 bg-white dark:bg-slate-800">
-              <Loader className="h-10 w-10 text-violet-500 animate-spin mb-4" />
-              <h3 className="text-sm font-bold text-slate-700 dark:text-slate-350">Scanning All Indian Gateways...</h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs leading-normal">
+            <div className="border border-paper-200 dark:border-paper-700 rounded-2xl h-80 flex flex-col items-center justify-center text-center p-6 bg-paper-50 dark:bg-paper-800">
+              <Loader className="h-10 w-10 text-marigold-500 animate-spin mb-4" />
+              <h3 className="text-sm font-bold text-paper-700 dark:text-paper-400">Scanning All Indian Gateways...</h3>
+              <p className="text-xs text-paper-400 mt-1 max-w-xs leading-normal">
                 Applying weighted scoring model parameters against lodging tiers, regional multipliers and attractions...
               </p>
             </div>
           )}
 
           {!loading && !hasSearched && (
-            <div className="border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-80 flex flex-col items-center justify-center text-center p-6 bg-slate-50/20 dark:bg-slate-800/10">
-              <Compass className="h-12 w-12 text-slate-300 dark:text-slate-655 mb-3 animate-pulse" />
-              <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-1">Set Constraints to Begin</h3>
-              <p className="text-xs text-slate-400 max-w-xs leading-normal">
+            <div className="border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl h-80 flex flex-col items-center justify-center text-center p-6 bg-paper-50/20 dark:bg-paper-800/10">
+              <Compass className="h-12 w-12 text-paper-300 dark:text-paper-700 mb-3 animate-pulse" />
+              <h3 className="text-sm font-bold text-paper-600 dark:text-paper-400 mb-1">Set Constraints to Begin</h3>
+              <p className="text-xs text-paper-400 max-w-xs leading-normal">
                 Enter your total trip budget and location preferences on the left, and our scoring matrix will reveal the best getaways.
               </p>
             </div>
           )}
 
           {!loading && hasSearched && results.length === 0 && (
-            <div className="border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-80 flex flex-col items-center justify-center text-center p-6 bg-slate-50/20 dark:bg-slate-800/10">
-              <AlertTriangle className="h-12 w-12 text-slate-300 dark:text-slate-655 mb-3" />
-              <h3 className="text-sm font-bold text-slate-655 dark:text-slate-400 mb-1">No Matches Found</h3>
-              <p className="text-xs text-slate-400 max-w-xs leading-normal">
+            <div className="border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl h-80 flex flex-col items-center justify-center text-center p-6 bg-paper-50/20 dark:bg-paper-800/10">
+              <AlertTriangle className="h-12 w-12 text-paper-300 dark:text-paper-700 mb-3" />
+              <h3 className="text-sm font-bold text-paper-700 dark:text-paper-400 mb-1">No Matches Found</h3>
+              <p className="text-xs text-paper-400 max-w-xs leading-normal">
                 Try widening your budget limit or lowering travel days to discover suitable packages.
               </p>
             </div>
@@ -311,53 +311,53 @@ export const ReverseSearch: React.FC = () => {
 
           {!loading && hasSearched && results.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wider">Top 5 Best Matches</h3>
+              <h3 className="text-sm font-bold text-paper-600 dark:text-paper-400 uppercase tracking-wider">Top 5 Best Matches</h3>
 
               <div className="flex flex-col gap-4">
                 {results.map((res, index) => (
                   <div
                     key={res.destination.id}
-                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row gap-5 items-start justify-between relative group hover:border-violet-500/40 transition-colors"
+                    className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row gap-5 items-start justify-between relative group hover:border-marigold-500/40 transition-colors"
                   >
 
                     {/* Left details */}
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <div className="h-6 w-6 rounded-full bg-violet-650/10 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-extrabold text-[10px] flex items-center justify-center">
+                        <div className="h-6 w-6 rounded-full bg-marigold-700/10 dark:bg-marigold-950/40 text-marigold-600 dark:text-marigold-400 font-extrabold text-[10px] flex items-center justify-center">
                           #{index + 1}
                         </div>
-                        <h4 className="font-extrabold text-lg text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                        <h4 className="font-extrabold text-lg text-paper-900 dark:text-white group-hover:text-marigold-600 dark:group-hover:text-marigold-400 transition-colors">
                           {res.destination.name}
                         </h4>
-                        <span className="bg-slate-100 dark:bg-slate-900 text-slate-550 dark:text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                        <span className="bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                           {res.destination.category}
                         </span>
                       </div>
 
-                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                        <MapPin size={11} className="text-slate-400 shrink-0" />
+                      <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                        <MapPin size={11} className="text-paper-400 shrink-0" />
                         {res.destination.state}
                       </span>
 
-                      <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed max-w-xl line-clamp-2">
+                      <p className="text-paper-500 dark:text-paper-400 text-xs leading-relaxed max-w-xl line-clamp-2">
                         {res.destination.description}
                       </p>
 
-                      <div className="flex items-center gap-4 text-xs font-semibold text-slate-655 dark:text-slate-400 pt-1">
+                      <div className="flex items-center gap-4 text-xs font-semibold text-paper-700 dark:text-paper-400 pt-1">
                         <div className="flex items-center gap-0.5 text-amber-500">
                           <Star size={13} fill="currentColor" />
-                          <span className="font-bold text-slate-800 dark:text-white">{res.destination.rating}</span>
+                          <span className="font-bold text-paper-800 dark:text-white">{res.destination.rating}</span>
                         </div>
                         <span>Best season: {res.destination.best_season}</span>
                       </div>
                     </div>
 
                     {/* Right cost & action */}
-                    <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-slate-100 md:dark:border-slate-700/60 md:pl-6 shrink-0 w-full md:w-auto">
+                    <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-paper-100 md:dark:border-paper-700/60 md:pl-6 shrink-0 w-full md:w-auto">
                       <div className="flex flex-col md:items-end">
-                        <span className="text-[9px] text-slate-400 font-bold uppercase">Estimated Cost</span>
-                        <span className="text-lg font-extrabold text-slate-900 dark:text-white">₹{res.estimated_cost.toLocaleString()}</span>
-                        <span className="text-[9px] text-slate-400 font-medium">({res.budget_fit}% of budget)</span>
+                        <span className="text-[9px] text-paper-400 font-bold uppercase">Estimated Cost</span>
+                        <span className="text-lg font-extrabold text-paper-900 dark:text-white">₹{res.estimated_cost.toLocaleString()}</span>
+                        <span className="text-[9px] text-paper-400 font-medium">({res.budget_fit}% of budget)</span>
                       </div>
 
                       <div className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase ${getValueScoreColor(res.value_score)}`}>
@@ -366,7 +366,7 @@ export const ReverseSearch: React.FC = () => {
 
                       <button
                         onClick={() => handlePlanTrip(res.destination.name)}
-                        className="w-full md:w-auto inline-flex items-center justify-center gap-1 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all"
+                        className="w-full md:w-auto inline-flex items-center justify-center gap-1 bg-paper-900 hover:bg-paper-800 dark:bg-paper-700 dark:hover:bg-paper-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all"
                       >
                         Select & Plan
                         <ArrowRight size={13} />
@@ -391,4 +391,7 @@ export const ReverseSearch: React.FC = () => {
     </div>
   );
 };
+
+
+
 

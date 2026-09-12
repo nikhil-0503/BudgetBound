@@ -58,7 +58,7 @@ export const BudgetHealthMeter: React.FC<BudgetHealthMeterProps> = ({
             cx="56"
             cy="56"
             r={radius}
-            className="stroke-slate-200 dark:stroke-slate-700 fill-none"
+            className="stroke-paper-200 dark:stroke-paper-700 fill-none"
             strokeWidth="8"
           />
           {/* Progress Circle */}
@@ -75,10 +75,10 @@ export const BudgetHealthMeter: React.FC<BudgetHealthMeterProps> = ({
         </svg>
         {/* Inner Text Label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xl font-extrabold text-slate-800 dark:text-white">
+          <span className="text-xl font-extrabold text-paper-800 dark:text-white">
             {percentage.toFixed(0)}%
           </span>
-          <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+          <span className="text-[9px] text-paper-400 dark:text-paper-500 font-bold uppercase tracking-wider">
             Used
           </span>
         </div>
@@ -87,7 +87,7 @@ export const BudgetHealthMeter: React.FC<BudgetHealthMeterProps> = ({
       {/* Stats Description */}
       <div className="flex-1 space-y-3.5 w-full text-left">
         <div>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest block">
+          <span className="text-[10px] text-paper-400 dark:text-paper-500 font-bold uppercase tracking-widest block">
             Budget Health
           </span>
           <h4 className={`text-base font-extrabold ${statusColor} flex items-center gap-1.5 mt-0.5`}>
@@ -97,24 +97,24 @@ export const BudgetHealthMeter: React.FC<BudgetHealthMeterProps> = ({
 
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div className="space-y-0.5">
-            <span className="text-slate-400 dark:text-slate-500 font-semibold block">Target Budget</span>
-            <span className="font-bold text-slate-700 dark:text-slate-300">₹{budget.toLocaleString()}</span>
+            <span className="text-paper-400 dark:text-paper-500 font-semibold block">Target Budget</span>
+            <span className="font-bold text-paper-700 dark:text-paper-300">₹{budget.toLocaleString()}</span>
           </div>
 
           <div className="space-y-0.5">
-            <span className="text-slate-400 dark:text-slate-500 font-semibold block">Remaining</span>
-            <span className="font-bold text-slate-700 dark:text-slate-300">₹{remaining.toLocaleString()}</span>
+            <span className="text-paper-400 dark:text-paper-500 font-semibold block">Remaining</span>
+            <span className="font-bold text-paper-700 dark:text-paper-300">₹{remaining.toLocaleString()}</span>
           </div>
 
           <div className="space-y-0.5">
-            <span className="text-slate-400 dark:text-slate-500 font-semibold block">Estimated Cost</span>
-            <span className="font-bold text-slate-700 dark:text-slate-300">₹{estimatedCost.toLocaleString()}</span>
+            <span className="text-paper-400 dark:text-paper-500 font-semibold block">Estimated Cost</span>
+            <span className="font-bold text-paper-700 dark:text-paper-300">₹{estimatedCost.toLocaleString()}</span>
           </div>
 
           {isActualAvailable && (
             <div className="space-y-0.5">
-              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Actual Spent</span>
-              <span className="font-bold text-slate-700 dark:text-slate-300">₹{actualExpenses.toLocaleString()}</span>
+              <span className="text-paper-400 dark:text-paper-500 font-semibold block">Actual Spent</span>
+              <span className="font-bold text-paper-700 dark:text-paper-300">₹{actualExpenses.toLocaleString()}</span>
             </div>
           )}
         </div>
@@ -123,3 +123,6 @@ export const BudgetHealthMeter: React.FC<BudgetHealthMeterProps> = ({
     </div>
   );
 };
+
+
+

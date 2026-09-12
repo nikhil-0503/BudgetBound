@@ -51,7 +51,7 @@ export const TimelineItinerary: React.FC<TimelineItineraryProps> = ({
     if (term.includes('flight') || term.includes('train') || term.includes('arrival') || term.includes('departure') || term.includes('travel') || term.includes('cab')) {
       return { icon: <Plane size={14} />, bg: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' };
     }
-    return { icon: <Camera size={14} />, bg: 'bg-violet-100 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400' };
+    return { icon: <Camera size={14} />, bg: 'bg-marigold-100 text-marigold-600 dark:bg-marigold-950/40 dark:text-marigold-400' };
   };
 
   const formatActivityTime = (timeStr: string) => {
@@ -69,16 +69,16 @@ export const TimelineItinerary: React.FC<TimelineItineraryProps> = ({
         return (
           <div 
             key={day.day_number} 
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm transition-all hover:shadow"
+            className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl overflow-hidden shadow-sm transition-all hover:shadow"
           >
             {/* Header Accordion Button */}
             <button
               type="button"
               onClick={() => toggleDay(day.day_number)}
-              className="w-full flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/10 text-left font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 focus:outline-none"
+              className="w-full flex items-center justify-between p-4 bg-paper-50/50 dark:bg-paper-900/10 text-left font-bold text-xs uppercase tracking-wider text-paper-700 dark:text-paper-300 focus:outline-none"
             >
               <div className="flex items-center gap-2">
-                <span className="h-6 w-6 rounded-lg bg-violet-100 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 flex items-center justify-center font-extrabold text-[10px]">
+                <span className="h-6 w-6 rounded-lg bg-marigold-100 dark:bg-marigold-950/50 text-marigold-600 dark:text-marigold-400 flex items-center justify-center font-extrabold text-[10px]">
                   {day.day_number}
                 </span>
                 <span>Day {day.day_number} Timeline</span>
@@ -88,9 +88,9 @@ export const TimelineItinerary: React.FC<TimelineItineraryProps> = ({
 
             {/* Expanded Day Details */}
             {isOpen && (
-              <div className="p-5 border-t border-slate-100 dark:border-slate-700/60 flex flex-col gap-4">
+              <div className="p-5 border-t border-paper-100 dark:border-paper-700/60 flex flex-col gap-4">
                 {day.description && (
-                  <p className="text-slate-500 dark:text-slate-400 text-xs italic leading-relaxed border-l-2 border-violet-400 pl-3">
+                  <p className="text-paper-500 dark:text-paper-400 text-xs italic leading-relaxed border-l-2 border-marigold-400 pl-3">
                     {day.description}
                   </p>
                 )}
@@ -98,7 +98,7 @@ export const TimelineItinerary: React.FC<TimelineItineraryProps> = ({
                 {/* Vertical Timeline Thread */}
                 <div className="relative pl-6 space-y-6 mt-2">
                   {/* Vertical Connection Line */}
-                  <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-slate-200 dark:bg-slate-700" />
+                  <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-paper-200 dark:bg-paper-700" />
 
                   {day.activities.map((act, actIdx) => {
                     const formattedTime = formatActivityTime(act.time);
@@ -110,28 +110,28 @@ export const TimelineItinerary: React.FC<TimelineItineraryProps> = ({
                       <div key={actIdx} className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs group">
                         
                         {/* Timeline Node Point */}
-                        <div className={`absolute -left-6 transform -translate-x-[1px] h-6.5 w-6.5 rounded-full ${bg} flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-sm shrink-0 z-10`}>
+                        <div className={`absolute -left-6 transform -translate-x-[1px] h-6.5 w-6.5 rounded-full ${bg} flex items-center justify-center border-4 border-white dark:border-paper-800 shadow-sm shrink-0 z-10`}>
                           {icon}
                         </div>
 
                         {/* Title & Timing Info */}
                         <div className="flex flex-col gap-1 sm:max-w-[70%]">
                           <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-[10px] tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1 uppercase">
+                            <span className="font-extrabold text-[10px] tracking-wider text-paper-400 dark:text-paper-500 flex items-center gap-1 uppercase">
                               <Clock size={11} />
                               {formattedTime}
                             </span>
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded">
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 bg-paper-100 dark:bg-paper-900 text-paper-500 dark:text-paper-400 rounded">
                               {duration}
                             </span>
                           </div>
-                          <span className="text-slate-800 dark:text-white font-bold leading-normal text-xs group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                          <span className="text-paper-800 dark:text-white font-bold leading-normal text-xs group-hover:text-marigold-600 dark:group-hover:text-marigold-400 transition-colors">
                             {act.title}
                           </span>
                         </div>
 
                         {/* Budget Tag info */}
-                        <div className="self-start sm:self-center font-bold text-[10px] bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 text-slate-600 dark:text-slate-400 px-3 py-1 rounded-xl whitespace-nowrap">
+                        <div className="self-start sm:self-center font-bold text-[10px] bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-800 text-paper-600 dark:text-paper-400 px-3 py-1 rounded-xl whitespace-nowrap">
                           {costStr}
                         </div>
 
@@ -147,3 +147,6 @@ export const TimelineItinerary: React.FC<TimelineItineraryProps> = ({
     </div>
   );
 };
+
+
+

@@ -86,8 +86,8 @@ export const DestinationDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 gap-4">
-        <Loader className="h-10 w-10 text-violet-500 animate-spin" />
+      <div className="min-h-[50vh] flex flex-col items-center justify-center text-paper-500 dark:text-paper-400 gap-4">
+        <Loader className="h-10 w-10 text-marigold-500 animate-spin" />
         <span className="text-sm font-semibold">Retrieving destination records...</span>
       </div>
     );
@@ -152,20 +152,20 @@ export const DestinationDetail: React.FC = () => {
         <div className="space-y-1">
           <Link 
             to="/explorer" 
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 uppercase tracking-widest transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-paper-400 hover:text-marigold-600 dark:hover:text-marigold-400 uppercase tracking-widest transition-colors mb-2"
           >
             <ArrowLeft size={14} />
             Back to Explorer
           </Link>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white">
               {dest.name}
             </h1>
-            <span className="bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 text-xs font-bold px-3 py-1 rounded-full uppercase shrink-0">
+            <span className="bg-marigold-100 dark:bg-marigold-950/40 text-marigold-700 dark:text-marigold-400 text-xs font-bold px-3 py-1 rounded-full uppercase shrink-0">
               {dest.category}
             </span>
           </div>
-          <span className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+          <span className="text-sm text-paper-500 dark:text-paper-400 flex items-center gap-1">
             <MapPin size={14} />
             {dest.state}, India
           </span>
@@ -173,7 +173,7 @@ export const DestinationDetail: React.FC = () => {
 
         <button 
           onClick={handlePlanHere}
-          className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-md shadow-violet-600/15"
+          className="inline-flex items-center gap-2 bg-marigold-600 hover:bg-marigold-500 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-md shadow-marigold-600/15"
         >
           <Compass size={16} />
           Plan Itinerary Here
@@ -187,63 +187,63 @@ export const DestinationDetail: React.FC = () => {
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Main Description */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-3">Overview</h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-paper-800 dark:text-white mb-3">Overview</h3>
+            <p className="text-paper-600 dark:text-paper-400 text-sm leading-relaxed mb-6">
               {dest.description}
             </p>
 
-            <div className="flex items-center gap-2.5 p-3.5 bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-xl text-xs font-semibold">
-              <CloudSun className="text-violet-500 shrink-0" size={18} />
-              <span className="text-slate-500 dark:text-slate-400">Best Season to Visit:</span>
-              <span className="text-slate-800 dark:text-white font-bold">{dest.best_season}</span>
+            <div className="flex items-center gap-2.5 p-3.5 bg-paper-50 dark:bg-paper-900/40 border border-paper-100 dark:border-paper-800 rounded-xl text-xs font-semibold">
+              <CloudSun className="text-marigold-500 shrink-0" size={18} />
+              <span className="text-paper-500 dark:text-paper-400">Best Season to Visit:</span>
+              <span className="text-paper-800 dark:text-white font-bold">{dest.best_season}</span>
             </div>
           </div>
 
           {/* Average Baseline Costs Grid */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-4">Estimated Average Base Costs</h3>
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-paper-800 dark:text-white mb-4">Estimated Average Base Costs</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl flex flex-col gap-2">
-                <Plane className="text-violet-500" size={18} />
-                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Transit Cost</span>
-                <span className="font-extrabold text-sm text-slate-800 dark:text-white">₹{dest.avg_travel_cost.toLocaleString()}</span>
-                <span className="text-[8px] text-slate-400">Round trip base</span>
+              <div className="p-4 bg-paper-50 dark:bg-paper-900/40 rounded-xl flex flex-col gap-2">
+                <Plane className="text-marigold-500" size={18} />
+                <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider">Transit Cost</span>
+                <span className="font-extrabold text-sm text-paper-800 dark:text-white">₹{dest.avg_travel_cost.toLocaleString()}</span>
+                <span className="text-[8px] text-paper-400">Round trip base</span>
               </div>
 
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl flex flex-col gap-2">
-                <Building className="text-violet-500" size={18} />
-                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Lodging Cost</span>
-                <span className="font-extrabold text-sm text-slate-800 dark:text-white">₹{dest.avg_hotel_cost.toLocaleString()}</span>
-                <span className="text-[8px] text-slate-400">Per night stay</span>
+              <div className="p-4 bg-paper-50 dark:bg-paper-900/40 rounded-xl flex flex-col gap-2">
+                <Building className="text-marigold-500" size={18} />
+                <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider">Lodging Cost</span>
+                <span className="font-extrabold text-sm text-paper-800 dark:text-white">₹{dest.avg_hotel_cost.toLocaleString()}</span>
+                <span className="text-[8px] text-paper-400">Per night stay</span>
               </div>
 
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl flex flex-col gap-2">
-                <Utensils className="text-violet-500" size={18} />
-                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Food / Day</span>
-                <span className="font-extrabold text-sm text-slate-800 dark:text-white">₹{dest.avg_food_cost.toLocaleString()}</span>
-                <span className="text-[8px] text-slate-400">Meals & beverages</span>
+              <div className="p-4 bg-paper-50 dark:bg-paper-900/40 rounded-xl flex flex-col gap-2">
+                <Utensils className="text-marigold-500" size={18} />
+                <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider">Food / Day</span>
+                <span className="font-extrabold text-sm text-paper-800 dark:text-white">₹{dest.avg_food_cost.toLocaleString()}</span>
+                <span className="text-[8px] text-paper-400">Meals & beverages</span>
               </div>
 
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl flex flex-col gap-2">
-                <Camera className="text-violet-500" size={18} />
-                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Activity Fare</span>
-                <span className="font-extrabold text-sm text-slate-800 dark:text-white">₹{dest.avg_activity_cost.toLocaleString()}</span>
-                <span className="text-[8px] text-slate-400">Average entry fee</span>
+              <div className="p-4 bg-paper-50 dark:bg-paper-900/40 rounded-xl flex flex-col gap-2">
+                <Camera className="text-marigold-500" size={18} />
+                <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider">Activity Fare</span>
+                <span className="font-extrabold text-sm text-paper-800 dark:text-white">₹{dest.avg_activity_cost.toLocaleString()}</span>
+                <span className="text-[8px] text-paper-400">Average entry fee</span>
               </div>
 
             </div>
           </div>
 
           {/* Attractions */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-4">Curated Local Attractions</h3>
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-paper-800 dark:text-white mb-4">Curated Local Attractions</h3>
             <div className="flex flex-col gap-3 font-medium">
               {dest.attractions.map((a, idx) => (
-                <div key={idx} className="flex items-center gap-3 text-slate-600 dark:text-slate-300 text-xs">
-                  <div className="h-6 w-6 rounded-md bg-violet-50 dark:bg-violet-950/40 flex items-center justify-center font-bold text-violet-600 dark:text-violet-400 shrink-0">
+                <div key={idx} className="flex items-center gap-3 text-paper-600 dark:text-paper-300 text-xs">
+                  <div className="h-6 w-6 rounded-md bg-marigold-50 dark:bg-marigold-950/40 flex items-center justify-center font-bold text-marigold-600 dark:text-marigold-400 shrink-0">
                     {idx + 1}
                   </div>
                   <span>{a}</span>
@@ -259,10 +259,10 @@ export const DestinationDetail: React.FC = () => {
 
           {/* Weather Intelligence Widget */}
           {dest.weather_intelligence && (
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                  <CloudSun size={16} className="text-violet-500" />
+                <h3 className="text-sm font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <CloudSun size={16} className="text-marigold-500" />
                   Season Intelligence
                 </h3>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -275,35 +275,35 @@ export const DestinationDetail: React.FC = () => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3.5 text-xs bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800 font-bold">
+              <div className="grid grid-cols-2 gap-3.5 text-xs bg-paper-50 dark:bg-paper-900/40 p-3 rounded-xl border border-paper-100 dark:border-paper-800 font-bold">
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-slate-400 block uppercase">Current Season</span>
-                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.current_season}</span>
+                  <span className="text-[10px] text-paper-400 block uppercase">Current Season</span>
+                  <span className="text-paper-800 dark:text-white">{dest.weather_intelligence.current_season}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-slate-400 block uppercase">Temp Range</span>
-                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.temperature_range}</span>
+                  <span className="text-[10px] text-paper-400 block uppercase">Temp Range</span>
+                  <span className="text-paper-800 dark:text-white">{dest.weather_intelligence.temperature_range}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-slate-400 block uppercase">Crowd Density</span>
-                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.crowd_level}</span>
+                  <span className="text-[10px] text-paper-400 block uppercase">Crowd Density</span>
+                  <span className="text-paper-800 dark:text-white">{dest.weather_intelligence.crowd_level}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-slate-400 block uppercase">Rain Chance</span>
-                  <span className="text-slate-800 dark:text-white">{dest.weather_intelligence.rain_probability}</span>
+                  <span className="text-[10px] text-paper-400 block uppercase">Rain Chance</span>
+                  <span className="text-paper-800 dark:text-white">{dest.weather_intelligence.rain_probability}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed italic border-l-2 border-violet-400 pl-3">
+              <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed italic border-l-2 border-marigold-400 pl-3">
                 {dest.weather_intelligence.recommendation}
               </p>
             </div>
           )}
 
           {/* Sample Itinerary */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-1.5">
-              <Calendar size={18} className="text-violet-500" />
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-paper-800 dark:text-white mb-4 flex items-center gap-1.5">
+              <Calendar size={18} className="text-marigold-500" />
               Sample 4-Day Itinerary Plan
             </h3>
 
@@ -312,15 +312,15 @@ export const DestinationDetail: React.FC = () => {
                 <div key={d.day} className="flex gap-4">
                   {/* Timeline bar */}
                   <div className="flex flex-col items-center shrink-0">
-                    <div className="h-6 w-6 rounded-full bg-violet-600 text-white font-bold flex items-center justify-center text-[10px]">
+                    <div className="h-6 w-6 rounded-full bg-marigold-600 text-white font-bold flex items-center justify-center text-[10px]">
                       D{d.day}
                     </div>
-                    {d.day < 4 && <div className="w-0.5 bg-slate-200 dark:bg-slate-700 flex-1 my-1" />}
+                    {d.day < 4 && <div className="w-0.5 bg-paper-200 dark:bg-paper-700 flex-1 my-1" />}
                   </div>
 
                   <div className="space-y-2 pb-2">
-                    <h4 className="font-bold text-slate-800 dark:text-white">{d.title}</h4>
-                    <ul className="list-disc pl-4 text-slate-500 dark:text-slate-400 space-y-1.5">
+                    <h4 className="font-bold text-paper-800 dark:text-white">{d.title}</h4>
+                    <ul className="list-disc pl-4 text-paper-500 dark:text-paper-400 space-y-1.5">
                       {d.activities.map((act, actIdx) => (
                         <li key={actIdx} className="leading-relaxed">{act}</li>
                       ))}
@@ -338,3 +338,6 @@ export const DestinationDetail: React.FC = () => {
     </div>
   );
 };
+
+
+

@@ -214,8 +214,8 @@ export const ExpenseTracker: React.FC = () => {
 
   if (loading && !trip) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 gap-4">
-        <Loader className="h-10 w-10 text-violet-500 animate-spin" />
+      <div className="min-h-[50vh] flex flex-col items-center justify-center text-paper-500 dark:text-paper-400 gap-4">
+        <Loader className="h-10 w-10 text-marigold-500 animate-spin" />
         <span className="text-sm font-semibold">Loading ledger details...</span>
       </div>
     );
@@ -244,21 +244,21 @@ export const ExpenseTracker: React.FC = () => {
         <div className="space-y-1">
           <Link 
             to="/dashboard" 
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 uppercase tracking-widest transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-paper-400 hover:text-marigold-600 dark:hover:text-marigold-400 uppercase tracking-widest transition-colors mb-2"
           >
             <ArrowLeft size={14} />
             Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white flex items-center gap-2">
             Expense Tracker: {trip.destination.name}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-paper-500 dark:text-paper-400">
             Log your expenditures and compare actual expenses against the initial budget plan.
           </p>
         </div>
         <button 
           onClick={handleOpenAdd}
-          className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-violet-600/15"
+          className="inline-flex items-center gap-2 bg-marigold-600 hover:bg-marigold-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-marigold-600/15"
         >
           <Plus size={16} />
           Log Expense
@@ -269,34 +269,34 @@ export const ExpenseTracker: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Allocated Budget */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-marigold-100 dark:bg-marigold-950/40 text-marigold-600 dark:text-marigold-400 flex items-center justify-center shrink-0">
             <Wallet size={22} />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Allocated Budget</span>
-            <span className="text-xl font-extrabold text-slate-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
+            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider block">Allocated Budget</span>
+            <span className="text-xl font-extrabold text-paper-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
           </div>
         </div>
 
         {/* Spent Actual */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center gap-4">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex items-center gap-4">
           <div className="h-12 w-12 rounded-xl bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
             <TrendingUp size={22} />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Actual Total Spent</span>
-            <span className="text-xl font-extrabold text-slate-800 dark:text-white">₹{stats.total_actual.toLocaleString()}</span>
+            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider block">Actual Total Spent</span>
+            <span className="text-xl font-extrabold text-paper-800 dark:text-white">₹{stats.total_actual.toLocaleString()}</span>
           </div>
         </div>
 
         {/* Savings Remaining */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center gap-4">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex items-center gap-4">
           <div className="h-12 w-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <TrendingDown size={22} />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Plan Remaining Savings</span>
+            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider block">Plan Remaining Savings</span>
             <span className={`text-xl font-extrabold block ${stats.savings >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
               ₹{stats.savings.toLocaleString()}
             </span>
@@ -314,38 +314,38 @@ export const ExpenseTracker: React.FC = () => {
         />
         
         {/* Live Budget Predictions Card */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
           <div>
-            <h3 className="font-extrabold text-sm uppercase tracking-wider text-slate-800 dark:text-white">
+            <h3 className="font-extrabold text-sm uppercase tracking-wider text-paper-800 dark:text-white">
               Live Financial Forecast
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Real-time spend pacing and projections</p>
+            <p className="text-[11px] text-paper-400 mt-0.5">Real-time spend pacing and projections</p>
           </div>
           
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div className="space-y-0.5">
-              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Remaining Budget</span>
+              <span className="text-paper-400 dark:text-paper-500 font-semibold block">Remaining Budget</span>
               <span className={`font-bold ${(stats.remaining_budget ?? 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                 ₹{stats.remaining_budget ? stats.remaining_budget.toLocaleString() : '0'}
               </span>
             </div>
             
             <div className="space-y-0.5">
-              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Current Burn Rate</span>
-              <span className="font-bold text-slate-700 dark:text-slate-300">
+              <span className="text-paper-400 dark:text-paper-500 font-semibold block">Current Burn Rate</span>
+              <span className="font-bold text-paper-700 dark:text-paper-300">
                 ₹{stats.daily_burn_rate ? stats.daily_burn_rate.toLocaleString(undefined, { maximumFractionDigits: 1 }) : '0'}/day
               </span>
             </div>
             
             <div className="space-y-0.5">
-              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Projected Spend</span>
-              <span className="font-bold text-slate-700 dark:text-slate-300">
+              <span className="text-paper-400 dark:text-paper-500 font-semibold block">Projected Spend</span>
+              <span className="font-bold text-paper-700 dark:text-paper-300">
                 ₹{stats.projected_final_spend ? stats.projected_final_spend.toLocaleString() : '0'}
               </span>
             </div>
             
             <div className="space-y-0.5">
-              <span className="text-slate-400 dark:text-slate-500 font-semibold block">Forecast Status</span>
+              <span className="text-paper-400 dark:text-paper-500 font-semibold block">Forecast Status</span>
               <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 ${
                 stats.prediction_status === "Likely to stay within budget"
                   ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
@@ -362,14 +362,14 @@ export const ExpenseTracker: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Side: Table Ledger */}
-        <div className="lg:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-base font-bold text-slate-800 dark:text-white mb-6">Expense Ledger</h2>
+        <div className="lg:col-span-7 bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="text-base font-bold text-paper-800 dark:text-white mb-6">Expense Ledger</h2>
 
           {expenses.length === 0 ? (
-            <div className="h-64 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center p-6 bg-slate-50/50 dark:bg-slate-900/10">
-              <Calendar className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-3 animate-pulse" />
-              <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-1">No Entries Recorded</h3>
-              <p className="text-xs text-slate-400 max-w-xs leading-normal">
+            <div className="h-64 border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl flex flex-col items-center justify-center text-center p-6 bg-paper-50/50 dark:bg-paper-900/10">
+              <Calendar className="h-12 w-12 text-paper-300 dark:text-paper-600 mb-3 animate-pulse" />
+              <h3 className="text-sm font-bold text-paper-600 dark:text-paper-400 mb-1">No Entries Recorded</h3>
+              <p className="text-xs text-paper-400 max-w-xs leading-normal">
                 You haven't logged any live expenses for this trip. Click the "Log Expense" button to begin tracking.
               </p>
             </div>
@@ -377,7 +377,7 @@ export const ExpenseTracker: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-slate-100 dark:border-slate-700 text-slate-400 font-bold uppercase tracking-wider">
+                  <tr className="border-b border-paper-100 dark:border-paper-700 text-paper-400 font-bold uppercase tracking-wider">
                     <th className="pb-4">Date</th>
                     <th className="pb-4">Category</th>
                     <th className="pb-4">Notes</th>
@@ -385,31 +385,31 @@ export const ExpenseTracker: React.FC = () => {
                     <th className="pb-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
+                <tbody className="divide-y divide-paper-100 dark:divide-paper-700/60 font-medium">
                   {expenses.map((exp) => (
-                    <tr key={exp.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                      <td className="py-4 text-slate-500 dark:text-slate-400">{exp.date}</td>
+                    <tr key={exp.id} className="hover:bg-paper-50/50 dark:hover:bg-paper-900/30 transition-colors">
+                      <td className="py-4 text-paper-500 dark:text-paper-400">{exp.date}</td>
                       <td className="py-4">
-                        <span className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        <span className="bg-paper-100 dark:bg-paper-700 text-paper-700 dark:text-paper-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
                           {exp.category}
                         </span>
                       </td>
-                      <td className="py-4 text-slate-500 dark:text-slate-400 max-w-[150px] truncate" title={exp.notes}>
-                        {exp.notes || '—'}
+                      <td className="py-4 text-paper-500 dark:text-paper-400 max-w-[150px] truncate" title={exp.notes}>
+                        {exp.notes || '"”'}
                       </td>
-                      <td className="py-4 text-slate-800 dark:text-white font-bold">₹{exp.amount.toLocaleString()}</td>
+                      <td className="py-4 text-paper-800 dark:text-white font-bold">₹{exp.amount.toLocaleString()}</td>
                       <td className="py-4 text-right">
                         <div className="flex items-center justify-end gap-2.5">
                           <button 
                             onClick={() => handleOpenEdit(exp)}
-                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:hover:text-white transition-all"
+                            className="p-1.5 rounded-lg hover:bg-paper-100 dark:hover:bg-paper-700 text-paper-500 hover:text-paper-700 dark:hover:text-white transition-all"
                             title="Edit"
                           >
                             <Edit3 size={13} />
                           </button>
                           <button 
                             onClick={() => handleDeleteExpense(exp.id)}
-                            className="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 transition-all"
+                            className="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-paper-500 hover:text-rose-500 dark:hover:text-rose-400 transition-all"
                             title="Delete"
                           >
                             <Trash2 size={13} />
@@ -427,20 +427,20 @@ export const ExpenseTracker: React.FC = () => {
         {/* Right Side: Estimated vs Actual chart comparison */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                <h3 className="text-base font-bold text-paper-800 dark:text-white">
                   {expenses.length === 0 ? 'Planned Budget Allocation' : 'Planned vs Actual Spend'}
                 </h3>
-                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                <p className="text-[10px] text-paper-400 font-semibold mt-0.5">
                   {expenses.length === 0
                     ? 'Log expenses to see actual vs planned comparison'
                     : 'Category-level comparison of estimated vs actual costs'}
                 </p>
               </div>
               {expenses.length === 0 && (
-                <span className="text-[9px] font-bold uppercase tracking-widest bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 px-2 py-1 rounded-lg border border-violet-200 dark:border-violet-900/30">
+                <span className="text-[9px] font-bold uppercase tracking-widest bg-marigold-100 dark:bg-marigold-950/40 text-marigold-700 dark:text-marigold-400 px-2 py-1 rounded-lg border border-marigold-200 dark:border-marigold-900/30">
                   Planned
                 </span>
               )}
@@ -457,38 +457,38 @@ export const ExpenseTracker: React.FC = () => {
                   data={stats.categories.filter(c => c.estimated > 0 || c.actual > 0)}
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-paper-700" />
                   <XAxis dataKey="category" stroke="#94a3b8" tick={{ fontSize: 10 }} />
                   <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} />
                   <Tooltip 
                     contentStyle={{ 
-                      background: darkMode ? '#1e293b' : 'rgba(255,255,255,0.9)', 
-                      border: darkMode ? '1px solid #475569' : '1px solid #cbd5e1',
-                      color: darkMode ? '#f8fafc' : '#0f172a',
+                      background: darkMode ? '#14231f' : 'rgba(251,250,245,0.95)', 
+                      border: darkMode ? '1px solid #1a3733' : '1px solid #d9d5bc',
+                      color: darkMode ? '#f3f1e4' : '#10120f',
                       borderRadius: '12px' 
                     }} 
-                    itemStyle={{ color: darkMode ? '#f8fafc' : '#0f172a' }}
-                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, undefined]}
+                    itemStyle={{ color: darkMode ? '#f3f1e4' : '#10120f' }}
+                    formatter={(value) => [`₹${Number(value).toLocaleString('en-IN')}`, '']}
                   />
                   <Legend wrapperStyle={{ paddingTop: '10px', fontSize: '11px' }} />
-                  <Bar name="Plan Estimate" dataKey="estimated" fill="#8b5cf6" radius={[3, 3, 0, 0]} />
+                  <Bar name="Plan Estimate" dataKey="estimated" fill="#1F6F63" radius={[3, 3, 0, 0]} />
                   {expenses.length > 0 && (
-                    <Bar name="Actual Spent" dataKey="actual" fill="#ef4444" radius={[3, 3, 0, 0]} />
+                    <Bar name="Actual Spent" dataKey="actual" fill="#9B3A5B" radius={[3, 3, 0, 0]} />
                   )}
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Difference Analysis — only shown when actual expenses exist */}
+            {/* Difference Analysis "” only shown when actual expenses exist */}
             {expenses.length > 0 ? (
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-3 text-xs">
-                <span className="font-bold text-slate-700 dark:text-slate-300 uppercase block mb-1">Difference Analysis</span>
+              <div className="mt-6 pt-4 border-t border-paper-100 dark:border-paper-700 flex flex-col gap-3 text-xs">
+                <span className="font-bold text-paper-700 dark:text-paper-300 uppercase block mb-1">Difference Analysis</span>
                 <div className="flex flex-col gap-2 font-medium">
                   {stats.categories.map((cat, idx) => {
                     const isSaved = cat.difference >= 0;
                     if (cat.estimated === 0 && cat.actual === 0) return null;
                     return (
-                      <div key={idx} className="flex justify-between items-center text-slate-500 dark:text-slate-400">
+                      <div key={idx} className="flex justify-between items-center text-paper-500 dark:text-paper-400">
                         <span>{cat.category}</span>
                         <span className={isSaved ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}>
                           {isSaved ? `+₹${cat.difference.toLocaleString()}` : `-₹${Math.abs(cat.difference).toLocaleString()}`}
@@ -499,14 +499,14 @@ export const ExpenseTracker: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-400 text-center py-2">
+              <div className="mt-6 pt-4 border-t border-paper-100 dark:border-paper-700 text-xs text-paper-400 text-center py-2">
                 Log your first expense to see actual vs planned differences.
               </div>
             )}
 
           </div>
 
-          {/* Manual Budget Allocation Editor — wrap in right column div */}
+          {/* Manual Budget Allocation Editor "” wrap in right column div */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             {trip.budget_allocation && (
               <BudgetAllocationEditor
@@ -525,16 +525,16 @@ export const ExpenseTracker: React.FC = () => {
 
       {/* Floating Add/Edit Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+        <div className="fixed inset-0 bg-paper-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button 
               onClick={() => setShowForm(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              className="absolute top-4 right-4 text-paper-400 hover:text-paper-600 dark:hover:text-white"
             >
               <X size={18} />
             </button>
 
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">
+            <h3 className="text-lg font-bold text-paper-900 dark:text-white mb-6">
               {editingExpenseId ? 'Edit Expense Entry' : 'Log New Expense'}
             </h3>
 
@@ -547,23 +547,23 @@ export const ExpenseTracker: React.FC = () => {
 
             <form onSubmit={handleSaveExpense} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Transaction Date</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Transaction Date</label>
                 <input 
                   type="date"
                   required
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Category</label>
+                  <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Category</label>
                   <select 
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 appearance-none"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 appearance-none"
                   >
                     {categories.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -572,7 +572,7 @@ export const ExpenseTracker: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Amount (INR)</label>
+                  <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Amount (INR)</label>
                   <input 
                     type="number"
                     required
@@ -580,33 +580,33 @@ export const ExpenseTracker: React.FC = () => {
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
                     placeholder="1500"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                    className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Description / Notes</label>
+                <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Description / Notes</label>
                 <input 
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Dinner at beachfront shack"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-violet-500"
+                  className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                 />
               </div>
 
-              <div className="flex gap-3 justify-end mt-4 border-t border-slate-100 dark:border-slate-700 pt-4">
+              <div className="flex gap-3 justify-end mt-4 border-t border-paper-100 dark:border-paper-700 pt-4">
                 <button 
                   type="button" 
                   onClick={() => setShowForm(false)}
-                  className="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all"
+                  className="bg-paper-100 dark:bg-paper-700 hover:bg-paper-200 text-paper-700 dark:text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all flex items-center gap-1 shadow-md shadow-violet-500/10"
+                  className="bg-marigold-600 hover:bg-marigold-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all flex items-center gap-1 shadow-md shadow-marigold-500/10"
                 >
                   <Save size={14} />
                   Save Entry
@@ -620,3 +620,6 @@ export const ExpenseTracker: React.FC = () => {
     </div>
   );
 };
+
+
+

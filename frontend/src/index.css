@@ -1,16 +1,107 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @variant dark (&:where(.dark, .dark *));
 
-:root {
-  --primary-color: #6d28d9; /* Violet-700 */
-  --primary-light: #8b5cf6; /* Violet-500 */
-  --primary-dark: #4c1d95; /* Violet-900 */
-  --accent-color: #14b8a6; /* Teal-500 */
-  --success-color: #10b981; /* Emerald-500 */
-  --warning-color: #f59e0b; /* Amber-500 */
-  --danger-color: #ef4444; /* Red-500 */
-  --bg-dark: #0f172a; /* Slate-900 */
-  --card-dark: #1e293b; /* Slate-800 */
+/*
+  BUDGETBOUND DESIGN TOKENS — "Field Ledger"
+  A travel-ledger identity: journeys logged like receipts, budgets kept like
+  accounts. Warm marigold for action, deep petrol for structure, berry for
+  emphasis — set against parchment paper and ink.
+*/
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Marigold — primary brand / action color (replaces marigold) */
+  --color-marigold-50: #FFFBEB;
+  --color-marigold-100: #FEF1C7;
+  --color-marigold-200: #FCE18A;
+  --color-marigold-300: #FACB4D;
+  --color-marigold-400: #F5B32E;
+  --color-marigold-500: #E8A33D;
+  --color-marigold-600: #D98E22;
+  --color-marigold-700: #B8721A;
+  --color-marigold-800: #925914;
+  --color-marigold-900: #78480F;
+  --color-marigold-950: #442804;
+
+  /* Petrol — structural / secondary color (replaces petrol) */
+  --color-petrol-50: #ECF7F4;
+  --color-petrol-100: #D2EEE7;
+  --color-petrol-200: #A6DED0;
+  --color-petrol-300: #74C9B5;
+  --color-petrol-400: #46AB93;
+  --color-petrol-500: #2B8B75;
+  --color-petrol-600: #1F6F63;
+  --color-petrol-700: #185A50;
+  --color-petrol-800: #14453D;
+  --color-petrol-900: #0F3830;
+  --color-petrol-950: #081F1B;
+
+  /* Berry — emphasis / tertiary color (replaces berry) */
+  --color-berry-50: #FDF0F4;
+  --color-berry-100: #FBDDE7;
+  --color-berry-200: #F5B3C9;
+  --color-berry-300: #E884A5;
+  --color-berry-400: #CE5A82;
+  --color-berry-500: #B04066;
+  --color-berry-600: #9B3A5B;
+  --color-berry-700: #7D2E48;
+  --color-berry-800: #612337;
+  --color-berry-900: #481929;
+  --color-berry-950: #2A0E17;
+
+  /* Paper / Ink — replaces plain slate as the neutral surface pairing */
+  --color-paper-50: #FBFAF5;
+  --color-paper-100: #F3F1E4;
+  --color-paper-200: #E9E6D3;
+  --color-paper-300: #D9D5BC;
+  --color-paper-400: #B9B394;
+  --color-paper-500: #948D6E;
+  --color-paper-600: #6E6850;
+  --color-paper-700: #514C3B;
+  --color-paper-800: #332F24;
+  --color-paper-900: #1D1B15;
+  --color-paper-950: #10120F;
+
+  --color-ink-50: #EEF3F1;
+  --color-ink-100: #D3DED9;
+  --color-ink-200: #A6BDB4;
+  --color-ink-300: #75988C;
+  --color-ink-400: #4C7369;
+  --color-ink-500: #305750;
+  --color-ink-600: #234742;
+  --color-ink-700: #1A3733;
+  --color-ink-800: #142823;
+  --color-ink-900: #101E1B;
+  --color-ink-950: #0B1513;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: var(--color-paper-100);
+  color: var(--color-ink-900);
+}
+
+.dark body {
+  background-color: var(--color-ink-950);
+  color: var(--color-paper-100);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Ledger figures: every rupee amount sets in tabular mono so columns line up */
+.num, .font-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 /* Custom Scrollbars */
@@ -22,52 +113,102 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.3);
+  background: rgba(148, 141, 110, 0.35);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.5);
+  background: rgba(148, 141, 110, 0.55);
 }
 
-/* Custom styles and premium glassmorphism classes */
+/* Glassmorphism, retained for modals/overlays */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(251, 250, 245, 0.75);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
-
 .dark .glass {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(20, 40, 35, 0.75);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient-move 8s ease infinite;
 }
-
 @keyframes gradient-move {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* Custom animations */
 @keyframes pulse-subtle {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.02); }
 }
-
 .pulse-subtle {
   animation: pulse-subtle 3s infinite ease-in-out;
 }
 
-/* Utility to ensure sidebar doesn't layout shift */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/*
+  Ticket motif — a die-cut stub used for summary/stat cards throughout the
+  app (dashboard, budget health, trip cards). Two circular notches simulate
+  a perforated tear-line between a "label" stub and the figure it reports.
+*/
+.ticket {
+  position: relative;
+  background-color: var(--color-paper-50);
+  border: 1px solid var(--color-paper-300);
+  border-radius: 0.75rem;
+  overflow: visible;
+}
+.dark .ticket {
+  background-color: var(--color-ink-800);
+  border-color: var(--color-ink-600);
+}
+
+.ticket-perforation {
+  position: relative;
+  border-top: 1px dashed var(--color-paper-400);
+  margin: 0 1.25rem;
+}
+.dark .ticket-perforation {
+  border-top-color: var(--color-ink-500);
+}
+.ticket-perforation::before,
+.ticket-perforation::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--color-paper-100);
+}
+.dark .ticket-perforation::before,
+.dark .ticket-perforation::after {
+  background: var(--color-ink-950);
+}
+.ticket-perforation::before { left: -1.4375rem; }
+.ticket-perforation::after { right: -1.4375rem; }
+
+.eyebrow-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.eyebrow-rule::before {
+  content: '';
+  width: 1.25rem;
+  height: 2px;
+  background: var(--color-marigold-500);
+  display: inline-block;
 }

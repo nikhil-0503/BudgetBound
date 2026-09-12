@@ -84,15 +84,15 @@ export const NotificationsPage: React.FC = () => {
       case 'Overspending Alert':
         return <AlertTriangle className="text-amber-500" size={18} />;
       case 'Packing Reminder':
-        return <Package className="text-violet-500" size={18} />;
+        return <Package className="text-marigold-500" size={18} />;
       case 'Checklist Completed':
         return <CheckCircle className="text-emerald-500" size={18} />;
       case 'Trip Shared Successfully':
-        return <Share2 className="text-indigo-500" size={18} />;
+        return <Share2 className="text-petrol-500" size={18} />;
       case 'Trip Exported':
         return <FileText className="text-teal-500" size={18} />;
       default:
-        return <Bell className="text-slate-400" size={18} />;
+        return <Bell className="text-paper-400" size={18} />;
     }
   };
 
@@ -101,11 +101,11 @@ export const NotificationsPage: React.FC = () => {
       case 'Overspending Alert':
         return 'border-rose-100 dark:border-rose-900/10 bg-rose-50/20 dark:bg-rose-950/5';
       case 'Budget Warning':
-        return 'border-amber-105 dark:border-amber-900/10 bg-amber-50/15 dark:bg-amber-950/5';
+        return 'border-amber-100 dark:border-amber-900/10 bg-amber-50/15 dark:bg-amber-950/5';
       case 'Checklist Completed':
         return 'border-emerald-100 dark:border-emerald-900/10 bg-emerald-50/10 dark:bg-emerald-950/5';
       default:
-        return 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800';
+        return 'border-paper-100 dark:border-paper-800 bg-paper-50 dark:bg-paper-800';
     }
   };
 
@@ -120,13 +120,13 @@ export const NotificationsPage: React.FC = () => {
     >
       
       {/* Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <Bell size={20} className="text-violet-500" />
+          <h2 className="text-xl font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <Bell size={20} className="text-marigold-500" />
             BudgetBound Notification Center
           </h2>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-[11px] text-paper-400 mt-0.5">
             Stay updated with your travel reminders, checklists, and expenditure warnings
           </p>
         </div>
@@ -135,7 +135,7 @@ export const NotificationsPage: React.FC = () => {
           <button
             onClick={handleMarkAllRead}
             disabled={actioning}
-            className="bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-[10px] px-4.5 py-2.5 rounded-xl uppercase transition-all shadow-md flex items-center gap-1.5 shrink-0"
+            className="bg-marigold-600 hover:bg-marigold-500 text-white font-extrabold text-[10px] px-4.5 py-2.5 rounded-xl uppercase transition-all shadow-md flex items-center gap-1.5 shrink-0"
           >
             {actioning ? <Loader size={12} className="animate-spin" /> : <Check size={12} />}
             Mark All Read
@@ -166,19 +166,19 @@ export const NotificationsPage: React.FC = () => {
                 transition={{ duration: 0.2 }}
                 className={`border p-4.5 rounded-2xl flex items-start gap-4 transition-all ${
                   notif.is_read 
-                    ? 'bg-slate-50/50 dark:bg-slate-900/10 border-slate-150 dark:border-slate-800 text-slate-450 dark:text-slate-400' 
-                    : 'shadow-sm text-slate-750 dark:text-slate-250 font-medium'
+                    ? 'bg-paper-50/50 dark:bg-paper-900/10 border-paper-200 dark:border-paper-800 text-paper-500 dark:text-paper-400' 
+                    : 'shadow-sm text-paper-800 dark:text-paper-300 font-medium'
                 } ${getNotificationColorClass(notif.type)}`}
               >
                 {/* Category indicator icon */}
-                <div className="h-9 w-9 rounded-xl bg-white dark:bg-slate-750 border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-center shrink-0">
+                <div className="h-9 w-9 rounded-xl bg-paper-50 dark:bg-paper-800 border border-paper-100 dark:border-paper-700/60 shadow-sm flex items-center justify-center shrink-0">
                   {getNotificationIcon(notif.type)}
                 </div>
 
                 {/* Message text content */}
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex justify-between items-start gap-2">
-                    <span className="text-xs font-extrabold uppercase text-[9px] tracking-wide text-slate-400 block">
+                    <span className="text-xs font-extrabold uppercase text-[9px] tracking-wide text-paper-400 block">
                       {notif.type}
                     </span>
                     
@@ -190,7 +190,7 @@ export const NotificationsPage: React.FC = () => {
                   
                   <p className="text-xs leading-relaxed">{notif.message}</p>
                   
-                  <div className="flex items-center gap-1 text-[10px] text-slate-400 pt-1 font-semibold">
+                  <div className="flex items-center gap-1 text-[10px] text-paper-400 pt-1 font-semibold">
                     <Clock size={10} />
                     <span>{new Date(notif.created_at).toLocaleDateString()}</span>
                     <span>{new Date(notif.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -202,7 +202,7 @@ export const NotificationsPage: React.FC = () => {
                   {!notif.is_read && (
                     <button
                       onClick={() => handleMarkRead(notif.id)}
-                      className="p-1.5 bg-slate-50 dark:bg-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-500 dark:text-slate-350 transition-colors"
+                      className="p-1.5 bg-paper-50 dark:bg-paper-700/60 hover:bg-paper-100 dark:hover:bg-paper-700 rounded-lg text-paper-500 dark:text-paper-400 transition-colors"
                       title="Mark Read"
                     >
                       <Check size={13} />
@@ -224,3 +224,6 @@ export const NotificationsPage: React.FC = () => {
     </motion.div>
   );
 };
+
+
+

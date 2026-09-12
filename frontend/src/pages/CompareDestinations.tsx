@@ -139,7 +139,7 @@ export const CompareDestinations: React.FC = () => {
         promises.push(fetchPlanForSlot(i, destId));
       }
     }
-    // Fire all concurrently — do not await sequentially
+    // Fire all concurrently "” do not await sequentially
     Promise.all(promises).catch(err => console.error('Re-simulate error:', err));
   };
 
@@ -226,8 +226,8 @@ export const CompareDestinations: React.FC = () => {
 
   if (loadingCatalog) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-slate-500 gap-4">
-        <Loader className="h-10 w-10 text-violet-500 animate-spin" />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-paper-500 gap-4">
+        <Loader className="h-10 w-10 text-marigold-500 animate-spin" />
         <span className="text-sm font-semibold">Loading destination directory...</span>
       </div>
     );
@@ -238,86 +238,86 @@ export const CompareDestinations: React.FC = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="space-y-8 relative text-slate-900 dark:text-slate-100"
+      className="space-y-8 relative text-paper-900 dark:text-paper-100"
     >
       
       {/* Header */}
       <div>
-        <span className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest">Analytics Studio</span>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Compare Destinations</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <span className="text-xs font-bold text-marigold-600 dark:text-marigold-400 uppercase tracking-widest">Analytics Studio</span>
+        <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white mt-1">Compare Destinations</h1>
+        <p className="text-sm text-paper-500 dark:text-paper-400">
           Analyze and cross-reference multiple travel locations side-by-side. Costs are calculated live from the database using your simulation preferences.
         </p>
       </div>
 
       {/* Preferences context editor */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex flex-col gap-6">
-        <h3 className="font-extrabold text-sm uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
-          <Sliders className="text-violet-500" size={16} />
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex flex-col gap-6">
+        <h3 className="font-extrabold text-sm uppercase tracking-wider text-paper-800 dark:text-white flex items-center gap-1.5">
+          <Sliders className="text-marigold-500" size={16} />
           Simulation Preferences
         </h3>
-        <p className="text-xs text-slate-400 dark:text-slate-500 -mt-4">
+        <p className="text-xs text-paper-400 dark:text-paper-500 -mt-4">
           Set your trip scenario below. All three destination plans are recalculated using the same parameters so costs are directly comparable.
-          The <span className="font-bold text-slate-600 dark:text-slate-300">Target Budget</span> is your reference — columns that exceed it are flagged in the table.
+          The <span className="font-bold text-paper-600 dark:text-paper-300">Target Budget</span> is your reference "” columns that exceed it are flagged in the table.
         </p>
         
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-xs font-bold">
           <div>
-            <label className="block text-slate-400 mb-1">Starting City</label>
+            <label className="block text-paper-400 mb-1">Starting City</label>
             <input
               type="text"
               value={startingCity}
               onChange={(e) => setStartingCity(e.target.value)}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500"
+              className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1">Reference Budget (INR)</label>
+            <label className="block text-paper-400 mb-1">Reference Budget (INR)</label>
             <input
               type="number"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500"
+              className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1">Duration (Days)</label>
+            <label className="block text-paper-400 mb-1">Duration (Days)</label>
             <input
               type="number"
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500"
+              className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1">Travelers Count</label>
+            <label className="block text-paper-400 mb-1">Travelers Count</label>
             <input
               type="number"
               value={travelersCount}
               onChange={(e) => setTravelersCount(Number(e.target.value))}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500"
+              className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1">Comfort (0-100)</label>
+            <label className="block text-paper-400 mb-1">Comfort (0-100)</label>
             <input
               type="number"
               value={comfortScore}
               onChange={(e) => setComfortScore(Number(e.target.value))}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500"
+              className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1">Travel Style</label>
+            <label className="block text-paper-400 mb-1">Travel Style</label>
             <select
               value={travelType}
               onChange={(e) => setTravelType(e.target.value)}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500"
+              className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             >
               {['Nature', 'Adventure', 'Family', 'Religious', 'Beach', 'City Exploration', 'Romantic', 'Solo'].map(t => (
                 <option key={t} value={t}>{t}</option>
@@ -329,29 +329,29 @@ export const CompareDestinations: React.FC = () => {
         <button
           onClick={reSimulateAll}
           disabled={activePlans.length === 0}
-          className="self-end inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-violet-600/10"
+          className="self-end inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 disabled:opacity-40 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-marigold-600/10"
         >
           Re-Simulate Comparison
         </button>
       </div>
 
       {/* Compare Table Matrix */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-xs min-w-[700px]">
             <thead>
-              <tr className="border-b border-slate-150 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/10">
-                <th className="p-4 font-bold uppercase text-[10px] text-slate-400 w-[220px]">Comparison Factors</th>
+              <tr className="border-b border-paper-200 dark:border-paper-700 bg-paper-50/50 dark:bg-paper-900/10">
+                <th className="p-4 font-bold uppercase text-[10px] text-paper-400 w-[220px]">Comparison Factors</th>
                 
                 {[0, 1, 2].map((slotIdx) => (
-                  <th key={slotIdx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 w-[250px] align-top">
+                  <th key={slotIdx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 w-[250px] align-top">
                     <div className="flex flex-col gap-2">
                       <select
                         value={selectedIds[slotIdx]}
                         onChange={(e) => handleSelectChange(slotIdx, e.target.value)}
-                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2 text-xs font-bold focus:outline-none focus:border-violet-500"
+                        className="w-full bg-paper-100 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl p-2 text-xs font-bold focus:outline-none focus:border-marigold-500"
                       >
-                        <option value="">— Choose Destination —</option>
+                        <option value="">"” Choose Destination "”</option>
                         {destinations.map(d => (
                           <option key={d.id} value={d.id}>{d.name} ({d.state})</option>
                         ))}
@@ -359,7 +359,7 @@ export const CompareDestinations: React.FC = () => {
 
                       {/* Per-slot loading spinner */}
                       {loadingSlots[slotIdx] && (
-                        <div className="flex items-center gap-2 text-[10px] text-violet-500 font-semibold">
+                        <div className="flex items-center gap-2 text-[10px] text-marigold-500 font-semibold">
                           <Loader size={12} className="animate-spin" />
                           <span>Simulating costs...</span>
                         </div>
@@ -390,7 +390,7 @@ export const CompareDestinations: React.FC = () => {
                             </span>
                           )}
                           {bestValueIdx === slotIdx && (
-                            <span className="bg-violet-100 text-violet-800 dark:bg-violet-950/40 dark:text-violet-400 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">
+                            <span className="bg-marigold-100 text-marigold-800 dark:bg-marigold-950/40 dark:text-marigold-400 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">
                               Best Value
                             </span>
                           )}
@@ -412,53 +412,53 @@ export const CompareDestinations: React.FC = () => {
               </tr>
             </thead>
             
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60 font-semibold text-slate-600 dark:text-slate-300">
+            <tbody className="divide-y divide-paper-100 dark:divide-paper-700/60 font-semibold text-paper-600 dark:text-paper-300">
               
               {/* Row: Destination Name */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 font-extrabold uppercase text-[10px] text-slate-400">Destination</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 font-extrabold uppercase text-[10px] text-paper-400">Destination</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white font-extrabold text-sm">
-                    {plans[idx]?.destination.name || (loadingSlots[idx] ? '...' : '—')}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-paper-900 dark:text-white font-extrabold text-sm">
+                    {plans[idx]?.destination.name || (loadingSlots[idx] ? '...' : '"”')}
                   </td>
                 ))}
               </tr>
 
               {/* Row: State */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">State</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">State</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 font-medium">
-                    {plans[idx]?.destination.state || '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-paper-500 dark:text-paper-400 font-medium">
+                    {plans[idx]?.destination.state || '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Category */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Category</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Category</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-xs font-bold uppercase">
-                    {plans[idx]?.destination.category || '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-xs font-bold uppercase">
+                    {plans[idx]?.destination.category || '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Budget Tier */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Budget Tier</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Budget Tier</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-bold">
-                    {plans[idx]?.destination.budget_tier || '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-bold">
+                    {plans[idx]?.destination.budget_tier || '"”'}
                   </td>
                 ))}
               </tr>
 
-              {/* Row: Estimated Total Cost — shows actual cost vs reference budget */}
-              <tr className="bg-slate-50/30 dark:bg-slate-900/10">
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 font-extrabold text-slate-700 dark:text-slate-200">
+              {/* Row: Estimated Total Cost "” shows actual cost vs reference budget */}
+              <tr className="bg-paper-50/30 dark:bg-paper-900/10">
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 font-extrabold text-paper-700 dark:text-paper-200">
                   Estimated Total Cost
-                  <span className="block text-[9px] font-bold text-slate-400 mt-0.5 normal-case">
+                  <span className="block text-[9px] font-bold text-paper-400 mt-0.5 normal-case">
                     Reference budget: ₹{Number(budget || 20000).toLocaleString()}
                   </span>
                 </td>
@@ -466,7 +466,7 @@ export const CompareDestinations: React.FC = () => {
                   const p = plans[idx];
                   const over = p && isOverBudget(p);
                   return (
-                    <td key={idx} className={`p-4 border-l border-slate-100 dark:border-slate-700/60 font-extrabold text-sm ${over ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
+                    <td key={idx} className={`p-4 border-l border-paper-100 dark:border-paper-700/60 font-extrabold text-sm ${over ? 'text-rose-600 dark:text-rose-400' : 'text-paper-900 dark:text-white'}`}>
                       {p ? (
                         <div className="flex flex-col gap-0.5">
                           <span>₹{p.costs.total_estimated_cost.toLocaleString()}</span>
@@ -481,7 +481,7 @@ export const CompareDestinations: React.FC = () => {
                             </span>
                           )}
                         </div>
-                      ) : '—'}
+                      ) : '"”'}
                     </td>
                   );
                 })}
@@ -489,109 +489,109 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Transport Mode & Cost */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Transport cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Transport cost</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx] ? `₹${plans[idx].costs.transport_cost.toLocaleString()} (${plans[idx].costs.transport_mode})` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx] ? `₹${plans[idx].costs.transport_cost.toLocaleString()} (${plans[idx].costs.transport_mode})` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Hotel Cost */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Hotel cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Hotel cost</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx] ? `₹${plans[idx].costs.hotel_cost.toLocaleString()} (${plans[idx].costs.hotel_tier})` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx] ? `₹${plans[idx].costs.hotel_cost.toLocaleString()} (${plans[idx].costs.hotel_tier})` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Food Cost */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Food cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Food cost</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx] ? `₹${plans[idx].costs.food_cost.toLocaleString()}` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx] ? `₹${plans[idx].costs.food_cost.toLocaleString()}` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Activities Cost */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Activities cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Activities cost</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx] ? `₹${plans[idx].costs.activities_cost.toLocaleString()}` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx] ? `₹${plans[idx].costs.activities_cost.toLocaleString()}` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Local Transport + Taxes */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Local transport + taxes</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Local transport + taxes</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx] ? `₹${(plans[idx].costs.local_transport_cost + plans[idx].costs.taxes_fees_cost).toLocaleString()}` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx] ? `₹${(plans[idx].costs.local_transport_cost + plans[idx].costs.taxes_fees_cost).toLocaleString()}` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Recommended Days */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Recommended Duration</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Recommended Duration</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-bold">
-                    {plans[idx] ? `${plans[idx].destination.recommended_duration} Days` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-bold">
+                    {plans[idx] ? `${plans[idx].destination.recommended_duration} Days` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Rating */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">User Rating</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">User Rating</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white font-extrabold">
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-paper-900 dark:text-white font-extrabold">
                     {plans[idx] ? (
                       <div className="flex items-center gap-1 text-amber-500">
                         <Star size={14} fill="currentColor" />
                         <span>{plans[idx].destination.rating} / 5</span>
                       </div>
-                    ) : '—'}
+                    ) : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Best Season */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Best Season</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Best Season</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400 truncate">
-                    {plans[idx]?.destination.best_season || '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400 truncate">
+                    {plans[idx]?.destination.best_season || '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Comfort Level */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Comfort Standard</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Comfort Standard</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white font-bold">
-                    {plans[idx] ? `${plans[idx].destination.comfort_level} / 100` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-paper-900 dark:text-white font-bold">
+                    {plans[idx] ? `${plans[idx].destination.comfort_level} / 100` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Weather Intelligence */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Weather & Season</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Weather & Season</td>
                 {[0, 1, 2].map(idx => {
                   const w = plans[idx]?.destination.weather_intelligence;
                   return (
-                    <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-xs">
+                    <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-xs">
                       {w ? (
                         <div className="flex flex-col gap-1">
-                          <span className="font-bold text-slate-800 dark:text-white">{w.current_season} Season</span>
+                          <span className="font-bold text-paper-800 dark:text-white">{w.current_season} Season</span>
                           <span className={`inline-block text-[9px] font-extrabold px-2 py-0.5 rounded-full w-max ${
                             w.season_rating === 'Excellent' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400' :
                             w.season_rating === 'Good' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400' :
@@ -599,7 +599,7 @@ export const CompareDestinations: React.FC = () => {
                             'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400'
                           }`}>{w.season_rating}</span>
                         </div>
-                      ) : '—'}
+                      ) : '"”'}
                     </td>
                   );
                 })}
@@ -607,12 +607,12 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Temp & Rain */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Temp & Rain Prob</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Temp & Rain Prob</td>
                 {[0, 1, 2].map(idx => {
                   const w = plans[idx]?.destination.weather_intelligence;
                   return (
-                    <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {w ? `${w.temperature_range} (Rain: ${w.rain_probability})` : '—'}
+                    <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-xs font-semibold text-paper-500 dark:text-paper-400">
+                      {w ? `${w.temperature_range} (Rain: ${w.rain_probability})` : '"”'}
                     </td>
                   );
                 })}
@@ -620,72 +620,72 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: CO2 Carbon Footprint */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5">Carbon Footprint</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5">Carbon Footprint</td>
                 {[0, 1, 2].map(idx => {
                   const c = plans[idx]?.carbon_footprint;
                   return (
-                    <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 text-xs">
+                    <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 text-xs">
                       {c ? (
                         <div className="flex flex-col gap-1">
-                          <span className="font-bold text-slate-800 dark:text-white">{c.co2_emissions} kg ({c.transport_mode})</span>
+                          <span className="font-bold text-paper-800 dark:text-white">{c.co2_emissions} kg ({c.transport_mode})</span>
                           <span className={`inline-block text-[9px] font-extrabold px-2 py-0.5 rounded-full w-max ${
                             c.carbon_rating === 'Eco Friendly' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400' :
                             c.carbon_rating === 'Moderate' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400' :
                             'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400'
                           }`}>{c.carbon_rating}</span>
                         </div>
-                      ) : '—'}
+                      ) : '"”'}
                     </td>
                   );
                 })}
               </tr>
 
               {/* Row: Recommendation Score */}
-              <tr className="bg-slate-50/30 dark:bg-slate-900/10">
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 text-violet-700 dark:text-violet-400 font-bold">Overall Recommendation Score</td>
+              <tr className="bg-paper-50/30 dark:bg-paper-900/10">
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 text-marigold-700 dark:text-marigold-400 font-bold">Overall Recommendation Score</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-extrabold text-violet-600 dark:text-violet-400 text-sm">
-                    {plans[idx] ? `${plans[idx].value_score.toFixed(1)}%` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-extrabold text-marigold-600 dark:text-marigold-400 text-sm">
+                    {plans[idx] ? `${plans[idx].value_score.toFixed(1)}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Budget Compatibility Score */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Budget Compatibility</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Budget Compatibility</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.budget_compatibility}%` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.budget_compatibility}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Type Match Score */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Travel Type Match</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Travel Type Match</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.trip_type_match}%` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.trip_type_match}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Comfort Match Score */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Comfort Match</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Comfort Match</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.comfort_match}%` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.comfort_match}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Duration Suitability */}
               <tr>
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">↳ Duration Suitability</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Duration Suitability</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.duration_suitability}%` : '—'}
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.duration_suitability}%` : '"”'}
                   </td>
                 ))}
               </tr>
@@ -701,30 +701,30 @@ export const CompareDestinations: React.FC = () => {
                 { key: 'solo_score', label: 'Solo Score' },
               ].map((row) => (
                 <tr key={row.key}>
-                  <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 pl-6">{row.label}</td>
+                  <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">{row.label}</td>
                   {[0, 1, 2].map(idx => (
-                    <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60 font-medium text-slate-500 dark:text-slate-400">
-                      {plans[idx] ? `${plans[idx].destination[row.key] ?? 0}%` : '—'}
+                    <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
+                      {plans[idx] ? `${plans[idx].destination[row.key] ?? 0}%` : '"”'}
                     </td>
                   ))}
                 </tr>
               ))}
 
               {/* Row: Action Button */}
-              <tr className="bg-slate-50/10 dark:bg-slate-900/5">
-                <td className="p-4 bg-slate-50/20 dark:bg-slate-900/5 uppercase font-bold text-[9px] text-slate-400">Lock Choice</td>
+              <tr className="bg-paper-50/10 dark:bg-paper-900/5">
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 uppercase font-bold text-[9px] text-paper-400">Lock Choice</td>
                 {[0, 1, 2].map(idx => (
-                  <td key={idx} className="p-4 border-l border-slate-100 dark:border-slate-700/60">
+                  <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60">
                     {plans[idx] ? (
                       <button
                         onClick={() => handleChoose(plans[idx])}
-                        className="inline-flex items-center gap-1 bg-violet-600 hover:bg-violet-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-md shadow-violet-600/10 w-full justify-center"
+                        className="inline-flex items-center gap-1 bg-marigold-600 hover:bg-marigold-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-md shadow-marigold-600/10 w-full justify-center"
                       >
                         <Check size={14} />
                         Choose Destination
                       </button>
                     ) : (
-                      <span className="text-slate-400 font-bold block text-center">—</span>
+                      <span className="text-paper-400 font-bold block text-center">"”</span>
                     )}
                   </td>
                 ))}
@@ -738,3 +738,6 @@ export const CompareDestinations: React.FC = () => {
     </motion.div>
   );
 };
+
+
+

@@ -164,7 +164,7 @@ export const SavedTrips: React.FC = () => {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'Draft':
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-900/50 dark:text-slate-400 border border-slate-200 dark:border-slate-800';
+        return 'bg-paper-100 text-paper-700 dark:bg-paper-900/50 dark:text-paper-400 border border-paper-200 dark:border-paper-800';
       case 'Planned':
         return 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30';
       case 'In Progress':
@@ -174,7 +174,7 @@ export const SavedTrips: React.FC = () => {
       case 'Cancelled':
         return 'bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30';
       default:
-        return 'bg-slate-100 text-slate-700';
+        return 'bg-paper-100 text-paper-700';
     }
   };
 
@@ -210,10 +210,10 @@ export const SavedTrips: React.FC = () => {
       <div className="space-y-8 max-w-6xl mx-auto p-6 md:p-10 animate-pulse">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2 w-1/3">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-1/2" />
-            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-md w-3/4" />
+            <div className="h-4 bg-paper-200 dark:bg-paper-700 rounded-md w-1/2" />
+            <div className="h-6 bg-paper-200 dark:bg-paper-700 rounded-md w-3/4" />
           </div>
-          <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-md w-1/4" />
+          <div className="h-10 bg-paper-200 dark:bg-paper-700 rounded-md w-1/4" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SkeletonCard />
@@ -235,25 +235,25 @@ export const SavedTrips: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest">Travel History</span>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">My Saved Trips</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-xs font-bold text-marigold-600 dark:text-marigold-400 uppercase tracking-widest">Travel History</span>
+          <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white mt-1">My Saved Trips</h1>
+          <p className="text-sm text-paper-500 dark:text-paper-400">
             View, duplicate, edit, or track expenses for all your finalized travel plans.
           </p>
         </div>
         <Link 
           to="/planner"
-          className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-violet-600/15"
+          className="inline-flex items-center gap-2 bg-marigold-600 hover:bg-marigold-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-marigold-600/15"
         >
           Plan New Destination
         </Link>
       </div>
 
       {/* Search & Sort Panel */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
         {/* Search */}
         <div className="relative w-full sm:max-w-xs">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-paper-400 pointer-events-none">
             <Search size={16} />
           </span>
           <input
@@ -261,17 +261,17 @@ export const SavedTrips: React.FC = () => {
             placeholder="Search by destination..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:focus:border-violet-500 dark:text-white transition-all"
+            className="w-full pl-10 pr-4 py-2 border border-paper-200 dark:border-paper-700 rounded-xl text-xs bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:focus:border-marigold-500 dark:text-white transition-all"
           />
         </div>
 
         {/* Sort dropdown */}
         <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-          <ArrowUpDown size={14} className="text-slate-400" />
+          <ArrowUpDown size={14} className="text-paper-400" />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs px-3 py-2 text-slate-600 dark:text-slate-300 font-bold focus:outline-none transition-all"
+            className="bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl text-xs px-3 py-2 text-paper-600 dark:text-paper-300 font-bold focus:outline-none transition-all"
           >
             <option value="newest">Sort: Newest</option>
             <option value="oldest">Sort: Oldest</option>
@@ -300,18 +300,18 @@ export const SavedTrips: React.FC = () => {
             return (
               <div 
                 key={trip.id} 
-                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
               >
                 {/* Image / Destination details */}
-                <div className="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start">
+                <div className="p-5 border-b border-paper-100 dark:border-paper-700 flex justify-between items-start">
                   <div>
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">{trip.destination.state}</span>
-                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mt-0.5">{trip.destination.name}</h3>
+                    <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider block">{trip.destination.state}</span>
+                    <h3 className="text-lg font-extrabold text-paper-900 dark:text-white mt-0.5">{trip.destination.name}</h3>
                     <div className="flex gap-2 items-center mt-1">
-                      <span className="text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 px-1.5 py-0.2 rounded font-semibold uppercase">
+                      <span className="text-[10px] bg-paper-100 dark:bg-paper-900 text-paper-500 dark:text-paper-400 px-1.5 py-0.2 rounded font-semibold uppercase">
                         {trip.travel_type}
                       </span>
-                      <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wide">
+                      <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wide">
                         {trip.days} Days / {trip.travelers_count} Travelers
                       </span>
                     </div>
@@ -322,8 +322,8 @@ export const SavedTrips: React.FC = () => {
                 </div>
 
                 {/* Travel Date */}
-                <div className="px-5 py-3.5 bg-slate-50/50 dark:bg-slate-900/10 border-b border-slate-100 dark:border-slate-700/60 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                  <Calendar size={14} className="text-violet-500 shrink-0" />
+                <div className="px-5 py-3.5 bg-paper-50/50 dark:bg-paper-900/10 border-b border-paper-100 dark:border-paper-700/60 flex items-center gap-2 text-xs text-paper-500 dark:text-paper-400">
+                  <Calendar size={14} className="text-marigold-500 shrink-0" />
                   <span className="font-medium">
                     {trip.start_date ? `Starts: ${trip.start_date}` : 'Planned dates not set'}
                   </span>
@@ -331,16 +331,16 @@ export const SavedTrips: React.FC = () => {
 
                 {/* Weather Quick Badge */}
                 {trip.destination.weather_intelligence && (
-                  <div className="px-5 py-2.5 bg-slate-50/20 dark:bg-slate-900/5 border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-400 font-semibold flex items-center gap-1">
-                      <CloudSun size={13} className="text-violet-500" />
+                  <div className="px-5 py-2.5 bg-paper-50/20 dark:bg-paper-900/5 border-b border-paper-100 dark:border-paper-700/60 flex items-center justify-between text-[11px]">
+                    <span className="text-paper-400 font-semibold flex items-center gap-1">
+                      <CloudSun size={13} className="text-marigold-500" />
                       Season: {trip.destination.weather_intelligence.current_season}
                     </span>
                     <span className={`font-bold px-2 py-0.5 rounded-full text-[9px] border ${
-                      trip.destination.weather_intelligence.season_rating === 'Excellent' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-205' :
-                      trip.destination.weather_intelligence.season_rating === 'Good' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400 border-blue-205' :
-                      trip.destination.weather_intelligence.season_rating === 'Fair' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border-amber-205' :
-                      'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border-rose-205'
+                      trip.destination.weather_intelligence.season_rating === 'Excellent' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200' :
+                      trip.destination.weather_intelligence.season_rating === 'Good' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200' :
+                      trip.destination.weather_intelligence.season_rating === 'Fair' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200' :
+                      'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200'
                     }`}>
                       {trip.destination.weather_intelligence.season_rating}
                     </span>
@@ -348,66 +348,66 @@ export const SavedTrips: React.FC = () => {
                 )}
 
                 {/* Costs Summary Grid */}
-                <div className="p-5 grid grid-cols-2 gap-4 text-xs border-b border-slate-100 dark:border-slate-700/60 bg-white dark:bg-slate-800">
+                <div className="p-5 grid grid-cols-2 gap-4 text-xs border-b border-paper-100 dark:border-paper-700/60 bg-paper-50 dark:bg-paper-800">
                   <div className="space-y-0.5">
-                    <span className="text-slate-400 block font-semibold">Total Target Budget</span>
-                    <span className="font-extrabold text-slate-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
+                    <span className="text-paper-400 block font-semibold">Total Target Budget</span>
+                    <span className="font-extrabold text-paper-800 dark:text-white">₹{trip.budget.toLocaleString()}</span>
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-slate-400 block font-semibold">Estimated Cost</span>
-                    <span className="font-extrabold text-slate-700 dark:text-slate-300">₹{trip.total_estimated_cost.toLocaleString()}</span>
+                    <span className="text-paper-400 block font-semibold">Estimated Cost</span>
+                    <span className="font-extrabold text-paper-700 dark:text-paper-300">₹{trip.total_estimated_cost.toLocaleString()}</span>
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-slate-400 block font-semibold">Actual Spending</span>
+                    <span className="text-paper-400 block font-semibold">Actual Spending</span>
                     <span className="font-extrabold text-rose-500">₹{actualSpent.toLocaleString()}</span>
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-slate-400 block font-semibold">Trip Savings</span>
+                    <span className="text-paper-400 block font-semibold">Trip Savings</span>
                     <span className="font-extrabold text-emerald-500">₹{savings.toLocaleString()}</span>
                   </div>
                 </div>
 
                 {/* Interactive Actions Footer */}
-                <div className="p-3 bg-slate-50/50 dark:bg-slate-900/15 flex items-center justify-between gap-1">
+                <div className="p-3 bg-paper-50/50 dark:bg-paper-900/15 flex items-center justify-between gap-1">
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => navigate(`/planner?tripId=${trip.id}`)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
                       title="View Planner Details"
                     >
                       <Eye size={13} />
                     </button>
                     <button
                       onClick={() => navigate(`/expenses/${trip.id}`)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
                       title="Manage Expenses"
                     >
                       <Receipt size={13} />
                     </button>
                     <button
                       onClick={() => openEditModal(trip)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
                       title="Edit Basic Metadata"
                     >
                       <Edit3 size={13} />
                     </button>
                     <button
                       onClick={() => handleDuplicate(trip.id)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
                       title="Duplicate Trip"
                     >
                       <Copy size={13} />
                     </button>
                     <button
                       onClick={() => setActiveShareTrip(trip)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
                       title="Share Trip Plan"
                     >
                       <Share2 size={13} />
                     </button>
                     <button
                       onClick={() => handleDownloadPDF(trip.id, trip.destination.name)}
-                      className="p-2 bg-white dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-650"
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
                       title="Download PDF"
                     >
                       <Download size={13} />
@@ -430,67 +430,67 @@ export const SavedTrips: React.FC = () => {
 
       {/* Edit Trip Modal Popup */}
       {editingTrip && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+        <div className="fixed inset-0 bg-paper-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fade-in">
+          <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button 
               onClick={() => setEditingTrip(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white focus:outline-none"
+              className="absolute top-4 right-4 text-paper-400 hover:text-paper-600 dark:hover:text-white focus:outline-none"
             >
               <X size={18} />
             </button>
 
-            <h3 className="font-extrabold text-base text-slate-900 dark:text-white mb-4">
+            <h3 className="font-extrabold text-base text-paper-900 dark:text-white mb-4">
               Edit Trip: {editingTrip.destination.name}
             </h3>
 
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Target Budget (INR)</label>
+                <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Target Budget (INR)</label>
                 <input
                   type="number"
                   value={editBudget}
                   onChange={(e) => setEditBudget(Number(e.target.value))}
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none"
+                  className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Duration (Days)</label>
+                  <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Duration (Days)</label>
                   <input
                     type="number"
                     value={editDays}
                     onChange={(e) => setEditDays(Number(e.target.value))}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none"
+                    className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Travelers</label>
+                  <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Travelers</label>
                   <input
                     type="number"
                     value={editTravelers}
                     onChange={(e) => setEditTravelers(Number(e.target.value))}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none"
+                    className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Travel Date</label>
+                  <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Travel Date</label>
                   <input
                     type="date"
                     value={editStartDate}
                     onChange={(e) => setEditStartDate(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none"
+                    className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Trip Lifecycle</label>
+                  <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Trip Lifecycle</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none font-bold"
+                    className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none font-bold"
                   >
                     {["Draft", "Planned", "In Progress", "Completed", "Cancelled"].map((st) => (
                       <option key={st} value={st}>{st}</option>
@@ -501,11 +501,11 @@ export const SavedTrips: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Travel Style</label>
+                  <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Travel Style</label>
                   <select
                     value={editType}
                     onChange={(e) => setEditType(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none font-bold"
+                    className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none font-bold"
                   >
                     {['Nature', 'Adventure', 'Family', 'Religious', 'Beach', 'City Exploration', 'Romantic', 'Solo'].map((st) => (
                       <option key={st} value={st}>{st}</option>
@@ -513,14 +513,14 @@ export const SavedTrips: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-500 font-bold mb-1.5 uppercase tracking-wide">Comfort Score (0-100)</label>
+                  <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Comfort Score (0-100)</label>
                   <input
                     type="number"
                     min="0"
                     max="100"
                     value={editComfort}
                     onChange={(e) => setEditComfort(Number(e.target.value))}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none"
+                    className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none"
                   />
                 </div>
               </div>
@@ -530,7 +530,7 @@ export const SavedTrips: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setEditingTrip(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                className="px-4 py-2 border border-paper-200 dark:border-paper-700 rounded-xl font-bold text-xs text-paper-500 hover:text-paper-800 dark:hover:text-white transition-colors"
               >
                 Cancel
               </button>
@@ -538,7 +538,7 @@ export const SavedTrips: React.FC = () => {
                 type="button"
                 onClick={handleSaveEdit}
                 disabled={updating}
-                className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl text-xs transition-colors"
+                className="px-4 py-2 bg-marigold-600 hover:bg-marigold-500 text-white font-bold rounded-xl text-xs transition-colors"
               >
                 {updating ? 'Saving...' : 'Save Changes'}
               </button>
@@ -566,3 +566,6 @@ export const SavedTrips: React.FC = () => {
     </motion.div>
   );
 };
+
+
+

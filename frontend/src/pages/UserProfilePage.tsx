@@ -33,7 +33,7 @@ export const UserProfilePage: React.FC = () => {
     trips_completed: 0,
     total_budget_planned: 0,
     total_savings: 0,
-    favorite_trip_type: '—'
+    favorite_trip_type: '"”'
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -119,8 +119,8 @@ export const UserProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-slate-400 gap-3">
-        <Loader className="animate-spin text-violet-500 h-8 w-8" />
+      <div className="flex flex-col items-center justify-center py-24 text-paper-400 gap-3">
+        <Loader className="animate-spin text-marigold-500 h-8 w-8" />
         <span className="text-xs font-semibold">Synchronizing profile configurations...</span>
       </div>
     );
@@ -135,28 +135,28 @@ export const UserProfilePage: React.FC = () => {
     >
       
       {/* Profile Header Title Card */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4.5">
           <div className="shrink-0">
             {photoUrl ? (
               <img 
                 src={photoUrl} 
                 alt="Profile" 
-                className="h-16 w-16 rounded-full object-cover border-2 border-violet-500 shadow-md" 
+                className="h-16 w-16 rounded-full object-cover border-2 border-marigold-500 shadow-md" 
               />
             ) : (
-              <div className="h-16 w-16 rounded-full bg-violet-100 dark:bg-violet-950 flex items-center justify-center text-violet-600 dark:text-violet-400 font-extrabold text-2xl uppercase">
+              <div className="h-16 w-16 rounded-full bg-marigold-100 dark:bg-marigold-950 flex items-center justify-center text-marigold-600 dark:text-marigold-400 font-extrabold text-2xl uppercase">
                 {user?.name ? user.name[0] : 'T'}
               </div>
             )}
           </div>
           <div>
-            <h2 className="text-xl font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <Settings size={20} className="text-violet-500" />
+            <h2 className="text-xl font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Settings size={20} className="text-marigold-500" />
               Settings & Preference Manager
             </h2>
-            <span className="text-[10px] text-slate-400 font-bold block uppercase mt-0.5">
-              Member Since: {user?.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}
+            <span className="text-[10px] text-paper-400 font-bold block uppercase mt-0.5">
+              Member Since: {user?.created_at ? new Date(user.created_at).toLocaleDateString() : '"”'}
             </span>
           </div>
         </div>
@@ -165,64 +165,64 @@ export const UserProfilePage: React.FC = () => {
       {/* Aggregate Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
-          <Award size={18} className="text-violet-500 mx-auto" />
-          <span className="text-[9px] font-bold text-slate-450 uppercase block">Completed Trips</span>
-          <span className="font-extrabold text-slate-850 dark:text-white text-base">{stats.trips_completed} Completed</span>
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
+          <Award size={18} className="text-marigold-500 mx-auto" />
+          <span className="text-[9px] font-bold text-paper-500 uppercase block">Completed Trips</span>
+          <span className="font-extrabold text-paper-900 dark:text-white text-base">{stats.trips_completed} Completed</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
           <Wallet size={18} className="text-sky-500 mx-auto" />
-          <span className="text-[9px] font-bold text-slate-450 uppercase block">Total Planned</span>
-          <span className="font-extrabold text-slate-850 dark:text-white text-base">₹{stats.total_budget_planned.toLocaleString()}</span>
+          <span className="text-[9px] font-bold text-paper-500 uppercase block">Total Planned</span>
+          <span className="font-extrabold text-paper-900 dark:text-white text-base">₹{stats.total_budget_planned.toLocaleString()}</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
           <TrendingUp size={18} className="text-emerald-500 mx-auto" />
-          <span className="text-[9px] font-bold text-slate-450 uppercase block">Total Savings</span>
+          <span className="text-[9px] font-bold text-paper-500 uppercase block">Total Savings</span>
           <span className="font-extrabold text-emerald-500 text-base">₹{stats.total_savings.toLocaleString()}</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-4.5 rounded-2xl shadow-sm text-center space-y-1">
           <Heart size={18} className="text-rose-500 mx-auto" />
-          <span className="text-[9px] font-bold text-slate-450 uppercase block">Favorite Style</span>
-          <span className="font-extrabold text-slate-850 dark:text-white text-base">{stats.favorite_trip_type}</span>
+          <span className="text-[9px] font-bold text-paper-500 uppercase block">Favorite Style</span>
+          <span className="font-extrabold text-paper-900 dark:text-white text-base">{stats.favorite_trip_type}</span>
         </div>
 
       </div>
 
       {/* Main Settings Form */}
-      <form onSubmit={handleProfileSave} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm space-y-6">
+      <form onSubmit={handleProfileSave} className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm space-y-6">
         
         {/* Row 1: Profile basic */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
           <div className="space-y-1.5">
-            <label id="display-name-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Your Display Name</label>
+            <label id="display-name-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Your Display Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
               aria-labelledby="display-name-label"
-              className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white"
+              className="w-full px-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label id="email-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Email Address (Read-only)</label>
+            <label id="email-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Email Address (Read-only)</label>
             <input
               type="email"
               value={user?.email || ''}
               disabled
               aria-labelledby="email-label"
-              className="w-full px-3.5 py-2.5 border border-slate-150 dark:border-slate-800/80 rounded-xl bg-slate-100/50 dark:bg-slate-950/40 text-slate-400 select-none cursor-not-allowed"
+              className="w-full px-3.5 py-2.5 border border-paper-200 dark:border-paper-800/80 rounded-xl bg-paper-100/50 dark:bg-paper-950/40 text-paper-400 select-none cursor-not-allowed"
             />
           </div>
         </div>
 
         {/* Row 2: Avatar select */}
         <div className="space-y-2">
-          <label id="avatar-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Choose Profile Avatar</label>
+          <label id="avatar-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Choose Profile Avatar</label>
           <div className="flex flex-wrap gap-4 items-center">
             {sampleAvatars.map((url, idx) => (
               <button
@@ -230,7 +230,7 @@ export const UserProfilePage: React.FC = () => {
                 type="button"
                 onClick={() => setPhotoUrl(url)}
                 aria-label={`Select Avatar Option ${idx + 1}`}
-                className={`h-14 w-14 rounded-full overflow-hidden border-2 transition-all shrink-0 ${photoUrl === url ? 'border-violet-600 scale-105 shadow-md shadow-violet-500/10' : 'border-transparent opacity-80 hover:opacity-100'}`}
+                className={`h-14 w-14 rounded-full overflow-hidden border-2 transition-all shrink-0 ${photoUrl === url ? 'border-marigold-600 scale-105 shadow-md shadow-marigold-500/10' : 'border-transparent opacity-80 hover:opacity-100'}`}
               >
                 <img src={url} alt={`Option ${idx + 1}`} className="h-full w-full object-cover" />
               </button>
@@ -241,7 +241,7 @@ export const UserProfilePage: React.FC = () => {
               value={photoUrl}
               onChange={(e) => setPhotoUrl(e.target.value)}
               aria-labelledby="avatar-label"
-              className="flex-1 min-w-[200px] px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white"
+              className="flex-1 min-w-[200px] px-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl text-xs bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
             />
           </div>
         </div>
@@ -250,24 +250,24 @@ export const UserProfilePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
           
           <div className="space-y-1.5">
-            <label id="starting-city-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Default starting City</label>
+            <label id="starting-city-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Default starting City</label>
             <div className="relative">
-              <MapPin size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <MapPin size={14} className="absolute left-3.5 top-3.5 text-paper-400" />
               <input
                 type="text"
                 value={defaultStartingCity}
                 onChange={(e) => setDefaultStartingCity(e.target.value)}
                 required
                 aria-labelledby="starting-city-label"
-                className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white"
+                className="w-full pl-9 pr-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label id="default-budget-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Default Target Budget (INR)</label>
+            <label id="default-budget-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Default Target Budget (INR)</label>
             <div className="relative">
-              <Wallet size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <Wallet size={14} className="absolute left-3.5 top-3.5 text-paper-400" />
               <input
                 type="number"
                 value={defaultBudget}
@@ -276,20 +276,20 @@ export const UserProfilePage: React.FC = () => {
                 min={1000}
                 step={1000}
                 aria-labelledby="default-budget-label"
-                className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white"
+                className="w-full pl-9 pr-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label id="preferred-style-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Preferred Style</label>
+            <label id="preferred-style-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Preferred Style</label>
             <div className="relative">
-              <Sparkles size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <Sparkles size={14} className="absolute left-3.5 top-3.5 text-paper-400" />
               <select
                 value={preferredTravelStyle}
                 onChange={(e) => setPreferredTravelStyle(e.target.value)}
                 aria-labelledby="preferred-style-label"
-                className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white"
+                className="w-full pl-9 pr-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
               >
                 {['Nature', 'Adventure', 'Family', 'Religious', 'Beach', 'City Exploration', 'Romantic', 'Solo'].map((style) => (
                   <option key={style} value={style}>{style}</option>
@@ -304,9 +304,9 @@ export const UserProfilePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
           
           <div className="space-y-1.5">
-            <label id="comfort-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Comfort level Preference ({preferredComfortLevel} / 100)</label>
+            <label id="comfort-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Comfort level Preference ({preferredComfortLevel} / 100)</label>
             <div className="flex gap-4 items-center pt-2">
-              <Sliders size={16} className="text-violet-500 shrink-0" />
+              <Sliders size={16} className="text-marigold-500 shrink-0" />
               <input
                 type="range"
                 min={0}
@@ -314,18 +314,18 @@ export const UserProfilePage: React.FC = () => {
                 value={preferredComfortLevel}
                 onChange={(e) => setPreferredComfortLevel(Number(e.target.value))}
                 aria-labelledby="comfort-label"
-                className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600"
+                className="flex-1 h-2 bg-paper-200 dark:bg-paper-700 rounded-lg appearance-none cursor-pointer accent-marigold-600"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label id="preferred-theme-label" className="block text-slate-400 font-bold uppercase tracking-wide text-[10px]">Preferred System Theme</label>
+            <label id="preferred-theme-label" className="block text-paper-400 font-bold uppercase tracking-wide text-[10px]">Preferred System Theme</label>
             <select
               value={preferredTheme}
               onChange={(e) => setPreferredTheme(e.target.value)}
               aria-labelledby="preferred-theme-label"
-              className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white font-bold"
+              className="w-full px-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white font-bold"
             >
               <option value="light">Light Theme Mode</option>
               <option value="dark">Dark Theme Mode</option>
@@ -335,13 +335,13 @@ export const UserProfilePage: React.FC = () => {
         </div>
 
         {/* Action button */}
-        <div className="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-700">
+        <div className="flex justify-end pt-3 border-t border-paper-100 dark:border-paper-700">
           <button
             type="submit"
             disabled={saving}
-            className="bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-[11px] px-6 py-3 rounded-xl uppercase transition-all shadow-md flex items-center gap-1.5"
+            className="bg-marigold-600 hover:bg-marigold-500 text-white font-extrabold text-[11px] px-6 py-3 rounded-xl uppercase transition-all shadow-md flex items-center gap-1.5"
           >
-            {saving ? <Loader size={13} className="animate-spin" /> : (success ? <Check size={13} className="text-emerald-350" /> : null)}
+            {saving ? <Loader size={13} className="animate-spin" /> : (success ? <Check size={13} className="text-emerald-400" /> : null)}
             {saving ? 'Saving preferences...' : (success ? 'Saved successfully!' : 'Save Preferences')}
           </button>
         </div>
@@ -351,3 +351,6 @@ export const UserProfilePage: React.FC = () => {
     </motion.div>
   );
 };
+
+
+

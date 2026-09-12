@@ -115,35 +115,35 @@ export const TripChecklist: React.FC<TripChecklistProps> = ({
 
   if (loading && items.length === 0) {
     return (
-      <div className="flex items-center justify-center p-6 text-slate-400 gap-2 text-xs">
-        <Loader size={14} className="animate-spin text-violet-500" />
+      <div className="flex items-center justify-center p-6 text-paper-400 gap-2 text-xs">
+        <Loader size={14} className="animate-spin text-marigold-500" />
         <span>Loading packing checklist...</span>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+    <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm space-y-4">
       {/* Title */}
       <div className="flex justify-between items-center">
-        <h3 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider flex items-center gap-2">
-          <Package size={16} className="text-violet-500" />
+        <h3 className="text-sm font-extrabold text-paper-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+          <Package size={16} className="text-marigold-500" />
           Smart Packing Checklist
         </h3>
-        <span className="text-[10px] font-bold text-slate-400">
+        <span className="text-[10px] font-bold text-paper-400">
           {packedCount}/{totalCount} Items Packed
         </span>
       </div>
 
       {/* Progress Bar */}
       <div className="space-y-1.5">
-        <div className="flex justify-between text-[10px] font-extrabold text-slate-500 uppercase">
+        <div className="flex justify-between text-[10px] font-extrabold text-paper-500 uppercase">
           <span>Packing Progress</span>
           <span className={percentage === 100 ? "text-emerald-500" : ""}>{percentage}% Complete</span>
         </div>
-        <div className="h-2 w-full bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-paper-100 dark:bg-paper-900 rounded-full overflow-hidden">
           <div 
-            className={`h-full rounded-full transition-all duration-500 ${percentage === 100 ? 'bg-emerald-500' : 'bg-violet-600'}`}
+            className={`h-full rounded-full transition-all duration-500 ${percentage === 100 ? 'bg-emerald-500' : 'bg-marigold-600'}`}
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -151,7 +151,7 @@ export const TripChecklist: React.FC<TripChecklistProps> = ({
 
       {/* Checklist items */}
       {items.length === 0 ? (
-        <div className="text-center py-6 text-slate-400 text-xs italic">
+        <div className="text-center py-6 text-paper-400 text-xs italic">
           No packing items yet. Add custom ones below.
         </div>
       ) : (
@@ -161,18 +161,18 @@ export const TripChecklist: React.FC<TripChecklistProps> = ({
               key={item.id} 
               className={`flex items-center justify-between gap-3 text-xs p-2 rounded-xl border transition-all ${
                 item.checked 
-                  ? 'bg-slate-50/50 dark:bg-slate-900/10 border-slate-150 dark:border-slate-800 text-slate-400' 
-                  : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700/60 text-slate-700 dark:text-slate-200'
+                  ? 'bg-paper-50/50 dark:bg-paper-900/10 border-paper-200 dark:border-paper-800 text-paper-400' 
+                  : 'bg-paper-50 dark:bg-paper-800 border-paper-100 dark:border-paper-700/60 text-paper-700 dark:text-paper-200'
               }`}
             >
               <button
                 type="button"
                 disabled={readOnly}
                 onClick={() => handleToggle(item)}
-                className={`flex items-start gap-2.5 text-left font-medium transition-colors ${readOnly ? 'cursor-default' : 'hover:text-violet-600'}`}
+                className={`flex items-start gap-2.5 text-left font-medium transition-colors ${readOnly ? 'cursor-default' : 'hover:text-marigold-600'}`}
               >
-                <span className="shrink-0 mt-0.5 text-violet-500">
-                  {item.checked ? <CheckSquare size={16} fill="currentColor" className="text-white dark:text-slate-800" /> : <Square size={16} />}
+                <span className="shrink-0 mt-0.5 text-marigold-500">
+                  {item.checked ? <CheckSquare size={16} fill="currentColor" className="text-white dark:text-paper-800" /> : <Square size={16} />}
                 </span>
                 <span className={item.checked ? 'line-through' : ''}>
                   {item.name}
@@ -183,7 +183,7 @@ export const TripChecklist: React.FC<TripChecklistProps> = ({
                 <button
                   type="button"
                   onClick={() => handleDeleteItem(item.id)}
-                  className="text-slate-450 hover:text-rose-500 transition-colors p-1"
+                  className="text-paper-500 hover:text-rose-500 transition-colors p-1"
                   title="Delete item"
                 >
                   <Trash2 size={13} />
@@ -196,19 +196,19 @@ export const TripChecklist: React.FC<TripChecklistProps> = ({
 
       {/* Add Custom Item */}
       {!readOnly && (
-        <form onSubmit={handleAddItem} className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+        <form onSubmit={handleAddItem} className="flex gap-2 pt-2 border-t border-paper-100 dark:border-paper-700/60">
           <input
             type="text"
             placeholder="Add custom packing item..."
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             disabled={adding}
-            className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 focus:outline-none focus:border-violet-500 dark:text-white"
+            className="flex-1 px-3 py-2 border border-paper-200 dark:border-paper-700 rounded-xl text-xs bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
           />
           <button
             type="submit"
             disabled={adding || !newItemName.trim()}
-            className="bg-violet-600 hover:bg-violet-500 text-white font-bold p-2.5 rounded-xl transition-all disabled:opacity-50 shrink-0"
+            className="bg-marigold-600 hover:bg-marigold-500 text-white font-bold p-2.5 rounded-xl transition-all disabled:opacity-50 shrink-0"
           >
             {adding ? <Loader size={14} className="animate-spin" /> : <Plus size={14} />}
           </button>
@@ -217,3 +217,6 @@ export const TripChecklist: React.FC<TripChecklistProps> = ({
     </div>
   );
 };
+
+
+

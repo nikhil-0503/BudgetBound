@@ -25,9 +25,9 @@ const MultiStopPlanner = lazy(() => import('./pages/MultiStopPlanner').then(m =>
 
 // Loading Spinner Indicator (Phase 3 Loader State)
 const RouteFallbackLoader = () => (
-  <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center text-slate-900 dark:text-slate-100 gap-4">
-    <Loader className="h-10 w-10 text-violet-650 animate-spin" />
-    <span className="text-sm font-bold tracking-wider text-slate-400 uppercase">Synchronizing BudgetBound...</span>
+  <div className="min-h-screen bg-paper-50 dark:bg-paper-900 flex flex-col items-center justify-center text-paper-900 dark:text-paper-100 gap-4">
+    <Loader className="h-10 w-10 text-marigold-700 animate-spin" />
+    <span className="text-sm font-bold tracking-wider text-paper-400 uppercase">Synchronizing BudgetBound...</span>
   </div>
 );
 
@@ -104,3 +104,6 @@ function App() {
 }
 
 export default App;
+
+
+

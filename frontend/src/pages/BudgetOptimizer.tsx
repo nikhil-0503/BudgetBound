@@ -105,8 +105,8 @@ export const BudgetOptimizer: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 gap-4">
-        <Loader className="h-10 w-10 text-violet-500 animate-spin" />
+      <div className="min-h-[50vh] flex flex-col items-center justify-center text-paper-500 dark:text-paper-400 gap-4">
+        <Loader className="h-10 w-10 text-marigold-500 animate-spin" />
         <span className="text-sm font-semibold">Running budget simulations...</span>
       </div>
     );
@@ -137,15 +137,15 @@ export const BudgetOptimizer: React.FC = () => {
       <div className="space-y-1">
         <Link 
           to="/dashboard" 
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 uppercase tracking-widest transition-colors mb-2"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-paper-400 hover:text-marigold-600 dark:hover:text-marigold-400 uppercase tracking-widest transition-colors mb-2"
         >
           <ArrowLeft size={14} />
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+        <h1 className="text-3xl font-extrabold text-paper-900 dark:text-white">
           Budget Optimizer: {trip.destination.name}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-paper-500 dark:text-paper-400">
           Analyze and adjust your trip parameters to save money or increase luxury dynamically.
         </p>
       </div>
@@ -161,31 +161,31 @@ export const BudgetOptimizer: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Current Total */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Current Total Cost</span>
-            <span className="text-2xl font-extrabold text-slate-800 dark:text-white">₹{data.current_cost.toLocaleString()}</span>
+            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider block">Current Total Cost</span>
+            <span className="text-2xl font-extrabold text-paper-800 dark:text-white">₹{data.current_cost.toLocaleString()}</span>
           </div>
-          <div className="h-10 w-10 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-lg bg-marigold-100 dark:bg-marigold-950/40 text-marigold-600 dark:text-marigold-400 flex items-center justify-center">
             ₹
           </div>
         </div>
 
         {/* Budget limit */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Target Budget</span>
-            <span className="text-2xl font-extrabold text-slate-800 dark:text-white">₹{data.budget.toLocaleString()}</span>
+            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider block">Target Budget</span>
+            <span className="text-2xl font-extrabold text-paper-800 dark:text-white">₹{data.budget.toLocaleString()}</span>
           </div>
-          <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-lg bg-petrol-100 dark:bg-petrol-950/40 text-petrol-600 dark:text-petrol-400 flex items-center justify-center">
             L
           </div>
         </div>
 
         {/* Health status */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 p-6 rounded-2xl shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Target Variance</span>
+            <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider block">Target Variance</span>
             <span className={`text-xl font-extrabold block ${data.current_cost <= data.budget ? 'text-emerald-500' : 'text-rose-500'}`}>
               {data.current_cost <= data.budget 
                 ? `Under Budget by ₹${(data.budget - data.current_cost).toLocaleString()}` 
@@ -196,10 +196,10 @@ export const BudgetOptimizer: React.FC = () => {
       </div>
 
       {!hasOptions ? (
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-12 text-center shadow-sm flex flex-col items-center justify-center">
+        <div className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-3xl p-12 text-center shadow-sm flex flex-col items-center justify-center">
           <Award className="h-16 w-16 text-emerald-500 mb-4" />
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Trip Highly Optimized</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-6">
+          <h3 className="text-lg font-bold text-paper-800 dark:text-white mb-2">Trip Highly Optimized</h3>
+          <p className="text-sm text-paper-500 dark:text-paper-400 max-w-sm mb-6">
             Your current plan is already at budget limitations with sleeper transits and budget properties. No further optimizer guidelines are required.
           </p>
         </div>
@@ -208,7 +208,7 @@ export const BudgetOptimizer: React.FC = () => {
           
           {/* Optimization Options List */}
           <div className="lg:col-span-5 flex flex-col gap-3">
-            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Optimization Strategies</h3>
+            <h3 className="text-sm font-bold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Optimization Strategies</h3>
             
             {data.options.map((option, index) => {
               const isSelected = index === selectedOptionIdx;
@@ -219,13 +219,13 @@ export const BudgetOptimizer: React.FC = () => {
                   onClick={() => setSelectedOptionIdx(index)}
                   className={`w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
                     isSelected
-                      ? 'bg-violet-600 border-violet-600 text-white shadow-md shadow-violet-600/10'
-                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600'
+                      ? 'bg-marigold-600 border-marigold-600 text-white shadow-md shadow-marigold-600/10'
+                      : 'bg-paper-50 dark:bg-paper-800 border-paper-200 dark:border-paper-700 text-paper-800 dark:text-paper-200 hover:border-paper-300 dark:hover:border-paper-600'
                   }`}
                 >
                   <div className="space-y-1">
                     <span className="text-xs font-bold block">{option.label}</span>
-                    <span className={`text-[10px] ${isSelected ? 'text-violet-200' : 'text-slate-400'}`}>
+                    <span className={`text-[10px] ${isSelected ? 'text-marigold-200' : 'text-paper-400'}`}>
                       {option.action_key.replace('_', ' ').toUpperCase()}
                     </span>
                   </div>
@@ -233,14 +233,14 @@ export const BudgetOptimizer: React.FC = () => {
                   <div className="flex items-center gap-1.5 shrink-0">
                     <span className={`text-xs font-bold px-2 py-1 rounded ${
                       isSelected
-                        ? 'bg-white/20 text-white'
-                        : isSaving ? 'bg-emerald-500/15 text-emerald-500' : 'bg-violet-500/15 text-violet-500'
+                        ? 'bg-paper-50/20 text-white'
+                        : isSaving ? 'bg-emerald-500/15 text-emerald-500' : 'bg-marigold-500/15 text-marigold-500'
                     }`}>
                       {isSaving 
                         ? `-₹${Math.abs(option.cost_difference).toLocaleString()}` 
                         : `+₹${option.cost_difference.toLocaleString()}`}
                     </span>
-                    <ChevronRight size={16} className={isSelected ? 'text-white' : 'text-slate-400'} />
+                    <ChevronRight size={16} className={isSelected ? 'text-white' : 'text-paper-400'} />
                   </div>
                 </button>
               );
@@ -249,92 +249,92 @@ export const BudgetOptimizer: React.FC = () => {
 
           {/* Option Comparison details */}
           {currentOption && (
-            <div className="lg:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col gap-6">
+            <div className="lg:col-span-7 bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-6 shadow-sm flex flex-col gap-6">
               
               <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{currentOption.label}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <h3 className="text-lg font-bold text-paper-900 dark:text-white mb-2">{currentOption.label}</h3>
+                <p className="text-xs text-paper-500 dark:text-paper-400 leading-relaxed">
                   {currentOption.description}
                 </p>
               </div>
 
               {/* Side by side comparison */}
-              <div className="border border-slate-100 dark:border-slate-700 rounded-xl overflow-hidden text-xs">
-                <div className="grid grid-cols-12 bg-slate-50 dark:bg-slate-900/40 p-3 font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">
+              <div className="border border-paper-100 dark:border-paper-700 rounded-xl overflow-hidden text-xs">
+                <div className="grid grid-cols-12 bg-paper-50 dark:bg-paper-900/40 p-3 font-bold text-paper-500 uppercase tracking-wider border-b border-paper-100 dark:border-paper-700">
                   <div className="col-span-6">Category</div>
                   <div className="col-span-3 text-right">Current</div>
-                  <div className="col-span-3 text-right text-violet-600 dark:text-violet-400">Optimized</div>
+                  <div className="col-span-3 text-right text-marigold-600 dark:text-marigold-400">Optimized</div>
                 </div>
 
-                <div className="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
+                <div className="divide-y divide-paper-100 dark:divide-paper-700/60 font-medium">
                   {/* Transportation */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Transportation</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Transportation</div>
                     <div className="col-span-3 text-right">₹{data.allocations.transport_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.transport_cost.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Accommodation */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Lodging (Hotel)</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Lodging (Hotel)</div>
                     <div className="col-span-3 text-right">₹{data.allocations.hotel_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.hotel_cost.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Food */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Food & Dining</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Food & Dining</div>
                     <div className="col-span-3 text-right">₹{data.allocations.food_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.food_cost.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Activities */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Activities</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Activities</div>
                     <div className="col-span-3 text-right">₹{data.allocations.activities_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.activities_cost.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Local Trans */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Local Travel</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Local Travel</div>
                     <div className="col-span-3 text-right">₹{data.allocations.local_transport_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.local_transport_cost.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Taxes */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Taxes & Fees</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Taxes & Fees</div>
                     <div className="col-span-3 text-right">₹{data.allocations.taxes_fees_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.taxes_fees_cost.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Emergency */}
                   <div className="grid grid-cols-12 p-3 items-center">
-                    <div className="col-span-6 text-slate-600 dark:text-slate-400">Emergency Reserve</div>
+                    <div className="col-span-6 text-paper-600 dark:text-paper-400">Emergency Reserve</div>
                     <div className="col-span-3 text-right">₹{data.allocations.emergency_reserve.toLocaleString()}</div>
-                    <div className="col-span-3 text-right font-bold text-slate-900 dark:text-white">
+                    <div className="col-span-3 text-right font-bold text-paper-900 dark:text-white">
                       ₹{currentOption.new_allocation.emergency_reserve.toLocaleString()}
                     </div>
                   </div>
 
                   {/* Total */}
-                  <div className="grid grid-cols-12 p-3 bg-slate-50 dark:bg-slate-900/30 items-center font-bold text-sm">
-                    <div className="col-span-6 text-slate-700 dark:text-slate-300">Total Simulated Cost</div>
+                  <div className="grid grid-cols-12 p-3 bg-paper-50 dark:bg-paper-900/30 items-center font-bold text-sm">
+                    <div className="col-span-6 text-paper-700 dark:text-paper-300">Total Simulated Cost</div>
                     <div className="col-span-3 text-right">₹{data.current_cost.toLocaleString()}</div>
-                    <div className="col-span-3 text-right text-violet-600 dark:text-violet-400">
+                    <div className="col-span-3 text-right text-marigold-600 dark:text-marigold-400">
                       ₹{
                         (
                           currentOption.new_allocation.transport_cost +
@@ -351,10 +351,10 @@ export const BudgetOptimizer: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4 justify-between items-center border-t border-slate-100 dark:border-slate-700 pt-4">
+              <div className="flex gap-4 justify-between items-center border-t border-paper-100 dark:border-paper-700 pt-4">
                 <div className="flex items-center gap-2">
                   <TrendingDown className="text-emerald-500 animate-pulse" />
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-medium text-paper-500 dark:text-paper-400">
                     {currentOption.cost_difference < 0 
                       ? `Applying will save INR ${Math.abs(currentOption.cost_difference).toLocaleString()}`
                       : `Applying will cost INR ${currentOption.cost_difference.toLocaleString()} more`}
@@ -364,7 +364,7 @@ export const BudgetOptimizer: React.FC = () => {
                 <button
                   onClick={handleApplyOptimization}
                   disabled={applying || success}
-                  className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md shadow-violet-600/10 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-600/10 disabled:opacity-50"
                 >
                   {applying ? (
                     <>
@@ -389,3 +389,6 @@ export const BudgetOptimizer: React.FC = () => {
     </div>
   );
 };
+
+
+
