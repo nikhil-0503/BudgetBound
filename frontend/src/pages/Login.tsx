@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Wallet, AlertCircle, Loader, Sun, Moon } from 'lucide-react';
+import { ForgotPasswordModal } from '../components/ForgotPasswordModal';
 
 export const Login: React.FC = () => {
   const { login, error, clearError } = useAuth();
@@ -13,6 +14,7 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +94,13 @@ export const Login: React.FC = () => {
                 placeholder="••••••••"
                 className="w-full bg-paper-50 dark:bg-ink-800/60 border border-paper-300 dark:border-ink-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-ink-900 dark:text-white transition-all"
               />
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-xs text-marigold-700 dark:text-marigold-400 hover:underline font-semibold mt-2"
+              >
+                Forgot password?
+              </button>
             </div>
 
             <button
@@ -118,6 +127,11 @@ export const Login: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <ForgotPasswordModal 
+        isOpen={showForgotPassword} 
+        onClose={() => setShowForgotPassword(false)} 
+      />
     </div>
   );
 };

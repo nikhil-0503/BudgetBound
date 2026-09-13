@@ -33,6 +33,7 @@ Based on these constraints and a comfort slider (0–100), the platform scores a
 * **Secure Signup & Login**: Credentials-based signup and login flows with email validation.
 * **JWT-Based Session Tracking**: Stateless authentication using JSON Web Tokens (`HS256`). A React interceptor automatically attaches authorization headers to all outgoing requests.
 * **Bcrypt Password Cryptography**: Passwords are securely hashed with bcrypt inside the database using standard salt rounds.
+* **Forgot Password Flow**: Simple 2-step password reset directly in the app (no email needed). Users verify their email and set a new password instantly. See `SIMPLIFIED_FORGOT_PASSWORD.md` for details.
 * **Client-Side Auth Guards**: React Router middleware (`ProtectedRoute` and `AnonymousRoute`) keeps unauthenticated users out of private views (planner, dashboard, optimizer, expenses) and automatically redirects authenticated users away from the login/signup screens.
 * **Auto-Session Cleanup**: Axios request/response interceptors automatically log the user out and redirect them to the login page on a `401 Unauthorized` status response.
 

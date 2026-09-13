@@ -5,8 +5,17 @@ from datetime import timedelta
 
 from app import models, schemas, auth
 from app.database import get_db
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    new_password: str
+    confirm_password: str
 
 @router.post("/register", response_model=schemas.Token, status_code=status.HTTP_201_CREATED)
 def register_user(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -132,3 +141,64 @@ def update_user_profile_details(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+@router.post("/forgot-password")
+def forgot_password(
+    request: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    """Verify user exists by email (first step of password reset)"""
+    user = db.query(models.User).filter(models.User.email == request.email).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No account found with this email address."
+        )
+    
+    return {
+        "message": f"Account found. You can now reset your password.",
+        "email": user.email
+    }
+
+@router.post("/reset-password")
+def reset_password(
+    request: ResetPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    """Reset password directly by email (no token needed)"""
+    
+    # Find user
+    user = db.query(models.User).filter(models.User.email == request.email).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No account found with this email address."
+        )
+    
+    # Validate passwords match
+    if request.new_password != request.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match."
+        )
+    
+    # Validate password length
+    if not request.new_password or len(request.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters long."
+        )
+    
+    # Update password
+    hashed_password = auth.get_password_hash(request.new_password)
+    user.hashed_password = hashed_password
+    
+    db.commit()
+    db.refresh(user)
+    
+    return {
+        "message": "Password reset successfully. You can now log in with your new password.",
+        "email": user.email
+    }

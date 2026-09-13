@@ -9,8 +9,13 @@ from typing import List
 
 from app import models, schemas, auth
 from app.database import get_db
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/admin/analytics", tags=["Admin Analytics"])
+
+class PasswordReset(BaseModel):
+    user_id: int
+    new_password: str
 
 def get_current_admin(current_user: models.User = Depends(auth.get_current_user)):
     if not current_user.is_admin:
@@ -119,6 +124,68 @@ def get_admin_analytics(
         "top_destinations": top_destinations,
         "monthly_creation": monthly_creation,
         "monthly_expenses": monthly_expenses
+    }
+
+@router.get("/users-login-details")
+def get_users_login_details(
+    admin: models.User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Get login details of all users. Admin only."""
+    users = db.query(models.User).all()
+    
+    user_details = []
+    for user in users:
+        trip_count = db.query(models.Trip).filter(models.Trip.user_id == user.id).count()
+        user_details.append({
+            "id": user.id,
+            "email": user.email,
+            "name": user.name,
+            "created_at": user.created_at.strftime("%Y-%m-%d %H:%M:%S") if user.created_at else None,
+            "is_admin": user.is_admin,
+            "trips_count": trip_count,
+            "photo_url": user.photo_url,
+            "preferred_theme": user.preferred_theme,
+            "default_budget": user.default_budget
+        })
+    
+    return {
+        "total_users": len(user_details),
+        "users": user_details
+    }
+
+@router.post("/reset-user-password")
+def reset_user_password(
+    password_reset: PasswordReset,
+    admin: models.User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Admin can reset a user's password to a new value."""
+    user = db.query(models.User).filter(models.User.id == password_reset.user_id).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found."
+        )
+    
+    # Prevent admin from resetting their own password via this endpoint
+    if user.id == admin.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot reset your own password via admin endpoint. Use profile update instead."
+        )
+    
+    # Hash and update password
+    hashed_password = auth.get_password_hash(password_reset.new_password)
+    user.hashed_password = hashed_password
+    db.commit()
+    db.refresh(user)
+    
+    return {
+        "message": f"Password reset successfully for user {user.email}",
+        "user_id": user.id,
+        "email": user.email
     }
 
 @router.get("/export-csv")
