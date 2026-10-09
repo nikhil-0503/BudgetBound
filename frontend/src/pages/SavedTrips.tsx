@@ -468,8 +468,10 @@ export const SavedTrips: React.FC = () => {
                   <label className="block text-paper-500 font-bold mb-1.5 uppercase tracking-wide">Travelers</label>
                   <input
                     type="number"
+                    min="1"
+                    max="20"
                     value={editTravelers}
-                    onChange={(e) => setEditTravelers(Number(e.target.value))}
+                    onChange={(e) => setEditTravelers(parseInt(e.target.value) || 1)}
                     className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2.5 bg-paper-50 dark:bg-paper-900 dark:text-white focus:outline-none"
                   />
                 </div>

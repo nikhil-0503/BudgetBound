@@ -9,11 +9,12 @@ router = APIRouter(prefix="/api/expenses", tags=["Expenses"])
 
 @router.post("/", response_model=schemas.ExpenseOut, status_code=status.HTTP_201_CREATED)
 def create_expense(
-    trip_id: int,
     expense_in: schemas.ExpenseCreate,
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
+    trip_id = expense_in.trip_id
+    
     # Verify trip belongs to user
     trip = db.query(models.Trip).filter(
         models.Trip.id == trip_id,

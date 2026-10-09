@@ -130,6 +130,7 @@ class ItineraryOut(ItineraryBase):
 
 # Expense Schemas
 class ExpenseCreate(BaseModel):
+    trip_id: int
     date: str
     category: str
     amount: float

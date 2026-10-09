@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models import Destination
+from app.seed_enhanced import INTERNATIONAL_DESTINATIONS
 
 DESTINATIONS_DATA = [
     # BEACH (15)
@@ -1102,11 +1103,21 @@ def seed_destinations(db: Session):
     existing_names = {name for (name,) in db.query(Destination.name).all()}
     added = 0
 
+    # Seed original destinations
     for dest_data in DESTINATIONS_DATA:
         if dest_data["name"] in existing_names:
             continue
         expanded = get_expanded_fields(dest_data["name"], dest_data["category"], dest_data["avg_hotel_cost"])
         db_destination = Destination(**dest_data, **expanded)
+        db.add(db_destination)
+        added += 1
+
+    # Seed international and enhanced destinations
+    for dest_data in INTERNATIONAL_DESTINATIONS:
+        if dest_data["name"] in existing_names:
+            continue
+        # Already have expanded fields in enhanced data
+        db_destination = Destination(**dest_data)
         db.add(db_destination)
         added += 1
 

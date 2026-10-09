@@ -296,8 +296,10 @@ export const CompareDestinations: React.FC = () => {
             <label className="block text-paper-400 mb-1">Travelers Count</label>
             <input
               type="number"
+              min="1"
+              max="20"
               value={travelersCount}
-              onChange={(e) => setTravelersCount(Number(e.target.value))}
+              onChange={(e) => setTravelersCount(parseInt(e.target.value) || 1)}
               className="w-full border border-paper-200 dark:border-paper-700 rounded-xl p-2 bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500"
             />
           </div>

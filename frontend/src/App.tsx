@@ -22,6 +22,7 @@ const NotificationsPage = lazy(() => import('./pages/NotificationsPage').then(m 
 const UserProfilePage = lazy(() => import('./pages/UserProfilePage').then(m => ({ default: m.UserProfilePage })));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage').then(m => ({ default: m.AdminAnalyticsPage })));
 const MultiStopPlanner = lazy(() => import('./pages/MultiStopPlanner').then(m => ({ default: m.MultiStopPlanner })));
+const CurrencyConverter = lazy(() => import('./pages/CurrencyConverter').then(m => ({ default: m.CurrencyConverter })));
 
 // Loading Spinner Indicator (Phase 3 Loader State)
 const RouteFallbackLoader = () => (
@@ -86,6 +87,7 @@ function App() {
             <Route path="/expenses/:tripId" element={<ProtectedRoute><ExpenseTracker /></ProtectedRoute>} />
             <Route path="/ai-companion" element={<ProtectedRoute><AICompanion /></ProtectedRoute>} />
             <Route path="/multi-stop" element={<ProtectedRoute><MultiStopPlanner /></ProtectedRoute>} />
+            <Route path="/currency-converter" element={<ProtectedRoute><CurrencyConverter /></ProtectedRoute>} />
 
             <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />

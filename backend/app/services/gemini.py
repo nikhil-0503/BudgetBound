@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
 # Load .env before reading env vars (singleton is created at import time)
-load_dotenv()
+load_dotenv(override=True)  # Force reload from .env file
 
 logger = logging.getLogger(__name__)
 

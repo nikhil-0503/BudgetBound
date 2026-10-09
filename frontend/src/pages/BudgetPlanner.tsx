@@ -788,14 +788,14 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 <div className="relative">
                   <Users className="absolute left-3.5 top-3.5 text-paper-400" size={16} />
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
+                    type="number"
+                    min="1"
+                    max="20"
                     required
                     value={travelersCount}
                     onChange={(e) => {
-                      const val = Number(e.target.value.replace(/[^0-9]/g, ''));
-                      if (!isNaN(val) && val >= 1) setTravelersCount(val);
+                      const val = parseInt(e.target.value) || 1;
+                      setTravelersCount(val);
                     }}
                     placeholder="1"
                     className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"

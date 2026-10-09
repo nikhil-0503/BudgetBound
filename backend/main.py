@@ -5,7 +5,7 @@ import logging
 
 from app import models, seed, auth
 from app.database import engine, get_db
-from app.routers import auth as auth_router, destinations, trips, expenses, ai_placeholders, notifications, documents, admin_analytics
+from app.routers import auth as auth_router, destinations, trips, expenses, ai_placeholders, notifications, documents, admin_analytics, trip_comparison, budget_alerts, currency_converter
 
 import os
 os.makedirs("uploads", exist_ok=True)
@@ -139,6 +139,9 @@ app.include_router(ai_placeholders.router)
 app.include_router(notifications.router)
 app.include_router(documents.router)
 app.include_router(admin_analytics.router)
+app.include_router(trip_comparison.router)
+app.include_router(budget_alerts.router)
+app.include_router(currency_converter.router)
 
 @app.get("/")
 def read_root():

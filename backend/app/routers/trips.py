@@ -937,6 +937,16 @@ def save_trip(
         message=notif_msg
     ))
     db.commit()
+    
+    # Reload with relationships
+    from sqlalchemy.orm import joinedload
+    db_trip = db.query(models.Trip).options(
+        joinedload(models.Trip.destination),
+        joinedload(models.Trip.itineraries),
+        joinedload(models.Trip.budget_allocation),
+        joinedload(models.Trip.packing_items)
+    ).filter(models.Trip.id == db_trip.id).first()
+    
     return db_trip
 
 def auto_update_trip_status(trip: models.Trip, db: Session):
@@ -986,7 +996,13 @@ def get_user_trips(
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    trips = db.query(models.Trip).filter(models.Trip.user_id == current_user.id).order_by(models.Trip.created_at.desc()).all()
+    from sqlalchemy.orm import joinedload
+    trips = db.query(models.Trip).options(
+        joinedload(models.Trip.destination),
+        joinedload(models.Trip.itineraries),
+        joinedload(models.Trip.budget_allocation),
+        joinedload(models.Trip.packing_items)
+    ).filter(models.Trip.user_id == current_user.id).order_by(models.Trip.created_at.desc()).all()
     for t in trips:
         attach_trip_intelligence(t, db)
     return trips

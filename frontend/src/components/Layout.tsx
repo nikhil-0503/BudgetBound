@@ -19,7 +19,8 @@ import {
   GitCompare,
   Bell,
   Settings,
-  ShieldAlert
+  ShieldAlert,
+  DollarSign
 } from 'lucide-react';
 
 interface SidebarLinkProps {
@@ -111,6 +112,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { to: '/explorer', label: 'Destination Explorer', icon: <Map size={19} /> },
     { to: '/ai-companion', label: 'AI Companion', icon: <Sparkles size={19} /> },
     { to: '/multi-stop', label: 'Multi-Stop Planner', icon: <MapPin size={19} /> },
+    { to: '/currency-converter', label: 'Currency Converter', icon: <DollarSign size={19} /> },
     { to: '/notifications', label: 'Notifications', icon: <Bell size={19} />, badgeCount: unreadCount },
     { to: '/profile', label: 'Preferences', icon: <Settings size={19} /> },
   ];
