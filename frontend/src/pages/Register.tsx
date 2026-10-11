@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Wallet, AlertCircle, Loader, Sun, Moon } from 'lucide-react';
 
 export const Register: React.FC = () => {
+  usePageTitle('Register | BudgetBound');
   const { register, error, clearError } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();

@@ -22,8 +22,10 @@
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.81.0",
     "react-leaflet": "^5.0.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.11.0",
     "recharts": "^3.9.2",
+    "remark-gfm": "^4.0.1",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
@@ -42,6 +44,3 @@
     "vite": "^8.1.1"
   }
 }
-
-
-

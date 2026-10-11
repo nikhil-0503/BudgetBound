@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../services/api';
 import { 
   Search, 
@@ -57,10 +58,12 @@ interface Trip {
 }
 
 export const SavedTrips: React.FC = () => {
+  usePageTitle('My Trips | BudgetBound');
   const navigate = useNavigate();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloadingTripId, setDownloadingTripId] = useState<number | null>(null);
 
   // Search & Filters state
   const [searchTerm, setSearchTerm] = useState('');
@@ -120,9 +123,41 @@ export const SavedTrips: React.FC = () => {
     }
   };
 
-  const handleDownloadPDF = (tripId: number, destName: string) => {
-    const token = localStorage.getItem('token');
-    window.open(`http://localhost:8000/api/trips/${tripId}/pdf?token=${token}`, '_blank');
+  const handleDownloadPDF = async (tripId: number, destName: string) => {
+  const handleDownloadPDF = async (tripId: number, destName: string) => {
+    setDownloadingTripId(tripId);
+    try {
+      const response = await api.get(`/api/trips/${tripId}/pdf`, {
+        responseType: 'arraybuffer',
+        headers: {
+          'Accept': 'application/pdf'
+        }
+      });
+      
+      console.log('PDF response received:', response.status, response.data.byteLength);
+      
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `budgetbound_${destName.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      console.log('PDF download completed');
+    } catch (err: any) {
+      console.error('Failed to download PDF:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data
+      });
+      alert('Failed to download PDF. Check browser console for details.');
+    } finally {
+      setDownloadingTripId(null);
+    }
+  };
   };
 
   const openEditModal = (trip: Trip) => {
@@ -407,10 +442,11 @@ export const SavedTrips: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleDownloadPDF(trip.id, trip.destination.name)}
-                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700"
+                      disabled={downloadingTripId === trip.id}
+                      className="p-2 bg-paper-50 dark:bg-paper-700 rounded-xl hover:bg-paper-100 dark:hover:bg-paper-600 text-paper-700 dark:text-white transition-all shadow-sm border border-paper-200 dark:border-paper-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Download PDF"
                     >
-                      <Download size={13} />
+                      {downloadingTripId === trip.id ? <Loader size={13} className="animate-spin" /> : <Download size={13} />}
                     </button>
                   </div>
 

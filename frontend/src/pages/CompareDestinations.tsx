@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { 
@@ -35,6 +36,7 @@ interface DestinationDropdown {
 const COMPARE_BUDGET_SENTINEL = 9_999_999;
 
 export const CompareDestinations: React.FC = () => {
+  usePageTitle('Compare Destinations | BudgetBound');
   const navigate = useNavigate();
 
   // Catalog state

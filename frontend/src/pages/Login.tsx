@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Wallet, AlertCircle, Loader, Sun, Moon } from 'lucide-react';
 import { ForgotPasswordModal } from '../components/ForgotPasswordModal';
 
 export const Login: React.FC = () => {
+  usePageTitle('Login | BudgetBound');
   const { login, error, clearError } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { motion } from 'framer-motion';
@@ -46,6 +47,7 @@ interface SummaryData {
 }
 
 export const AdminAnalyticsPage: React.FC = () => {
+  usePageTitle('Admin Analytics | BudgetBound');
   const { user } = useAuth();
 
   // All hooks MUST be declared before any conditional return (React Rules of Hooks)

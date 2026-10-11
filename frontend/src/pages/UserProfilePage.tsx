@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../services/api';
@@ -26,6 +27,7 @@ interface ProfileStats {
 }
 
 export const UserProfilePage: React.FC = () => {
+  usePageTitle('My Profile | BudgetBound');
   const { user, updateUser } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
   

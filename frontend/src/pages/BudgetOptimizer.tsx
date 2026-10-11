@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../services/api';
 import { 
   ShieldAlert, 
@@ -45,6 +46,7 @@ interface TripInfo {
 }
 
 export const BudgetOptimizer: React.FC = () => {
+  usePageTitle('Budget Optimizer | BudgetBound');
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -72,6 +73,7 @@ interface TripDetails {
 }
 
 export const ExpenseTracker: React.FC = () => {
+  usePageTitle('Expense Tracker | BudgetBound');
   const { tripId } = useParams<{ tripId: string }>();
   const { darkMode } = useTheme();
   const [trip, setTrip] = useState<TripDetails | null>(null);

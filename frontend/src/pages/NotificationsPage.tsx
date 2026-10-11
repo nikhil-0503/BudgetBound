@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EmptyState, SkeletonList } from '../components/FeedbackStates';
@@ -25,6 +26,7 @@ interface Notification {
 }
 
 export const NotificationsPage: React.FC = () => {
+  usePageTitle('Notifications | BudgetBound');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [actioning, setActioning] = useState(false);

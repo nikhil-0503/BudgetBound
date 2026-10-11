@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -28,7 +29,7 @@ import {
   AlertCircle,
   Eye,
   PlusCircle,
-  Percent,
+  PiggyBank,
   Loader,
   Download
 } from 'lucide-react';
@@ -75,6 +76,7 @@ interface DashboardStats {
 }
 
 export const Dashboard: React.FC = () => {
+  usePageTitle('Dashboard | BudgetBound');
   const { user } = useAuth();
   const { darkMode } = useTheme();
   const navigate = useNavigate();
@@ -250,7 +252,7 @@ export const Dashboard: React.FC = () => {
             <h3 className="font-num text-2xl font-semibold text-ink-900 dark:text-paper-50">₹{stats.savings.toLocaleString('en-IN')}</h3>
           </div>
           <div className="h-11 w-11 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-            <Percent size={22} />
+            <PiggyBank size={22} />
           </div>
         </div>
       </div>

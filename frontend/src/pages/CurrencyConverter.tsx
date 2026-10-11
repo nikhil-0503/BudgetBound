@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { DollarSign, ArrowRightLeft, TrendingUp, Info, MapPin, CreditCard } from 'lucide-react';
 import api from '../services/api';
 
@@ -13,6 +14,7 @@ interface RatesResponse {
 }
 
 export const CurrencyConverter: React.FC = () => {
+  usePageTitle('Currency Converter | BudgetBound');
   const [amount, setAmount] = useState<number>(10000);
   const [fromCurrency, setFromCurrency] = useState<string>('INR');
   const [toCurrency, setToCurrency] = useState<string>('USD');

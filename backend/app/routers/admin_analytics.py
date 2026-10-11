@@ -65,12 +65,8 @@ def get_admin_analytics(
     trip_ids_in_scope = {t.id for t in trips}
     total_savings = 0.0
     for t in trips:
-        # Use filtered expenses if available, otherwise 0 spent (no logged expenses in period)
-        if t.id in filtered_expense_map:
-            actual_spent = sum(filtered_expense_map[t.id])
-        else:
-            actual_spent = 0.0
-        total_savings += max(0.0, t.budget - actual_spent)
+        # Savings = projected savings if you stick to estimated cost
+        total_savings += max(0.0, t.budget - t.total_estimated_cost)
     avg_savings = round(total_savings / total_trips, 2) if total_trips > 0 else 0.0
     
     # Comfort level

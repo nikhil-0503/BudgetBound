@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -127,6 +128,7 @@ interface BudgetPlannerProps {
 }
 
 export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'discover' }) => {
+  usePageTitle('Budget Planner | BudgetBound');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const modeParam = searchParams.get('mode');
@@ -591,18 +593,32 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     setDownloadingPdf(true);
     try {
       const response = await api.get(`/api/trips/${savedTripId}/pdf`, {
-        responseType: 'blob'
+        responseType: 'arraybuffer',
+        headers: {
+          'Accept': 'application/pdf'
+        }
       });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      
+      console.log('PDF response received:', response.status, response.data.byteLength);
+      
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `budgetbound_${plan.destination.name.replace(/\s+/g, '_').toLowerCase()}.pdf`);
       document.body.appendChild(link);
       link.click();
-      link.parentNode?.removeChild(link);
+      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Failed to download PDF:', err);
+      console.log('PDF download completed');
+    } catch (err: any) {
+      console.error('Failed to download PDF:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data
+      });
+      alert('Failed to download PDF. Check browser console for details.');
     } finally {
       setDownloadingPdf(false);
     }
@@ -662,7 +678,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         description={flowMode === 'discover'
           ? 'Use this step to compare options. The app ranks destinations by your budget, days, starting city, and comfort level, then lets you choose one to continue.'
           : 'Use the selected destination or let the planner choose the strongest fit. The backend will calculate the trip and show the final itinerary in the same place.'}
-        ctaLabel={flowMode === 'discover' ? 'Find matches first' : 'Build the itinerary next'}
+        ctaLabel={flowMode === 'discover' ? 'Find matches first' : 'Build the itinerary'}
         steps={[
           { title: 'Step 1: Set trip details', description: 'Enter the same trip details once for either discovery or planning.' },
           { title: 'Step 2: Compare or lock a destination', description: 'Search first, or jump straight into itinerary generation if you already know what you want.' },

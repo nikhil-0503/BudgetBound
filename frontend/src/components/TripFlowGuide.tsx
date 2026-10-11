@@ -41,7 +41,6 @@ export const TripFlowGuide: React.FC<TripFlowGuideProps> = ({
           {ctaLabel ? (
             <div className="inline-flex items-center gap-2 rounded-2xl bg-paper-900 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-paper-900/10 dark:bg-marigold-600 dark:shadow-marigold-900/20">
               {ctaLabel}
-              <ArrowRight size={14} />
             </div>
           ) : null}
         </div>

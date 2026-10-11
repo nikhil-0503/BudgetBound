@@ -100,8 +100,8 @@ def get_user_profile_details(
     
     total_savings = 0.0
     for t in trips:
-        actual_spent = sum([e.amount for e in t.expenses])
-        total_savings += max(0.0, t.budget - actual_spent)
+        # Savings = money left if you stick to the estimated cost (projected savings)
+        total_savings += max(0.0, t.budget - t.total_estimated_cost)
         
     from collections import Counter
     styles = [t.travel_type for t in trips if t.travel_type]

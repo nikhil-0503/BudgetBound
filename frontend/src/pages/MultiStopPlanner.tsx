@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { MapPin, Plus, X, Calendar, Users, DollarSign, Loader, Sparkles, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 
@@ -9,6 +10,7 @@ interface Stop {
 }
 
 export const MultiStopPlanner: React.FC = () => {
+  usePageTitle('Multi-Stop Planner | BudgetBound');
   const [stops, setStops] = useState<Stop[]>([
     { id: '1', destination: '', days: 2 },
     { id: '2', destination: '', days: 2 }
@@ -71,7 +73,12 @@ export const MultiStopPlanner: React.FC = () => {
         special: specialRequests
       });
 
-      setResult(response.data);
+      // Normalize the result: convert "legs" to "stops" for frontend display
+      const data = response.data;
+      if (data.legs && !data.stops) {
+        data.stops = data.legs;
+      }
+      setResult(data);
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.detail || 'Failed to generate multi-stop plan. Please try again.');
@@ -305,30 +312,75 @@ export const MultiStopPlanner: React.FC = () => {
 
                 {result.stops && result.stops.length > 0 && (
                   <div className="space-y-3 mt-6">
-                    {result.stops.map((stop: any, index: number) => (
-                      <div key={index} className="bg-paper-50 dark:bg-paper-900 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-marigold-600 text-white flex items-center justify-center font-semibold text-sm">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-paper-900 dark:text-white mb-1">
-                              {stop.destination || stops[index]?.destination}
-                            </h3>
-                            <p className="text-xs text-paper-600 dark:text-paper-400 mb-2">
-                              {stop.days || stops[index]?.days} days • Est. ₹{stop.estimated_cost?.toLocaleString() || 'TBD'}
-                            </p>
-                            {stop.highlights && (
-                              <ul className="text-xs text-paper-700 dark:text-paper-300 space-y-1">
-                                {stop.highlights.slice(0, 3).map((highlight: string, i: number) => (
-                                  <li key={i}>• {highlight}</li>
-                                ))}
-                              </ul>
-                            )}
+                    {result.stops.map((stop: any, index: number) => {
+                      const globalDayRange = stop.global_day_range || [null, null];
+                      const globalDayDisplay = globalDayRange[0] && globalDayRange[1] 
+                        ? `Days ${globalDayRange[0]}-${globalDayRange[1]}`
+                        : `${stop.days} days`;
+                      
+                      return (
+                        <div key={index} className="bg-paper-50 dark:bg-paper-900 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-marigold-600 text-white flex items-center justify-center font-semibold text-sm">
+                              {index + 1}
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-paper-900 dark:text-white mb-1">
+                                {stop.destination || stops[index]?.destination}
+                              </h3>
+                              <p className="text-xs text-paper-600 dark:text-paper-400 mb-2">
+                                {globalDayDisplay} • Est. ₹{stop.estimated_cost?.toLocaleString() || 'TBD'}
+                              </p>
+                              {stop.best_time_tip && (
+                                <p className="text-xs text-paper-600 dark:text-paper-400 mb-2 italic">
+                                  💡 {stop.best_time_tip}
+                                </p>
+                              )}
+                              {stop.highlights && Array.isArray(stop.highlights) && (
+                                <ul className="text-xs text-paper-700 dark:text-paper-300 space-y-1 mb-2">
+                                  {stop.highlights.slice(0, 3).map((highlight: string, i: number) => (
+                                    <li key={i}>• {highlight}</li>
+                                  ))}
+                                </ul>
+                              )}
+                              {stop.itinerary && Array.isArray(stop.itinerary) && stop.itinerary.length > 0 && (
+                                <details className="text-xs cursor-pointer mt-2">
+                                  <summary className="font-medium text-marigold-600 dark:text-marigold-400 hover:underline">
+                                    View detailed itinerary
+                                  </summary>
+                                  <div className="mt-2 space-y-2">
+                                    {stop.itinerary.map((day: any, dayIdx: number) => {
+                                      const dayGlobalNumber = day.global_day_number || (globalDayRange[0] ? globalDayRange[0] + dayIdx : day.day_number);
+                                      return (
+                                        <div key={dayIdx} className="bg-paper-100 dark:bg-paper-800 p-2 rounded">
+                                          <p className="font-medium text-paper-900 dark:text-paper-50 mb-1">
+                                            Day {dayGlobalNumber}: {day.description}
+                                          </p>
+                                          <ul className="space-y-1">
+                                            {day.activities?.map((act: any, actIdx: number) => (
+                                              <li key={actIdx} className="text-paper-700 dark:text-paper-300">
+                                                <span className="text-xs font-medium text-paper-600 dark:text-paper-400">{act.time}</span> - {act.title} (₹{act.cost?.toLocaleString() || '0'})
+                                                {act.notes && <p className="text-xs text-paper-600 dark:text-paper-400 mt-0.5">📝 {act.notes}</p>}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </details>
+                              )}
+                              {stop.travel_to_next && (
+                                <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded text-xs text-blue-900 dark:text-blue-200">
+                                  <p className="font-medium">🚗 Travel to next stop: {stop.travel_to_next.mode} ({stop.travel_to_next.duration})</p>
+                                  <p>Cost: ₹{stop.travel_to_next.approx_cost?.toLocaleString() || '0'}</p>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
@@ -349,6 +401,40 @@ export const MultiStopPlanner: React.FC = () => {
                       ₹{(totalBudget - (result.total_estimated_cost || 0)).toLocaleString()}
                     </span>
                   </div>
+                  
+                  {result.budget_breakdown && (
+                    <details className="mt-3 pt-3 border-t border-paper-200 dark:border-paper-700">
+                      <summary className="text-xs font-medium text-paper-600 dark:text-paper-400 cursor-pointer hover:text-marigold-600">
+                        Budget Breakdown by Category
+                      </summary>
+                      <div className="mt-3 space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-paper-600 dark:text-paper-400">Accommodation</span>
+                          <span className="text-paper-900 dark:text-paper-50">₹{result.budget_breakdown.accommodation?.toLocaleString() || '0'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-paper-600 dark:text-paper-400">Food & Dining</span>
+                          <span className="text-paper-900 dark:text-paper-50">₹{result.budget_breakdown.food?.toLocaleString() || '0'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-paper-600 dark:text-paper-400">Activities & Experiences</span>
+                          <span className="text-paper-900 dark:text-paper-50">₹{result.budget_breakdown.activities?.toLocaleString() || '0'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-paper-600 dark:text-paper-400">Local Transport</span>
+                          <span className="text-paper-900 dark:text-paper-50">₹{result.budget_breakdown.local_transport?.toLocaleString() || '0'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-paper-600 dark:text-paper-400">Inter-City Transport</span>
+                          <span className="text-paper-900 dark:text-paper-50">₹{result.budget_breakdown.inter_city_transport?.toLocaleString() || '0'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-paper-600 dark:text-paper-400">Contingency Buffer</span>
+                          <span className="text-paper-900 dark:text-paper-50">₹{result.budget_breakdown.contingency?.toLocaleString() || '0'}</span>
+                        </div>
+                      </div>
+                    </details>
+                  )}
                 </div>
 
                 <button

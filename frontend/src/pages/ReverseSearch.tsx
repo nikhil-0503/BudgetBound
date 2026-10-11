@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { TripFlowGuide } from '../components/TripFlowGuide';
@@ -40,6 +41,7 @@ interface DestinationResult {
 }
 
 export const ReverseSearch: React.FC = () => {
+  usePageTitle('Reverse Search | BudgetBound');
   const navigate = useNavigate();
   const [startingCity, setStartingCity] = useState('Bangalore');
   const [budget, setBudget] = useState<number>(25000);

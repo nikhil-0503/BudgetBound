@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { TimelineItinerary } from '../components/TimelineItinerary';
@@ -77,6 +78,7 @@ interface Trip {
 }
 
 export const SharedTripView: React.FC = () => {
+  usePageTitle('Shared Trip | BudgetBound');
   const { shareToken } = useParams<{ shareToken: string }>();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [loading, setLoading] = useState(true);

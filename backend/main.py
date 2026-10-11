@@ -2,17 +2,29 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import logging
+import os
+from dotenv import load_dotenv
+
+# CRITICAL: Load .env BEFORE anything else
+load_dotenv(override=True)
 
 from app import models, seed, auth
 from app.database import engine, get_db
 from app.routers import auth as auth_router, destinations, trips, expenses, ai_placeholders, notifications, documents, admin_analytics, trip_comparison, budget_alerts, currency_converter
-
 import os
 os.makedirs("uploads", exist_ok=True)
 
-# Setup Logging
-logging.basicConfig(level=logging.INFO)
+# Setup Logging - Configure root logger to propagate all INFO+ events
+logging.basicConfig(
+    level=logging.DEBUG,  # Changed to DEBUG to see all diagnostics
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger("budgetbound.api")
+
+# Explicitly configure app-level loggers
+for logger_name in ["app.services", "app.services.gemini", "budgetbound"]:
+    app_logger = logging.getLogger(logger_name)
+    app_logger.setLevel(logging.DEBUG)  # Changed to DEBUG
 
 # Create tables in Database (if they don't exist)
 try:
@@ -298,3 +310,8 @@ def get_dashboard_stats(
         "budget_usage_chart": budget_usage_chart,
         "category_chart": category_chart
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

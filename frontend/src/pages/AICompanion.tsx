@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../services/api';
+import { MarkdownMessage } from '../components/MarkdownMessage';
+import { CustomPlannerItinerary } from '../components/CustomPlannerItinerary';
+import { ExplainabilityReport } from '../components/ExplainabilityReport';
 import {
   Sparkles,
   MessageSquare,
@@ -29,6 +33,7 @@ interface SavedTrip {
 }
 
 export const AICompanion: React.FC = () => {
+  usePageTitle('AI Companion | BudgetBound');
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'chat' | 'planner' | 'regenerator' | 'explain' | 'multistop'>('chat');
   const [savedTrips, setSavedTrips] = useState<SavedTrip[]>([]);
@@ -62,7 +67,8 @@ export const AICompanion: React.FC = () => {
   // 4. Explainability states
   const [explainTripId, setExplainTripId] = useState('');
   const [explainingLoading, setExplainingLoading] = useState(false);
-  const [explanationText, setExplanationText] = useState<string | null>(null);
+  const [explanationData, setExplanationData] = useState<any | null>(null);
+  const [explanationError, setExplanationError] = useState<string | null>(null);
 
   // Fetch saved trips for dropdowns on mount
   useEffect(() => {
@@ -159,14 +165,16 @@ export const AICompanion: React.FC = () => {
     if (!regenTripId || !regeneratedResult) return;
     setApplyingRegen(true);
     try {
-      await api.put(`/api/trips/${regenTripId}`, regeneratedResult);
-      alert('Trip schedule and budget regenerated successfully!');
+      // The regenerate endpoint now saves automatically to the database
+      // Just show success message and navigate to view the updated trip
+      alert('Trip schedule and budget regenerated and saved successfully!');
       setRegeneratedResult(null);
       setRegenInstruction('');
-      navigate(`/expenses/${regenTripId}`);
+      // Navigate to planner to view the updated trip with refreshed data
+      navigate(`/planner?tripId=${regenTripId}`);
     } catch (err) {
       console.error(err);
-      alert('Failed to apply regeneration update.');
+      alert('Error navigating to updated trip view.');
     } finally {
       setApplyingRegen(false);
     }
@@ -176,15 +184,17 @@ export const AICompanion: React.FC = () => {
     e.preventDefault();
     if (!explainTripId) return;
     setExplainingLoading(true);
-    setExplanationText(null);
+    setExplanationData(null);
+    setExplanationError(null);
     try {
       const response = await api.post('/api/ai/explain', {
         trip_id: Number(explainTripId)
       });
-      setExplanationText(response.data.explanation);
+      setExplanationData(response.data);
     } catch (err: any) {
       console.error(err);
-      triggerAIError(err.response?.data?.detail || "AI service not connected yet. API integration pending.");
+      const errorMsg = err.response?.data?.detail || "Failed to generate explanation. API service may not be available.";
+      setExplanationError(errorMsg);
     } finally {
       setExplainingLoading(false);
     }
@@ -263,7 +273,7 @@ export const AICompanion: React.FC = () => {
               {chatMessages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex items-start gap-3 max-w-[80%] ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                  className={`flex items-start gap-3 ${msg.sender === 'user' ? 'ml-auto flex-row-reverse max-w-[85%]' : 'mr-auto max-w-[90%]'
                     }`}
                 >
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 font-bold ${msg.sender === 'user'
@@ -277,13 +287,17 @@ export const AICompanion: React.FC = () => {
                     ? 'bg-marigold-600 border-marigold-600 text-white rounded-tr-none'
                     : 'bg-paper-50 dark:bg-paper-900/60 border-paper-200 dark:border-paper-700/60 text-paper-700 dark:text-paper-300 rounded-tl-none'
                     }`}>
-                    {msg.text}
+                    {msg.sender === 'user' ? (
+                      msg.text
+                    ) : (
+                      <MarkdownMessage content={msg.text} isDarkMode={true} />
+                    )}
                   </div>
                 </div>
               ))}
 
               {chatLoading && (
-                <div className="flex items-start gap-3 mr-auto max-w-[80%]">
+                <div className="flex items-start gap-3 mr-auto max-w-[90%]">
                   <div className="h-8 w-8 rounded-full bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400 flex items-center justify-center shrink-0">
                     <Loader size={14} className="animate-spin" />
                   </div>
@@ -327,13 +341,13 @@ export const AICompanion: React.FC = () => {
 
             <form onSubmit={handlePlannerSubmit} className="flex flex-col gap-4">
               <div>
-                <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Destination Stays / Keywords</label>
+                <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Destination / Keywords</label>
                 <input
                   type="text"
                   required
                   value={prefKeywords}
                   onChange={(e) => setPrefKeywords(e.target.value)}
-                  placeholder="e.g. Kashmir, Backwaters, Ladakh glaciers"
+                  placeholder="e.g. Kashmir, Zanzibar, Tokyo, Barcelona"
                   className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                 />
               </div>
@@ -344,6 +358,7 @@ export const AICompanion: React.FC = () => {
                   <input
                     type="number"
                     required
+                    min="1000"
                     value={prefBudget}
                     onChange={(e) => setPrefBudget(Number(e.target.value))}
                     className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
@@ -351,10 +366,12 @@ export const AICompanion: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Days Limit</label>
+                  <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Number of Days</label>
                   <input
                     type="number"
                     required
+                    min="1"
+                    max="60"
                     value={prefDays}
                     onChange={(e) => setPrefDays(Number(e.target.value))}
                     className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
@@ -363,53 +380,60 @@ export const AICompanion: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Special Stays / Dietary Needs</label>
+                <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">
+                  Preferences & Special Requirements
+                  <span className="text-[9px] font-normal text-paper-400 ml-2">(e.g., cuisine, comfort level, activities)</span>
+                </label>
                 <textarea
                   value={prefSpecial}
                   onChange={(e) => setPrefSpecial(e.target.value)}
-                  placeholder="e.g. Vegetarian food only, wheelchair accessible paths, focus on history museums."
+                  placeholder="e.g. Delicious food, fancy travel, river cruise, vegetarian, budget travel, adventure sports, cultural sites, wellness retreat"
                   rows={3}
                   className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 resize-none leading-relaxed"
                 />
+                <p className="text-[9px] text-paper-400 mt-1">
+                  💡 Tip: Include specific cuisines, comfort preferences, activities, or dietary requirements. Our AI will prioritize these in the itinerary.
+                </p>
               </div>
 
               <button
                 type="submit"
                 disabled={planningLoading}
-                className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
+                className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 disabled:from-paper-400 disabled:to-paper-400 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
               >
-                {planningLoading ? <Loader size={16} className="animate-spin" /> : null}
-                Generate Custom Itinerary
+                {planningLoading ? (
+                  <>
+                    <Loader size={16} className="animate-spin" />
+                    <span>Generating Itinerary...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={16} />
+                    <span>Generate Custom Itinerary</span>
+                  </>
+                )}
               </button>
             </form>
 
             {plannedResult && (
               <div className="mt-8 border-t border-paper-200 dark:border-paper-700/60 pt-6 animate-fade-in">
-                <div className="bg-paper-50 dark:bg-paper-900/30 border border-paper-200 dark:border-paper-700 rounded-2xl p-6">
-                  <h4 className="text-lg font-bold text-marigold-600 dark:text-marigold-400 mb-1">{plannedResult.plan_name}</h4>
-                  <p className="text-xs text-paper-400 mb-4">Estimated Total Expense: <strong className="text-paper-800 dark:text-paper-200">₹{plannedResult.estimated_cost?.toLocaleString()}</strong></p>
-                  <p className="text-xs text-paper-600 dark:text-paper-400 leading-relaxed mb-6 bg-paper-50 dark:bg-paper-900 p-4 rounded-xl border border-paper-200 dark:border-paper-700">{plannedResult.summary}</p>
-
-                  <h5 className="text-xs font-bold text-paper-400 uppercase tracking-wider mb-3">Planned Schedule</h5>
-                  <div className="space-y-4">
-                    {plannedResult.days?.map((day: any) => (
-                      <div key={day.day_number} className="bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl p-4">
-                        <div className="font-bold text-xs text-paper-800 dark:text-paper-200 mb-2 pb-1 border-b border-paper-100 dark:border-paper-700">
-                          Day {day.day_number} - {day.description}
-                        </div>
-                        <div className="space-y-2">
-                          {day.activities?.map((act: any, aIdx: number) => (
-                            <div key={aIdx} className="flex justify-between items-center text-xs">
-                              <span className="text-paper-400 font-semibold w-16">{act.time}</span>
-                              <span className="text-paper-700 dark:text-paper-300 flex-1 px-2">{act.title}</span>
-                              <span className="text-paper-500 font-bold">₹{act.cost}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <CustomPlannerItinerary
+                  plan_name={plannedResult.plan_name}
+                  destination={plannedResult.destination}
+                  num_days={plannedResult.num_days || plannedResult.days?.length || 0}
+                  estimated_total_cost={plannedResult.estimated_total_cost}
+                  budget_limit={plannedResult.budget_limit}
+                  summary={plannedResult.summary}
+                  budget_breakdown={plannedResult.budget_breakdown}
+                  days={plannedResult.days}
+                  requirements_extracted={plannedResult.requirements_extracted}
+                  requirements_coverage={plannedResult.requirements_coverage}
+                  validation_warnings={plannedResult.validation_warnings}
+                  data_source={plannedResult.data_source}
+                  semantic_score={plannedResult.semantic_score}
+                  feasibility_score={plannedResult.feasibility_score}
+                  requirement_coverage_score={plannedResult.requirement_coverage_score}
+                />
               </div>
             )}
           </div>
@@ -530,26 +554,30 @@ export const AICompanion: React.FC = () => {
 
         {/* Panel 4: Explainability */}
         {activeTab === 'explain' && (
-          <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full py-4 justify-center">
+          <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full py-4">
             <div className="text-center mb-8">
               <HelpCircle className="h-10 w-10 text-marigold-500 mx-auto mb-2 animate-pulse" />
               <h3 className="text-base font-bold text-paper-800 dark:text-white">AI Itinerary Explainability</h3>
               <p className="text-xs text-paper-400 max-w-sm mx-auto mt-1 leading-normal">
-                Want to know why the engine selected a certain resort tier, dining budget or local transit mode? Ask our AI for transparency.
+                Understand exactly why the engine selected a specific accommodation tier, transport mode, or budget allocation. All explanations are grounded in actual decision data.
               </p>
             </div>
 
             {savedTrips.length === 0 ? (
               <div className="text-center py-6 text-xs text-paper-400 font-medium bg-paper-50 dark:bg-paper-900/35 border border-dashed border-paper-200 dark:border-paper-700 rounded-xl p-6">
-                No trips logged in history. Plan a trip before simulating budget explanation.
+                No trips logged in history. Plan a trip before analyzing budget decisions.
               </div>
             ) : (
-              <form onSubmit={handleExplainSubmit} className="flex flex-col gap-4">
+              <form onSubmit={handleExplainSubmit} className="flex flex-col gap-4 mb-6">
                 <div>
                   <label className="block text-[10px] font-bold text-paper-400 uppercase mb-2">Select Trip to Analyze</label>
                   <select
                     value={explainTripId}
-                    onChange={(e) => setExplainTripId(e.target.value)}
+                    onChange={(e) => {
+                      setExplainTripId(e.target.value);
+                      setExplanationData(null);
+                      setExplanationError(null);
+                    }}
                     className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-xs text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500 appearance-none"
                   >
                     {savedTrips.map(t => (
@@ -563,22 +591,18 @@ export const AICompanion: React.FC = () => {
                 <button
                   type="submit"
                   disabled={explainingLoading}
-                  className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
+                  className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-marigold-600 to-petrol-600 hover:from-marigold-500 hover:to-petrol-500 disabled:from-paper-400 disabled:to-paper-400 text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-md shadow-marigold-500/10"
                 >
                   {explainingLoading ? <Loader size={16} className="animate-spin" /> : null}
-                  Analyze Budget Selections
+                  {explainingLoading ? 'Analyzing...' : 'Analyze Budget Selections'}
                 </button>
               </form>
             )}
 
-            {explanationText && (
-              <div className="mt-8 border-t border-paper-200 dark:border-paper-700/60 pt-6 animate-fade-in font-sans">
-                <div className="bg-paper-50 dark:bg-paper-900/30 border border-paper-200 dark:border-paper-700 rounded-2xl p-6">
-                  <h4 className="text-sm font-bold text-paper-800 dark:text-white mb-4">Budget Selection Analysis</h4>
-                  <div className="bg-paper-50 dark:bg-paper-800 p-6 rounded-xl border border-paper-200 dark:border-paper-700 text-xs text-paper-700 dark:text-paper-300 leading-relaxed whitespace-pre-wrap font-sans">
-                    {explanationText}
-                  </div>
-                </div>
+            {/* Explainability Report Component */}
+            {explanationData && (
+              <div className="animate-fade-in">
+                <ExplainabilityReport data={explanationData} error={explanationError} />
               </div>
             )}
           </div>

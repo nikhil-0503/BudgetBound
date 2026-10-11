@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { TripFlowGuide } from '../components/TripFlowGuide';
@@ -41,6 +42,7 @@ interface Destination {
 }
 
 export const DestinationDetail: React.FC = () => {
+  usePageTitle('Destination Details | BudgetBound');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   

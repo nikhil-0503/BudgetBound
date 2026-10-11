@@ -2,7 +2,7 @@ import io
 # pyrefly: ignore [missing-import]
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 # pyrefly: ignore [missing-import]
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, Response
 # pyrefly: ignore [missing-import]
 from sqlalchemy.orm import Session
 # pyrefly: ignore [missing-import]
@@ -11,6 +11,7 @@ import datetime
 
 from app import models, schemas, auth
 from app.database import get_db
+from app.services.pdf_generator import generate_premium_trip_pdf
 from app.services.gemini import gemini_service
 
 # ReportLab imports for PDF generation
@@ -768,12 +769,34 @@ def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends(get_d
         selected_plan = matched_plans[0]
         if not selected_plan["under_budget"]:
             est = round(selected_plan["costs"]["total_estimated_cost"], 2)
+            dest_obj = selected_plan["destination"]
+            
+            # Try to find viable alternatives (different day counts)
+            alternatives = []
+            for alt_days in [req.days - 1, req.days - 2, req.days + 1, req.days + 2]:
+                if alt_days > 0 and alt_days <= 30:
+                    alt_costs = calculate_costs(dest_obj, alt_days, req.travelers_count, req.comfort_score, req.starting_city)
+                    if alt_costs["total_estimated_cost"] <= req.budget:
+                        alternatives.append({
+                            "days": alt_days,
+                            "cost": round(alt_costs["total_estimated_cost"], 2),
+                            "savings": round(req.budget - alt_costs["total_estimated_cost"], 2)
+                        })
+            
+            # Sort by days (prefer closest to original request)
+            alternatives.sort(key=lambda x: abs(x["days"] - req.days))
+            
+            alt_msg = ""
+            if alternatives:
+                best_alt = alternatives[0]
+                alt_msg = f" However, {best_alt['days']} days would work (estimated ₹{best_alt['cost']:,.0f}). Consider {best_alt['days']} days instead."
+            
             raise HTTPException(
                 status_code=422,
                 detail=(
-                    f"Selected destination '{selected_plan['destination'].name}' exceeds your budget. "
-                    f"Estimated cost: INR {est:,.0f} vs your budget of INR {req.budget:,.0f}. "
-                    f"Try increasing your budget or reducing duration/comfort level."
+                    f"'{dest_obj.name}' for {req.days} days exceeds your budget of ₹{req.budget:,.0f} "
+                    f"(estimated ₹{est:,.0f}).{alt_msg} "
+                    f"Or try: increasing budget, reducing comfort level, or choosing another destination."
                 )
             )
     else:
@@ -785,13 +808,22 @@ def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends(get_d
             matched_plans.sort(key=lambda x: x["costs"]["total_estimated_cost"])
             cheapest = matched_plans[0]
             cheapest_cost = round(cheapest["costs"]["total_estimated_cost"], 2)
+            
+            # Try alternative days for cheapest destination
+            alt_days_msg = ""
+            for alt_days in [req.days - 1, req.days - 2]:
+                if alt_days > 0:
+                    alt_costs = calculate_costs(cheapest["destination"], alt_days, req.travelers_count, req.comfort_score, req.starting_city)
+                    if alt_costs["total_estimated_cost"] <= req.budget:
+                        alt_days_msg = f" Try {alt_days} days (₹{alt_costs['total_estimated_cost']:,.0f}) or "
+                        break
+            
             raise HTTPException(
                 status_code=422,
                 detail=(
-                    f"No destination found within your budget of INR {req.budget:,.0f}. "
-                    f"The most affordable option ({cheapest['destination'].name}) costs approximately "
-                    f"INR {cheapest_cost:,.0f}. Try increasing your budget, reducing trip duration, "
-                    f"or lowering your comfort score."
+                    f"No destination fits your budget of ₹{req.budget:,.0f} for {req.days} days. "
+                    f"Most affordable: {cheapest['destination'].name} (₹{cheapest_cost:,.0f}). "
+                    f"{alt_days_msg}try: increasing budget, reducing trip duration, or lowering comfort level."
                 )
             )
 
@@ -978,7 +1010,9 @@ def attach_trip_intelligence(t: models.Trip, db: Session):
     auto_update_trip_status(t, db)
     actual_spent = sum([e.amount for e in t.expenses])
     t.actual_spending = round(actual_spent, 2)
-    t.savings = round(max(0.0, t.budget - actual_spent), 2)
+    # Savings = money left if you stick to the estimated cost (projected savings)
+    # NOT actual remaining budget after spending
+    t.savings = round(max(0.0, t.budget - t.total_estimated_cost), 2)
     
     month_val = None
     if t.start_date:
@@ -1394,11 +1428,12 @@ def get_shared_trip_details(
                 db.refresh(trip)
         except Exception:
             pass
-            
+    
     # Calculate spending/savings
     actual_spent = sum([e.amount for e in trip.expenses])
     trip.actual_spending = round(actual_spent, 2)
-    trip.savings = round(max(0.0, trip.budget - actual_spent), 2)
+    # Savings = money left if you stick to the estimated cost (projected savings)
+    trip.savings = round(max(0.0, trip.budget - trip.total_estimated_cost), 2)
     
     # Calculate weather intelligence
     month_val = None
@@ -1723,207 +1758,34 @@ def download_trip_pdf(
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    trip = db.query(models.Trip).filter(
-        models.Trip.id == trip_id,
-        models.Trip.user_id == current_user.id
-    ).first()
-    if not trip:
-        raise HTTPException(status_code=404, detail="Trip not found")
-
-    # Generate PDF in memory
-    buffer = io.BytesIO()
-    
-    # 0.5 inch margins
-    doc = SimpleDocTemplate(
-        buffer, 
-        pagesize=letter, 
-        rightMargin=36, 
-        leftMargin=36, 
-        topMargin=36, 
-        bottomMargin=36
-    )
-    
-    styles = getSampleStyleSheet()
-    
-    # Custom styles
-    title_style = ParagraphStyle(
-        'DocTitle',
-        parent=styles['Heading1'],
-        fontName='Helvetica-Bold',
-        fontSize=24,
-        textColor=colors.HexColor('#6d28d9'), # violet-700
-        spaceAfter=15
-    )
-    
-    subtitle_style = ParagraphStyle(
-        'DocSubtitle',
-        parent=styles['Heading2'],
-        fontName='Helvetica-Bold',
-        fontSize=16,
-        textColor=colors.HexColor('#1f2937'), # gray-800
-        spaceBefore=12,
-        spaceAfter=8,
-        keepWithNext=True
-    )
-    
-    body_style = ParagraphStyle(
-        'DocBody',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=10,
-        leading=14,
-        textColor=colors.HexColor('#4b5563') # gray-600
-    )
-
-    bold_body_style = ParagraphStyle(
-        'DocBoldBody',
-        parent=body_style,
-        fontName='Helvetica-Bold'
-    )
-    
-    header_col_style = ParagraphStyle(
-        'HeadCol',
-        parent=body_style,
-        fontName='Helvetica-Bold',
-        textColor=colors.white
-    )
-
-    story = []
-    
-    # 1. Header Details
-    story.append(Paragraph(f"BudgetBound Travel Plan — {trip.destination.name}", title_style))
-    story.append(Paragraph(f"Generated for {current_user.name} on {datetime.date.today().strftime('%B %d, %Y')}", body_style))
-    story.append(Spacer(1, 15))
-    
-    # 2. Trip Summary Table
-    summary_data = [
-        [Paragraph("Destination", bold_body_style), Paragraph(f"{trip.destination.name}, {trip.destination.state}", body_style),
-         Paragraph("Duration", bold_body_style), Paragraph(f"{trip.days} Days", body_style)],
-        [Paragraph("Starting Budget", bold_body_style), Paragraph(f"INR {trip.budget:,.2f}", body_style),
-         Paragraph("Estimated Cost", bold_body_style), Paragraph(f"INR {trip.total_estimated_cost:,.2f}", body_style)],
-        [Paragraph("Comfort Score", bold_body_style), Paragraph(f"{trip.comfort_score}/100", body_style),
-         Paragraph("Travelers", bold_body_style), Paragraph(f"{trip.travelers_count} traveler(s)", body_style)],
-        [Paragraph("Hotel Quality", bold_body_style), Paragraph(f"{trip.hotel_tier}", body_style),
-         Paragraph("Transport Mode", bold_body_style), Paragraph(f"{trip.transport_mode}", body_style)]
-    ]
-    
-    t_summary = Table(summary_data, colWidths=[110, 160, 110, 160])
-    t_summary.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#e5e7eb')),
-        ('BACKGROUND', (0,0), (0,-1), colors.HexColor('#f9fafb')),
-        ('BACKGROUND', (2,0), (2,-1), colors.HexColor('#f9fafb')),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-    ]))
-    story.append(t_summary)
-    story.append(Spacer(1, 20))
-    
-    # 3. Budget Allocation Breakdown
-    story.append(Paragraph("Estimated Cost Allocation Breakdown", subtitle_style))
-    alloc = trip.budget_allocation
-    
-    alloc_data = [
-        [Paragraph("Category", header_col_style), Paragraph("Estimated Cost", header_col_style)],
-        [Paragraph("Transportation", body_style), Paragraph(f"INR {alloc.transport_cost:,.2f}", body_style)],
-        [Paragraph("Accommodation (Hotel)", body_style), Paragraph(f"INR {alloc.hotel_cost:,.2f}", body_style)],
-        [Paragraph("Food & Dining", body_style), Paragraph(f"INR {alloc.food_cost:,.2f}", body_style)],
-        [Paragraph("Activities & Entry Fees", body_style), Paragraph(f"INR {alloc.activities_cost:,.2f}", body_style)],
-        [Paragraph("Local Travel / Cabs", body_style), Paragraph(f"INR {alloc.local_transport_cost:,.2f}", body_style)],
-        [Paragraph("Taxes & Booking Fees", body_style), Paragraph(f"INR {alloc.taxes_fees_cost:,.2f}", body_style)],
-        [Paragraph("Emergency Reserve", body_style), Paragraph(f"INR {alloc.emergency_reserve:,.2f}", body_style)],
-        [Paragraph("Total Estimated Trip Cost", bold_body_style), Paragraph(f"INR {trip.total_estimated_cost:,.2f}", bold_body_style)]
-    ]
-    t_alloc = Table(alloc_data, colWidths=[270, 270])
-    t_alloc.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#6d28d9')),
-        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#e5e7eb')),
-        ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor('#f3f4f6')),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-    ]))
-    story.append(t_alloc)
-    story.append(Spacer(1, 20))
-    
-    # 4. Daily Itinerary Section
-    story.append(Paragraph("Daily Itinerary Plan", subtitle_style))
-    
-    itineraries = sorted(trip.itineraries, key=lambda x: x.day_number)
-    for it in itineraries:
-        day_story = []
-        day_story.append(Paragraph(f"Day {it.day_number} Plan — {it.description or ''}", bold_body_style))
-        day_story.append(Spacer(1, 5))
+    """Download trip itinerary as premium branded PDF."""
+    try:
+        trip = db.query(models.Trip).filter(
+            models.Trip.id == trip_id,
+            models.Trip.user_id == current_user.id
+        ).first()
         
-        act_data = [[
-            Paragraph("Time Slot", header_col_style), 
-            Paragraph("Duration", header_col_style), 
-            Paragraph("Category", header_col_style), 
-            Paragraph("Activity Title", header_col_style), 
-            Paragraph("Estimated Expense", header_col_style)
-        ]]
-        
-        activities = it.activities if isinstance(it.activities, list) else []
-        for act in activities:
-            cost_val = act.get('cost', 0.0)
-            cost_str = f"INR {cost_val:,.2f}" if cost_val > 0 else "Included / Free"
-            
-            time_val = act.get('time', 'Morning')
-            if time_val == 'Morning':
-                time_val = '08:00'
-            elif time_val == 'Afternoon':
-                time_val = '13:00'
-            elif time_val == 'Evening':
-                time_val = '17:00'
-            elif time_val == 'Night':
-                time_val = '20:00'
-                
-            title = act.get('title', 'Leisure time')
-            
-            category = act.get('category')
-            if not category:
-                title_lower = str(title).lower()
-                if 'hotel' in title_lower or 'check-in' in title_lower:
-                    category = 'Hotel'
-                elif 'lunch' in title_lower or 'dinner' in title_lower or 'food' in title_lower or 'breakfast' in title_lower or 'dine' in title_lower or 'restaurant' in title_lower:
-                    category = 'Food'
-                elif 'travel' in title_lower or 'arrival' in title_lower or 'departure' in title_lower or 'flight' in title_lower or 'train' in title_lower or 'cab' in title_lower:
-                    category = 'Travel'
-                else:
-                    category = 'Attraction'
-                    
-            duration = act.get('duration') or "2.0h"
-            
-            act_data.append([
-                Paragraph(time_val, body_style),
-                Paragraph(duration, body_style),
-                Paragraph(category, body_style),
-                Paragraph(title, body_style),
-                Paragraph(cost_str, body_style)
-            ])
-            
-        t_act = Table(act_data, colWidths=[70, 70, 75, 205, 120])
-        t_act.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#4b5563')),
-            ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#e5e7eb')),
-            ('VALIGN', (0,0), (-1,-1), 'TOP'),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-            ('TOPPADDING', (0,0), (-1,-1), 4),
-        ]))
-        
-        day_story.append(t_act)
-        day_story.append(Spacer(1, 12))
-        
-        story.append(KeepTogether(day_story))
+        if not trip:
+            raise HTTPException(status_code=404, detail="Trip not found")
 
-    doc.build(story)
-    buffer.seek(0)
-    
-    return StreamingResponse(
-        buffer,
-        media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename=budgetbound_{trip.destination.name.replace(' ', '_').lower()}.pdf"}
-    )
+        # Generate premium PDF
+        pdf_bytes = generate_premium_trip_pdf(trip, current_user)
+        
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=budgetbound_{trip.destination.name.replace(' ', '_').lower()}.pdf"
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"PDF Generation Error: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
 
 @router.put("/{trip_id}/allocations", response_model=schemas.TripOut)
 def update_trip_allocations(
@@ -2017,7 +1879,7 @@ def reset_trip_allocations(
 # MULTI-STOP TRIP ENDPOINTS
 # ==========================================
 
-@router.post("/multistop/save", response_model=schemas.MultiStopTripOut)
+@router.post("/multistop", response_model=schemas.MultiStopTripOut)
 def save_multistop_trip(
     req: schemas.MultiStopTripCreate,
     current_user: models.User = Depends(auth.get_current_user),
@@ -2027,6 +1889,8 @@ def save_multistop_trip(
     Saves an AI-generated multi-stop trip to the user's account.
     Stores the raw JSON result deeply so it can be rehydrated directly on the frontend.
     """
+    print(f"DEBUG: Saving multistop trip - name={req.trip_name}, budget={req.total_budget}")
+    
     new_ms_trip = models.MultiStopTrip(
         user_id=current_user.id,
         trip_name=req.trip_name,
@@ -2047,6 +1911,7 @@ def save_multistop_trip(
     db.commit()
     db.refresh(new_ms_trip)
     
+    print(f"DEBUG: Multistop trip saved with id={new_ms_trip.id}")
     return new_ms_trip
 
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { TripFlowGuide } from '../components/TripFlowGuide';
@@ -29,6 +30,7 @@ interface Destination {
 }
 
 export const DestinationExplorer: React.FC = () => {
+  usePageTitle('Explore Destinations | BudgetBound');
   const navigate = useNavigate();
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [states, setStates] = useState<string[]>([]);

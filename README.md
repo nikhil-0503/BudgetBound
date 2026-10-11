@@ -23,7 +23,7 @@ Based on these constraints and a comfort slider (0–100), the platform scores a
 | **Destination Explorer** | `/explorer`, `/explorer/:id` | Paginated catalog with search, category filters, and detailed destination pages |
 | **Budget Optimizer** | `/optimizer/:tripId` | Rules-based cost optimization (hotel downgrade, transit swap, itinerary trim, surplus upgrade) |
 | **Expense Tracker** | `/expenses/:tripId` | Log transactions by category, compare against estimates, view difference stats |
-| **AI Companion** | `/ai-companion` | Groq-powered travel chat assistant (other AI tabs are planned) |
+| **AI Companion** | `/ai-companion` | Multi-tab AI interface: chat for travel questions, explainability for budget decision tracing with quantified alternatives, itinerary regeneration, personalized planner |
 
 ---
 
@@ -77,10 +77,18 @@ Based on these constraints and a comfort slider (0–100), the platform scores a
 * **Variance Analysis Graphs**: Compares the user's actual spending against the pre-calculated budget allocations for each category. If no expenses exist, displays the "Planned Budget Allocation" chart. If expenses exist, shows a comparison of "Planned vs. Actual Spend".
 * **Variance Indicator Badge**: Shows real-time difference figures (under-budget vs. over-budget) to highlight categories causing budget leaks. Shows warning cards and Forecasts.
 
-### 7. Groq AI Travel Companion Chatbot (`/ai-companion`)
+### 7. Groq AI Travel Companion Chatbot & AI Services (`/ai-companion`)
 * **Interactive AI Interface**: Direct chat window to ask travel questions, local guidelines, packing tips, or regional cuisines.
 * **Groq Llama/Gemma Model Integration**: Utilizes fast AI inference through the Groq SDK, configurable to models like `gemma2-9b-it`, `llama-3.1-8b-instant`, or `llama-3.3-70b-versatile`.
 * **Smart fallback architecture**: Backend automatically falls back to static template rendering when `GROQ_API_KEY` is not present, keeping the application fully functional.
+
+### 8. AI Itinerary Explainability (`/ai-companion` → Explainability Tab)
+* **Data-Grounded Decision Tracing**: Extracts actual decision logic from cost calculations (not LLM-generated post-hoc reasoning). Explains each budget decision separately across 7 categories: Transport, Accommodation, Food, Activities, Contingency, Taxes, and Local Transit.
+* **Quantified Alternatives**: For each category, calculates all available options (e.g., Flight/Train/Bus for transport; Budget/Mid/Luxury for accommodation) with exact cost differences and potential savings.
+* **Financial Reconciliation**: Validates that all cost categories sum correctly to the trip total, ensuring no hidden costs or AI hallucination is possible.
+* **Structured JSON Response**: Returns type-safe Pydantic models (not Markdown) that enable rich frontend rendering with expandable cost breakdowns, financial summary cards, and alternatives comparison.
+* **AI-Assisted Summarization**: Optional Groq-powered narrative summary of the structured facts (fallback: returns structured response without narrative if API unavailable).
+* **Works for Any Trip**: No hardcoding—dynamically extracts decision factors from trip metadata (destination, comfort score, duration, travel mode) and destination pricing database.
 
 ### 8. High-Fidelity PDF Export Generator
 * **Aesthetic PDF Document Layout**: Clean document formats built using ReportLab, sporting modern fonts and aligned grid components.
@@ -139,8 +147,9 @@ BudgetBound/
 │       │   ├── trips.py        # Planning, scoring, optimizer, PDF export
 │       │   └── ai_placeholders.py # AI chat and planned AI endpoints
 │       └── services/
-│           ├── gemini.py       # Groq-powered itinerary + chat (active)
-│           └── openai.py       # OpenAI interface stub for future integration
+│           ├── gemini.py              # Groq-powered itinerary, chat, and budget explanation (active)
+│           ├── explainability.py      # Data-grounded decision extraction and alternative generation
+│           └── openai.py              # OpenAI interface stub for future integration
 └── frontend/
     ├── Dockerfile              # Node build → Nginx static serve
     ├── package.json
@@ -199,6 +208,48 @@ Starting city and destination are mapped to region clusters (North, South, East,
 - **Itinerary Streamlining:** Halve daily activities to cut ticket costs
 - **Surplus Upgrade:** Suggest luxury lodging when under budget
 
+### 4. AI-Grounded Itinerary Explainability
+
+The **Budget Explanation** feature extracts actual decision logic (not LLM-generated post-hoc reasoning) to explain how BudgetBound calculated your trip costs:
+
+**How It Works:**
+1. **Decision Extraction**: Traces the comfort-slider and destination-based decisions that drive cost allocation:
+   - **Transport**: Comfort < 50 → Train; ≥ 50 → Flight
+   - **Accommodation**: Comfort < 30 → Budget; 30–70 → Mid; > 70 → Luxury
+   - **Activities**: Comfort < 30 → 1/day; 30–70 → 2/day; > 70 → 3/day
+   - **Food & Contingency**: Base allocation + comfort multiplier
+
+2. **Alternative Calculation**: For each category, computes all available options with real cost formulas:
+   - **Transport Modes**: Train, Bus, Flight (region-adjusted pricing)
+   - **Accommodation Tiers**: Budget, Mid-Range, Luxury (destination-specific rates)
+   - **Activity Levels**: 1, 2, or 3 activities per day
+
+3. **Financial Reconciliation**: Validates all cost categories sum to trip total, ensuring no hidden costs.
+
+4. **Structured JSON Response**: Returns type-safe response with decision factors, alternatives, and quantified savings (not Markdown):
+   ```json
+   {
+     "trip_metadata": { "destination": "Paris", "comfort_score": 75, ... },
+     "financial_summary": { "budget": 100000, "cost": 98500, "remaining": 1500 },
+     "cost_explanations": [
+       {
+         "category": "Transport",
+         "decision_factors": ["comfort_score: 75", "distance: 1200km"],
+         "selected_option": "Flight",
+         "cost": 25000,
+         "alternatives": [
+           { "option": "Train", "cost": 15000, "savings": 10000 },
+           { "option": "Bus", "cost": 8000, "savings": 17000 }
+         ]
+       }
+     ]
+   }
+   ```
+
+5. **AI-Assisted Summary** (optional): Groq API generates a narrative summary of the facts (fallback: returns structured response if API unavailable).
+
+**Access via**: AI Companion → "Analyze Budget Selections" tab → Select a trip → View structured breakdown with expandable categories and alternatives.
+
 ---
 
 ## Theme System
@@ -221,8 +272,8 @@ The backend uses the **Groq API** (not OpenAI) for AI features:
 |---------|--------|-------|
 | **Itinerary generation** | Active | Used during trip planning; falls back to templates if `GROQ_API_KEY` is missing |
 | **AI chat** (`/api/ai/chat`) | Active | Interactive travel companion in AI Companion page |
+| **Budget explanation** (`/api/ai/explain`) | Active | Structured JSON response with decision tracing, quantified alternatives, and financial reconciliation |
 | **Trip regeneration** | Planned | Returns 501 |
-| **Budget explanation** | Planned | Returns 501 |
 | **Personalized planner** | Planned | Returns 501 |
 
 Set `GROQ_API_KEY` in `backend/.env` to enable AI. Default model is `gemma2-9b-it`; override with `GROQ_MODEL`.
@@ -310,7 +361,7 @@ docker-compose up --build
 | `/api/destinations` | `GET /`, `GET /states`, `GET /categories`, `GET /{id}` |
 | `/api/trips` | `POST /plan`, `POST /`, `GET /`, `GET /{id}`, `DELETE /{id}`, `GET /reverse/search`, `POST /{id}/optimize`, `POST /{id}/optimize/apply`, `GET /{id}/pdf` |
 | `/api/expenses` | `POST /`, `GET /trip/{trip_id}`, `PUT /{id}`, `DELETE /{id}`, `GET /trip/{trip_id}/stats` |
-| `/api/ai` | `POST /chat`, `POST /regenerate`, `POST /explain`, `POST /personalized-plan` |
+| `/api/ai` | `POST /chat`, `POST /explain`, `POST /regenerate`, `POST /personalized-plan` |
 | `/api/dashboard` | `GET /stats` |
 
 ---

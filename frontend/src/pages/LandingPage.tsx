@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useTheme } from '../context/ThemeContext';
 import {
   Compass,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
+  usePageTitle('BudgetBound - Travel Budget Planner');
   const { darkMode, toggleTheme } = useTheme();
 
   const samplePlans = [
