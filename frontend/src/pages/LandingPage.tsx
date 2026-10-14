@@ -26,7 +26,7 @@ export const LandingPage: React.FC = () => {
       days: 4,
       cost: '₹14,500',
       rating: 4.7,
-      img: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&q=80&w=600',
+      img: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=600',
       tag: 'Best Value'
     },
     {
@@ -36,7 +36,7 @@ export const LandingPage: React.FC = () => {
       days: 3,
       cost: '₹9,800',
       rating: 4.6,
-      img: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=600',
+      img: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&q=80&w=600',
       tag: 'Popular'
     },
     {
@@ -46,7 +46,7 @@ export const LandingPage: React.FC = () => {
       days: 4,
       cost: '₹8,200',
       rating: 4.7,
-      img: 'https://images.unsplash.com/photo-1561361513-2d000a50f0db?auto=format&fit=crop&q=80&w=600',
+      img: 'https://images.unsplash.com/photo-1609920658906-8223bd289001?auto=format&fit=crop&q=80&w=600',
       tag: 'Budget Pick'
     }
   ];
@@ -101,7 +101,7 @@ export const LandingPage: React.FC = () => {
             Tell us what you can spend. We'll tell you where that takes you.
           </h1>
           <p className="text-base md:text-lg text-paper-700 dark:text-paper-300 max-w-lg mb-10 leading-relaxed">
-            Most planners ask where you want to go, then break the news about the cost. BudgetBound works the other way: give us a budget, a starting city, and how many days you have, and we build the itinerary — lodging, transit, food, and the hidden costs — to fit inside it.
+            Most planners ask where you want to go, then break the news about the cost. BudgetBound works the other way: give us a budget, a starting city, and how many days you have, and we build the itinerary - lodging, transit, food, and the hidden costs - to fit inside it.
           </p>
 
           <div className="flex flex-col sm:flex-row items-start gap-4 mb-10">
@@ -120,13 +120,9 @@ export const LandingPage: React.FC = () => {
             </a>
           </div>
 
-          <div className="flex items-center gap-2 text-amber-500">
-            {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="currentColor" />)}
-            <span className="text-xs text-paper-600 dark:text-paper-400 font-medium ml-1">Rated 4.7 by budget travelers across India</span>
-          </div>
         </div>
 
-        {/* Receipt mockup — the product's core idea, made literal */}
+        {/* Receipt mockup - the product's core idea, made literal */}
         <div className="relative mx-auto w-full max-w-sm">
           <div className="absolute -inset-x-4 top-6 h-full bg-petrol-600/10 dark:bg-petrol-500/10 rounded-2xl -z-10 rotate-2" />
           <div className="ticket p-0 shadow-lg">
@@ -160,7 +156,7 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-6">
           <div className="max-w-2xl mb-16">
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-900 dark:text-paper-50 mb-4">Three steps, in order</h2>
-            <p className="text-paper-700 dark:text-paper-400">No mood boards, no browsing — just the constraints that decide a real trip.</p>
+            <p className="text-paper-700 dark:text-paper-400">No mood boards, no browsing - just the constraints that decide a real trip.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-paper-300 dark:bg-ink-700 rounded-2xl overflow-hidden border border-paper-300 dark:border-ink-700">
@@ -168,7 +164,7 @@ export const LandingPage: React.FC = () => {
               <span className="font-display text-3xl text-marigold-600 dark:text-marigold-400">01</span>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-paper-50 mt-4 mb-3">Set your limits</h3>
               <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">
-                Your maximum budget, starting city, how many days you have, and the kind of trip — beach, adventure, nature, religious, and more.
+                Your maximum budget, starting city, how many days you have, and the kind of trip - beach, adventure, nature, religious, and more.
               </p>
             </div>
 
@@ -184,7 +180,7 @@ export const LandingPage: React.FC = () => {
               <span className="font-display text-3xl text-marigold-600 dark:text-marigold-400">03</span>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-paper-50 mt-4 mb-3">Get your plan</h3>
               <p className="text-paper-700 dark:text-paper-400 text-sm leading-relaxed">
-                A full cost breakdown, hidden expenses accounted for, and a day-by-day itinerary — ready to save or take offline as a PDF.
+                A full cost breakdown, hidden expenses accounted for, and a day-by-day itinerary - ready to save or take offline as a PDF.
               </p>
             </div>
           </div>
@@ -273,35 +269,6 @@ export const LandingPage: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-24 max-w-6xl mx-auto px-6">
-        <div className="max-w-2xl mb-16">
-          <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-900 dark:text-paper-50 mb-4">From people who've used it</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { quote: "I entered ₹15,000 for a Munnar trip and the engine correctly recommended trains and homestays that fit exactly. Saved me hours of spreadsheets.", name: 'Nikhil Kumar', role: 'Solo explorer', initials: 'NK' },
-            { quote: "We wanted a family trip under ₹40,000. It suggested South Goa with a full itinerary and flight costs that actually fit our budget.", name: 'Priya Sharma', role: 'Family planner', initials: 'PR' },
-            { quote: "The hidden-cost predictions — local cabs, tolls — are accurate. I log expenses as I go and compare them against the estimate instantly.", name: 'Amit Sen', role: 'Weekend trekker', initials: 'AS' },
-          ].map((t) => (
-            <div key={t.name} className="ticket p-6">
-              <div className="flex items-center gap-1 text-amber-500 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="currentColor" />)}
-              </div>
-              <p className="text-paper-700 dark:text-paper-300 text-sm leading-relaxed mb-6">{t.quote}</p>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-marigold-100 dark:bg-marigold-950/50 text-marigold-700 dark:text-marigold-400 flex items-center justify-center font-display font-semibold text-xs">{t.initials}</div>
-                <div>
-                  <h4 className="text-ink-900 dark:text-paper-50 text-sm font-semibold">{t.name}</h4>
-                  <span className="text-xs text-paper-500">{t.role}</span>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 

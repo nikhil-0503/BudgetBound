@@ -46,7 +46,7 @@ export const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ content, isDar
     ),
 
     // Links
-    a: ({ href, ...props }) => (
+    a: ({ href, ...props }: { href?: string }) => (
       <a
         href={href}
         target="_blank"

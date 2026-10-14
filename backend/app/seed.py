@@ -483,21 +483,15 @@ DESTINATIONS_DATA = [
         "attractions": ["Gulmarg Meadows", "St. Mary's Church", "Apharwat Peak", "Alpathar Lake"]
     },
     {
-        "name": "Manali Couple Getaway", "state": "Himachal Pradesh", "avg_travel_cost": 2500.0, "avg_hotel_cost": 2400.0,
-        "avg_food_cost": 750.0, "avg_activity_cost": 800.0, "rating": 4.6, "category": "Romantic",
-        "best_season": "October to June", "description": "Misty cedar forests, river side dining, and cozy wooden mountain cottages.",
-        "attractions": ["Old Manali cafes", "Solang Valley", "Van Vihar", "Jogini Falls"]
-    },
-    {
         "name": "Shimla", "state": "Himachal Pradesh", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2200.0,
         "avg_food_cost": 700.0, "avg_activity_cost": 300.0, "rating": 4.4, "category": "Romantic",
         "best_season": "October to June", "description": "The summer capital of British India, known for colonial architecture and snowy strolls.",
         "attractions": ["The Ridge", "Mall Road", "Jakhoo Temple", "Kalka-Shimla Toy Train"]
     },
     {
-        "name": "Ooty Honeymoon special", "state": "Tamil Nadu", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2500.0,
-        "avg_food_cost": 700.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Romantic",
-        "best_season": "October to June", "description": "Emerald-green tea garden hills, rose gardens, and private lake boating.",
+        "name": "Ooty Hill Station", "state": "Tamil Nadu", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2500.0,
+        "avg_food_cost": 700.0, "avg_activity_cost": 400.0, "rating": 4.5, "category": "Nature",
+        "best_season": "October to June", "description": "Emerald-green tea garden hills, rose gardens, and scenic lake boating.",
         "attractions": ["Pykara Lake & Falls", "Botanical Gardens", "Rose Garden", "Avalanche Lake"]
     },
     {
@@ -835,7 +829,7 @@ DESTINATIONS_DATA = [
     {
         "name": "Hampi Heritage Circuit", "state": "Karnataka", "avg_travel_cost": 1800.0, "avg_hotel_cost": 1100.0,
         "avg_food_cost": 450.0, "avg_activity_cost": 350.0, "rating": 4.8, "category": "City Exploration",
-        "best_season": "October to March", "description": "Beyond the main ruins — lesser-visited temples, rice-paddy sunrises, and coracle rides on the Tungabhadra.",
+        "best_season": "October to March", "description": "Beyond the main ruins - lesser-visited temples, rice-paddy sunrises, and coracle rides on the Tungabhadra.",
         "attractions": ["Tungabhadra Coracle Ride", "Sasivekalu Ganesha", "Anegundi Village", "Lotus Mahal"]
     },
     {
@@ -877,27 +871,15 @@ DESTINATIONS_DATA = [
         "attractions": ["French Quarter Walk", "Promenade Beach Sunset", "Sri Aurobindo Ashram", "Paradise Beach Ferry"]
     },
     {
-        "name": "Andaman Islands Romantic Escape", "state": "Andaman & Nicobar", "avg_travel_cost": 9000.0, "avg_hotel_cost": 5000.0,
-        "avg_food_cost": 1200.0, "avg_activity_cost": 2200.0, "rating": 4.8, "category": "Romantic",
-        "best_season": "November to April", "description": "Bioluminescent beaches, private island sunset cruises, and couple snorkelling in coral lagoons.",
-        "attractions": ["Radhanagar Beach Sunset", "Glass Bottom Boat Ride", "Ross Island", "Sawai Island Picnic"]
-    },
-    {
         "name": "Binsar", "state": "Uttarakhand", "avg_travel_cost": 2800.0, "avg_hotel_cost": 2000.0,
         "avg_food_cost": 550.0, "avg_activity_cost": 350.0, "rating": 4.5, "category": "Romantic",
         "best_season": "March to June, September to November", "description": "Private forested estate viewpoints overlooking 300km of Himalayan peaks, wildlife, and birdsong.",
         "attractions": ["Binsar Wildlife Sanctuary", "Zero Point Panorama", "Kasar Devi Temple", "Sunrise Forest Walk"]
     },
 
-    # ADDITIONAL FAMILY
+    # ADDITIONAL DESTINATIONS
     {
-        "name": "Coorg Family Holiday", "state": "Karnataka", "avg_travel_cost": 2200.0, "avg_hotel_cost": 2400.0,
-        "avg_food_cost": 700.0, "avg_activity_cost": 600.0, "rating": 4.5, "category": "Family",
-        "best_season": "October to April", "description": "Kids enjoy elephant encounters, jungle trails, and coffee estate scavenger hunts.",
-        "attractions": ["Dubare Elephant Camp", "Abbey Falls", "Kodava Cultural Show", "Nagarhole Day Trip"]
-    },
-    {
-        "name": "Gangtok Family Sikkim", "state": "Sikkim", "avg_travel_cost": 4500.0, "avg_hotel_cost": 2200.0,
+        "name": "Gangtok", "state": "Sikkim", "avg_travel_cost": 4500.0, "avg_hotel_cost": 2200.0,
         "avg_food_cost": 700.0, "avg_activity_cost": 700.0, "rating": 4.5, "category": "Family",
         "best_season": "March to May, September to December", "description": "Beautiful orchid houses, cable car rides, and colourful Rumtek Monastery for family exploration.",
         "attractions": ["Tsomgo Lake", "Rumtek Monastery", "Gangtok Ropeway", "Flower Exhibition Centre"]

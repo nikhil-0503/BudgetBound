@@ -79,13 +79,13 @@ def get_admin_analytics(
     dest_counter = Counter(dest_names)
     cat_counter = Counter(categories)
     
-    popular_dest = dest_counter.most_common(1)[0][0] if dest_counter else "—"
-    popular_cat = cat_counter.most_common(1)[0][0] if cat_counter else "—"
+    popular_dest = dest_counter.most_common(1)[0][0] if dest_counter else "-"
+    popular_cat = cat_counter.most_common(1)[0][0] if cat_counter else "-"
     
     # Top 10 Destinations
     top_destinations = [{"name": name, "count": count} for name, count in dest_counter.most_common(10)]
     
-    # Monthly creation trends — formatted as 'Mon YYYY' for chart readability
+    # Monthly creation trends - formatted as 'Mon YYYY' for chart readability
     creation_months: dict = {}
     for t in trips:
         m_str = t.created_at.strftime("%Y-%m")
@@ -95,7 +95,7 @@ def get_admin_analytics(
         for m in sorted(creation_months.keys())
     ]
 
-    # Monthly expense trends — use filtered expenses only, formatted as 'Mon YYYY'
+    # Monthly expense trends - use filtered expenses only, formatted as 'Mon YYYY'
     expense_months: dict = {}
     for e in expenses:
         try:
@@ -203,8 +203,8 @@ def export_trips_csv(
     for t in trips:
         writer.writerow([
             t.id, t.user_id, t.user.name, t.user.email,
-            t.destination.name if t.destination else "—",
-            t.destination.category if t.destination else "—",
+            t.destination.name if t.destination else "-",
+            t.destination.category if t.destination else "-",
             t.budget, t.days, t.travelers_count, t.transport_mode, t.hotel_tier, t.status,
             t.created_at.strftime("%Y-%m-%d %H:%M:%S")
         ])

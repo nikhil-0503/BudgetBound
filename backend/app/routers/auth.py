@@ -105,7 +105,7 @@ def get_user_profile_details(
         
     from collections import Counter
     styles = [t.travel_type for t in trips if t.travel_type]
-    fav_style = Counter(styles).most_common(1)[0][0] if styles else "—"
+    fav_style = Counter(styles).most_common(1)[0][0] if styles else "-"
 
     return {
         "user": current_user,

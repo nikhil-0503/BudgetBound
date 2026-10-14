@@ -3,17 +3,17 @@
 @variant dark (&:where(.dark, .dark *));
 
 /*
-  BUDGETBOUND DESIGN TOKENS — "Field Ledger"
+  BUDGETBOUND DESIGN TOKENS - "Field Ledger"
   A travel-ledger identity: journeys logged like receipts, budgets kept like
   accounts. Warm marigold for action, deep petrol for structure, berry for
-  emphasis — set against parchment paper and ink.
+  emphasis - set against parchment paper and ink.
 */
 @theme {
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Fraunces', ui-serif, Georgia, serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
 
-  /* Marigold — primary brand / action color (replaces marigold) */
+  /* Marigold - primary brand / action color (replaces marigold) */
   --color-marigold-50: #FFFBEB;
   --color-marigold-100: #FEF1C7;
   --color-marigold-200: #FCE18A;
@@ -26,7 +26,7 @@
   --color-marigold-900: #78480F;
   --color-marigold-950: #442804;
 
-  /* Petrol — structural / secondary color (replaces petrol) */
+  /* Petrol - structural / secondary color (replaces petrol) */
   --color-petrol-50: #ECF7F4;
   --color-petrol-100: #D2EEE7;
   --color-petrol-200: #A6DED0;
@@ -39,7 +39,7 @@
   --color-petrol-900: #0F3830;
   --color-petrol-950: #081F1B;
 
-  /* Berry — emphasis / tertiary color (replaces berry) */
+  /* Berry - emphasis / tertiary color (replaces berry) */
   --color-berry-50: #FDF0F4;
   --color-berry-100: #FBDDE7;
   --color-berry-200: #F5B3C9;
@@ -52,7 +52,7 @@
   --color-berry-900: #481929;
   --color-berry-950: #2A0E17;
 
-  /* Paper / Ink — replaces plain slate as the neutral surface pairing */
+  /* Paper / Ink - replaces plain slate as the neutral surface pairing */
   --color-paper-50: #FBFAF5;
   --color-paper-100: #F3F1E4;
   --color-paper-200: #E9E6D3;
@@ -159,7 +159,7 @@ h1, h2, h3, .font-display {
 }
 
 /*
-  Ticket motif — a die-cut stub used for summary/stat cards throughout the
+  Ticket motif - a die-cut stub used for summary/stat cards throughout the
   app (dashboard, budget health, trip cards). Two circular notches simulate
   a perforated tear-line between a "label" stub and the figure it reports.
 */
@@ -211,4 +211,15 @@ h1, h2, h3, .font-display {
   height: 2px;
   background: var(--color-marigold-500);
   display: inline-block;
+}
+
+/* Remove number input spinners (up/down arrows) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

@@ -53,7 +53,7 @@ def test_destination_database():
             # SHOULD have detailed description
             assert len(activity.description) > 50, f"Activity '{activity.title}' description too short"
         
-        print(f"✓ {dest.title():>10} — {len(activities)} specific activities, e.g., '{activities[0].title}'")
+        print(f"✓ {dest.title():>10} - {len(activities)} specific activities, e.g., '{activities[0].title}'")
     
     return True
 
@@ -149,7 +149,7 @@ def test_fallback_uses_destination_db():
     
     generic_ratio = generic_count / total_activities if total_activities > 0 else 0
     assert generic_ratio < 0.3, f"Too many generic activities: {generic_ratio * 100:.0f}%"
-    print(f"✓ Generic activities: {generic_count}/{total_activities} ({generic_ratio * 100:.0f}%) — Below 30% threshold")
+    print(f"✓ Generic activities: {generic_count}/{total_activities} ({generic_ratio * 100:.0f}%) - Below 30% threshold")
     
     # Check for destination-specific highlights
     for leg in itinerary.get("legs", []):
@@ -247,7 +247,7 @@ def test_budget_reconciliation():
 def run_all_tests():
     """Execute all Phase 2 tests."""
     print("\n" + "="*70)
-    print("BUDGETBOUND MULTI-STOP PLANNER — PHASE 2 TESTING")
+    print("BUDGETBOUND MULTI-STOP PLANNER - PHASE 2 TESTING")
     print("Destination-Specific Activities, Preferences, Transfer Estimates, Validation")
     print("="*70)
     
@@ -279,7 +279,7 @@ def run_all_tests():
     print("\n" + "="*70)
     print(f"RESULTS: {passed}/{len(tests)} tests passed")
     if failed == 0:
-        print("🎉 ALL PHASE 2 TESTS PASSED — Production ready!")
+        print("🎉 ALL PHASE 2 TESTS PASSED - Production ready!")
         return 0
     else:
         print(f"❌ {failed} test(s) failed")

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
@@ -355,7 +355,7 @@ export const CompareDestinations: React.FC = () => {
                         onChange={(e) => handleSelectChange(slotIdx, e.target.value)}
                         className="w-full bg-paper-100 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl p-2 text-xs font-bold focus:outline-none focus:border-marigold-500"
                       >
-                        <option value="">"” Choose Destination "”</option>
+                        <option value="">— Choose Destination —</option>
                         {destinations.map(d => (
                           <option key={d.id} value={d.id}>{d.name} ({d.state})</option>
                         ))}
@@ -493,7 +493,7 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Transport Mode & Cost */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Transport cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Transport cost</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
                     {plans[idx] ? `₹${plans[idx].costs.transport_cost.toLocaleString()} (${plans[idx].costs.transport_mode})` : '"”'}
@@ -503,7 +503,7 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Hotel Cost */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Hotel cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Hotel cost</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
                     {plans[idx] ? `₹${plans[idx].costs.hotel_cost.toLocaleString()} (${plans[idx].costs.hotel_tier})` : '"”'}
@@ -513,7 +513,7 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Food Cost */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Food cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Food cost</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
                     {plans[idx] ? `₹${plans[idx].costs.food_cost.toLocaleString()}` : '"”'}
@@ -523,7 +523,7 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Activities Cost */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Activities cost</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Activities cost</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
                     {plans[idx] ? `₹${plans[idx].costs.activities_cost.toLocaleString()}` : '"”'}
@@ -533,7 +533,7 @@ export const CompareDestinations: React.FC = () => {
 
               {/* Row: Local Transport + Taxes */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Local transport + taxes</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Local transport + taxes</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
                     {plans[idx] ? `₹${(plans[idx].costs.local_transport_cost + plans[idx].costs.taxes_fees_cost).toLocaleString()}` : '"”'}
@@ -649,47 +649,47 @@ export const CompareDestinations: React.FC = () => {
                 <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 text-marigold-700 dark:text-marigold-400 font-bold">Overall Recommendation Score</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-extrabold text-marigold-600 dark:text-marigold-400 text-sm">
-                    {plans[idx] ? `${plans[idx].value_score.toFixed(1)}%` : '"”'}
+                    {plans[idx] ? `${Math.round(plans[idx].value_score)}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Budget Compatibility Score */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Budget Compatibility</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Budget Compatibility</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.budget_compatibility}%` : '"”'}
+                    {plans[idx]?.breakdown ? `${Math.round(plans[idx].breakdown.budget_compatibility * 100)}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Type Match Score */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Travel Type Match</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Travel Type Match</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.trip_type_match}%` : '"”'}
+                    {plans[idx]?.breakdown ? `${Math.round(plans[idx].breakdown.trip_type_match * 100)}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Comfort Match Score */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Comfort Match</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Comfort Match</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.comfort_match}%` : '"”'}
+                    {plans[idx]?.breakdown ? `${Math.round(plans[idx].breakdown.comfort_match * 100)}%` : '"”'}
                   </td>
                 ))}
               </tr>
 
               {/* Row: Duration Suitability */}
               <tr>
-                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">â†³ Duration Suitability</td>
+                <td className="p-4 bg-paper-50/20 dark:bg-paper-900/5 pl-6">↳ Duration Suitability</td>
                 {[0, 1, 2].map(idx => (
                   <td key={idx} className="p-4 border-l border-paper-100 dark:border-paper-700/60 font-medium text-paper-500 dark:text-paper-400">
-                    {plans[idx]?.breakdown ? `${plans[idx].breakdown.duration_suitability}%` : '"”'}
+                    {plans[idx]?.breakdown ? `${Math.round(plans[idx].breakdown.duration_suitability * 100)}%` : '"”'}
                   </td>
                 ))}
               </tr>

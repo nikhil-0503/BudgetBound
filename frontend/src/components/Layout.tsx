@@ -152,7 +152,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </div>
       </header>
 
-      {/* Sidebar Navigation — styled as a boarding-pass stub */}
+      {/* Sidebar Navigation - styled as a boarding-pass stub */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-64 h-full bg-paper-50 dark:bg-ink-900 border-r border-dashed border-paper-400 dark:border-ink-600 flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}

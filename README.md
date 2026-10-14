@@ -1,11 +1,11 @@
-# BudgetBound — Budget-First Travel Planning Platform
+# BudgetBound - Budget-First Travel Planning Platform
 
 BudgetBound is a full-stack travel planning platform built around a **budget-first discovery model**.
 
 Instead of asking users where they want to go first, BudgetBound flips the travel discovery equation:
 
 1. **What is your budget?** (e.g., ₹15,000, ₹50,000)
-2. **Where are you starting from?** (e.g., Bangalore, Delhi, Mumbai — with an interactive map picker)
+2. **Where are you starting from?** (e.g., Bangalore, Delhi, Mumbai - with an interactive map picker)
 3. **How many days do you have?** (e.g., 3 days, 5 days)
 4. **What type of trip do you want?** (Beach, Adventure, Nature, Religious, Romantic, City Exploration, etc.)
 
@@ -18,8 +18,8 @@ Based on these constraints and a comfort slider (0–100), the platform scores a
 | Module | Route | Description |
 |--------|-------|-------------|
 | **Dashboard** | `/dashboard` | Trip summaries, budget vs. estimated vs. actual charts, expense category breakdown |
-| **Trip Flow** | `/planner` | Budget-first planner — set constraints, get the best destination, full cost breakdown, and itinerary |
-| **Destination Discovery** | `/reverse-search` | Same planner UI in *discover* mode — returns top 5 ranked destinations without committing to a plan |
+| **Trip Flow** | `/planner` | Budget-first planner - set constraints, get the best destination, full cost breakdown, and itinerary |
+| **Destination Discovery** | `/reverse-search` | Same planner UI in *discover* mode - returns top 5 ranked destinations without committing to a plan |
 | **Destination Explorer** | `/explorer`, `/explorer/:id` | Paginated catalog with search, category filters, and detailed destination pages |
 | **Budget Optimizer** | `/optimizer/:tripId` | Rules-based cost optimization (hotel downgrade, transit swap, itinerary trim, surplus upgrade) |
 | **Expense Tracker** | `/expenses/:tripId` | Log transactions by category, compare against estimates, view difference stats |
@@ -88,7 +88,7 @@ Based on these constraints and a comfort slider (0–100), the platform scores a
 * **Financial Reconciliation**: Validates that all cost categories sum correctly to the trip total, ensuring no hidden costs or AI hallucination is possible.
 * **Structured JSON Response**: Returns type-safe Pydantic models (not Markdown) that enable rich frontend rendering with expandable cost breakdowns, financial summary cards, and alternatives comparison.
 * **AI-Assisted Summarization**: Optional Groq-powered narrative summary of the structured facts (fallback: returns structured response without narrative if API unavailable).
-* **Works for Any Trip**: No hardcoding—dynamically extracts decision factors from trip metadata (destination, comfort score, duration, travel mode) and destination pricing database.
+* **Works for Any Trip**: No hardcoding-dynamically extracts decision factors from trip metadata (destination, comfort score, duration, travel mode) and destination pricing database.
 
 ### 8. High-Fidelity PDF Export Generator
 * **Aesthetic PDF Document Layout**: Clean document formats built using ReportLab, sporting modern fonts and aligned grid components.
@@ -186,7 +186,7 @@ BudgetBound/
 
 $$\text{Score} = 35\% \times \text{Budget Fit} + 25\% \times \text{Category Match} + 12\% \times \text{Rating} + 20\% \times \text{Comfort Match} + 8\% \times \text{Duration Suitability}$$
 
-- **Budget Fit (35%):** Rewards destinations that use budget efficiently. Budget is enforced as a **hard constraint**—destinations over budget are filtered out.
+- **Budget Fit (35%):** Rewards destinations that use budget efficiently. Budget is enforced as a **hard constraint**-destinations over budget are filtered out.
 - **Category Match (25%):** Blends main category (60%) with sub-category affinities from DB columns.
 - **Rating (12%):** Normalized to 0–1 from a 5-star scale.
 - **Comfort Match (20%):** Stronger alignment between comfort slider (0-100) and destination's comfort profile.
@@ -291,7 +291,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/budgetbound
 # Auth
 JWT_SECRET_KEY=your_secret_key_here
 
-# Groq AI (optional — templates used when absent)
+# Groq AI (optional - templates used when absent)
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=gemma2-9b-it
 ```
@@ -306,7 +306,7 @@ The frontend API base URL is set in `frontend/src/services/api.ts` (`http://loca
 
 - Node.js 18+
 - Python 3.11+
-- PostgreSQL (optional — SQLite fallback works out of the box)
+- PostgreSQL (optional - SQLite fallback works out of the box)
 
 ### Local Development
 

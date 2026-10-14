@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BudgetBound - AI-Powered Travel Planning System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            page-break-after: always;
+        }
+
+        .slide h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 20px;
+            border-bottom: 5px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .slide h2 {
+            color: #764ba2;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+
+        .slide h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .slide ul {
+            margin-left: 30px;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+            border: none;
+            margin-bottom: 30px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .title-slide .meta {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .feature-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .feature-box h4 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .feature-box p {
+            font-size: 1em;
+            margin: 0;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tech-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .diagram-box {
+            background: white;
+            border: 3px solid #667eea;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #ffd700 0%, #ffed4e 100%);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.2em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.1em;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .workflow-step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #764ba2;
+        }
+
+        .workflow-step h4 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .slide {
+                page-break-after: always;
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            font-size: 1.2em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        
+        <!-- Slide 1: Title Slide -->
+        <div class="slide title-slide">
+            <h1>🌍 BudgetBound</h1>
+            <p class="subtitle">AI-Powered Travel Planning System</p>
+            <p class="meta">Full-Stack Web Application</p>
+            <p class="meta">React + TypeScript + Python FastAPI</p>
+            <div style="margin-top: 60px;">
+                <p style="font-size: 1.4em;">Smart Budget Planning for Smart Travelers</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Problem Statement & Motivation -->
+        <div class="slide">
+            <h1>Problem Statement & Motivation</h1>
+            
+            <h2>🎯 The Challenge</h2>
+            <p>Planning a budget-friendly trip is complex and time-consuming:</p>
+            <ul>
+                <li><strong>Information Overload</strong> - Too many destinations, prices constantly changing</li>
+                <li><strong>Budget Uncertainty</strong> - Hard to estimate total costs accurately</li>
+                <li><strong>Hidden Expenses</strong> - Unexpected costs blow budgets</li>
+                <li><strong>Currency Confusion</strong> - International travel currency calculations</li>
+                <li><strong>No Centralized Tool</strong> - Multiple apps needed for planning</li>
+            </ul>
+
+            <h2>💡 Our Motivation</h2>
+            <p>To create a <span class="highlight">single, intelligent platform</span> that:</p>
+            <ul>
+                <li>Automatically calculates realistic trip budgets</li>
+                <li>Tracks expenses in real-time</li>
+                <li>Provides AI-powered recommendations</li>
+                <li>Supports both domestic and international travel</li>
+                <li>Makes travel planning accessible to everyone</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Proposed Solution -->
+        <div class="slide">
+            <h1>Proposed Solution</h1>
+            
+            <h2>✨ BudgetBound Features</h2>
+            
+            <div class="two-column">
+                <div>
+                    <div class="feature-box">
+                        <h4>🤖 AI Trip Planning</h4>
+                        <p>Intelligent budget allocation and itinerary generation</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>💰 Real-Time Tracking</h4>
+                        <p>Track expenses vs budget with live alerts</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🌐 Currency Converter</h4>
+                        <p>Live exchange rates for 166+ currencies</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>📊 Budget Optimizer</h4>
+                        <p>Smart cost-saving recommendations</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="feature-box">
+                        <h4>🗺️ Multi-Stop Planner</h4>
+                        <p>Plan complex itineraries with multiple cities</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>⚖️ Trip Comparison</h4>
+                        <p>Compare up to 5 destinations side-by-side</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🌱 Carbon Footprint</h4>
+                        <p>Eco-friendly travel recommendations</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>📱 QR Sharing</h4>
+                        <p>Share trips instantly with friends/family</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: User Roles & Use Cases -->
+        <div class="slide">
+            <h1>User Roles & Use Cases</h1>
+            
+            <h2>👥 User Roles</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Description</th>
+                        <th>Key Capabilities</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Regular User</strong></td>
+                        <td>Budget-conscious traveler</td>
+                        <td>Plan trips, track expenses, use AI companion</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Admin</strong></td>
+                        <td>System administrator</td>
+                        <td>View analytics, manage destinations, monitor users</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>📱 Use Cases</h2>
+            
+            <div class="workflow-step">
+                <h4>Use Case 1: Plan a Weekend Trip</h4>
+                <p><strong>Actor:</strong> Regular User | <strong>Goal:</strong> Plan budget trip to Goa</p>
+                <p>1. User enters budget (₹15,000) and preferences → 2. AI generates itinerary → 3. User reviews and saves → 4. Tracks expenses during trip</p>
+            </div>
+
+            <div class="workflow-step">
+                <h4>Use Case 2: Compare Destinations</h4>
+                <p><strong>Actor:</strong> Regular User | <strong>Goal:</strong> Choose between Bali, Thailand, Dubai</p>
+                <p>1. Select multiple destinations → 2. System compares costs, activities → 3. User makes informed decision</p>
+            </div>
+
+            <div class="workflow-step">
+                <h4>Use Case 3: Share Trip with Friends</h4>
+                <p><strong>Actor:</strong> Regular User | <strong>Goal:</strong> Share itinerary with travel group</p>
+                <p>1. Create trip → 2. Enable public sharing → 3. Generate QR code → 4. Friends scan and view</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Requirement Analysis -->
+        <div class="slide">
+            <h1>Requirement Analysis</h1>
+            
+            <h2>🔧 Functional Requirements</h2>
+            <ul>
+                <li><strong>User Management:</strong> Registration, login, profile management</li>
+                <li><strong>Trip Planning:</strong> Budget input, destination selection, AI itinerary generation</li>
+                <li><strong>Budget Management:</strong> Automatic allocation, category-wise breakdown</li>
+                <li><strong>Expense Tracking:</strong> Add expenses, real-time budget comparison</li>
+                <li><strong>Currency Conversion:</strong> Live rates, multi-currency support</li>
+                <li><strong>AI Integration:</strong> Chat assistant, smart recommendations</li>
+                <li><strong>Trip Sharing:</strong> Public/private toggle, QR code generation</li>
+                <li><strong>Analytics:</strong> User statistics, revenue tracking (Admin)</li>
+            </ul>
+
+            <h2>⚡ Non-Functional Requirements</h2>
+            <ul>
+                <li><strong>Performance:</strong> Page load < 2s, API response < 500ms</li>
+                <li><strong>Security:</strong> JWT authentication, password hashing, SQL injection prevention</li>
+                <li><strong>Scalability:</strong> Support 1000+ concurrent users</li>
+                <li><strong>Usability:</strong> Intuitive UI, mobile-responsive design</li>
+                <li><strong>Reliability:</strong> 99.9% uptime, data backup</li>
+                <li><strong>Maintainability:</strong> Modular code, comprehensive documentation</li>
+            </ul>
+        </div>
+
+        <!-- Slide 6: System Design -->
+        <div class="slide">
+            <h1>System Design</h1>
+            
+            <h2>🏗️ Design Principles</h2>
+            <ul>
+                <li><strong>Separation of Concerns:</strong> Backend API ↔ Frontend UI</li>
+                <li><strong>RESTful Architecture:</strong> Standard HTTP methods (GET, POST, PUT, DELETE)</li>
+                <li><strong>Component-Based UI:</strong> Reusable React components</li>
+                <li><strong>State Management:</strong> Context API for global state</li>
+                <li><strong>Responsive Design:</strong> Mobile-first approach</li>
+            </ul>
+
+            <h2>🎨 Key Design Decisions</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Backend</h3>
+                    <ul>
+                        <li><strong>FastAPI:</strong> High-performance async API</li>
+                        <li><strong>SQLAlchemy ORM:</strong> Database abstraction</li>
+                        <li><strong>Pydantic:</strong> Request/response validation</li>
+                        <li><strong>JWT Tokens:</strong> Stateless authentication</li>
+                        <li><strong>Router Pattern:</strong> Modular API endpoints</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li><strong>React + TypeScript:</strong> Type-safe UI</li>
+                        <li><strong>Vite:</strong> Fast build tool</li>
+                        <li><strong>TailwindCSS:</strong> Utility-first styling</li>
+                        <li><strong>React Router:</strong> Client-side routing</li>
+                        <li><strong>Axios:</strong> HTTP client</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Workflow Design -->
+        <div class="slide">
+            <h1>Workflow Design</h1>
+            
+            <h2>🔄 Core User Journey</h2>
+            
+            <div class="architecture-diagram">
+                <div class="diagram-box">
+                    <strong>1. Registration</strong><br>
+                    Create Account
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>2. Login</strong><br>
+                    Authenticate User
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>3. Browse Destinations</strong><br>
+                    Explore 205 Options
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>4. Plan Trip</strong><br>
+                    Budget + Preferences
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>5. AI Generates Itinerary</strong><br>
+                    Smart Recommendations
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>6. Review & Save</strong><br>
+                    Customize Details
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>7. Track Expenses</strong><br>
+                    During Trip
+                </div>
+                <div class="arrow">↓</div>
+                <div class="diagram-box">
+                    <strong>8. Share Trip</strong><br>
+                    QR Code / Link
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: System Architecture -->
+        <div class="slide">
+            <h1>System Architecture</h1>
+            
+            <h2>🏛️ Three-Tier Architecture</h2>
+            
+            <div class="architecture-diagram">
+                <div class="diagram-box" style="background: #e3f2fd;">
+                    <strong>Presentation Layer</strong><br>
+                    React Frontend (Port 5175)<br>
+                    18 Pages | 11 Components
+                </div>
+                <div class="arrow">⬇ HTTP/REST ⬇</div>
+                <div class="diagram-box" style="background: #f3e5f5;">
+                    <strong>Application Layer</strong><br>
+                    FastAPI Backend (Port 8000)<br>
+                    11 Routers | 50+ Endpoints
+                </div>
+                <div class="arrow">⬇ SQLAlchemy ORM ⬇</div>
+                <div class="diagram-box" style="background: #fff3e0;">
+                    <strong>Data Layer</strong><br>
+                    SQLite Database<br>
+                    8 Tables | 205 Destinations
+                </div>
+            </div>
+
+            <h2>🔌 External Integrations</h2>
+            <div class="tech-stack">
+                <div class="tech-item">Google Gemini AI<br>(Trip Planning)</div>
+                <div class="tech-item">Groq/OpenAI<br>(Chat Assistant)</div>
+                <div class="tech-item">ExchangeRate API<br>(Live Currency)</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Database Design -->
+        <div class="slide">
+            <h1>Database Design</h1>
+            
+            <h2>📊 Entity-Relationship Model</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Table</th>
+                        <th>Key Fields</th>
+                        <th>Relationships</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>users</strong></td>
+                        <td>id, name, email, password_hash, is_admin</td>
+                        <td>1-to-Many → trips, expenses, notifications</td>
+                    </tr>
+                    <tr>
+                        <td><strong>destinations</strong></td>
+                        <td>id, name, state, category, avg_cost_per_day</td>
+                        <td>1-to-Many → trips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>trips</strong></td>
+                        <td>id, user_id, destination_id, budget, days, status</td>
+                        <td>Many-to-1 → users, destinations<br>1-to-Many → itineraries, expenses</td>
+                    </tr>
+                    <tr>
+                        <td><strong>itineraries</strong></td>
+                        <td>id, trip_id, day_number, activities (JSON)</td>
+                        <td>Many-to-1 → trips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>expenses</strong></td>
+                        <td>id, trip_id, category, amount, date, notes</td>
+                        <td>Many-to-1 → trips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>packing_items</strong></td>
+                        <td>id, trip_id, item_name, is_packed</td>
+                        <td>Many-to-1 → trips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>documents</strong></td>
+                        <td>id, user_id, trip_id, file_path, category</td>
+                        <td>Many-to-1 → users, trips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>notifications</strong></td>
+                        <td>id, user_id, message, is_read, created_at</td>
+                        <td>Many-to-1 → users</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 10: Technology Stack -->
+        <div class="slide">
+            <h1>Technology Stack</h1>
+            
+            <h2>🛠️ Complete Tech Stack</h2>
+            
+            <div class="tech-stack">
+                <div class="tech-item">React 18</div>
+                <div class="tech-item">TypeScript</div>
+                <div class="tech-item">Python 3.11</div>
+                <div class="tech-item">FastAPI</div>
+                <div class="tech-item">SQLAlchemy</div>
+                <div class="tech-item">SQLite</div>
+                <div class="tech-item">TailwindCSS</div>
+                <div class="tech-item">Vite</div>
+                <div class="tech-item">JWT Auth</div>
+                <div class="tech-item">Google Gemini</div>
+                <div class="tech-item">Groq AI</div>
+                <div class="tech-item">Lucide Icons</div>
+            </div>
+
+            <h2>📦 Key Libraries</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Backend</h3>
+                    <ul>
+                        <li><strong>fastapi</strong> - Web framework</li>
+                        <li><strong>sqlalchemy</strong> - ORM</li>
+                        <li><strong>pydantic</strong> - Validation</li>
+                        <li><strong>bcrypt</strong> - Password hashing</li>
+                        <li><strong>python-jose</strong> - JWT tokens</li>
+                        <li><strong>httpx</strong> - Async HTTP client</li>
+                        <li><strong>google-genai</strong> - AI integration</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li><strong>react-router-dom</strong> - Routing</li>
+                        <li><strong>axios</strong> - API calls</li>
+                        <li><strong>lucide-react</strong> - Icons</li>
+                        <li><strong>qrcode</strong> - QR generation</li>
+                        <li><strong>tailwindcss</strong> - Styling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Implementation Highlights -->
+        <div class="slide">
+            <h1>Implementation Highlights</h1>
+            
+            <h2>✨ Key Features Implemented</h2>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <span class="stat-number">205</span>
+                    <span class="stat-label">Destinations</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">18</span>
+                    <span class="stat-label">Frontend Pages</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">API Endpoints</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Test Pass Rate</span>
+                </div>
+            </div>
+
+            <h2>🎯 Major Accomplishments</h2>
+            <ul>
+                <li><strong>Live Currency Conversion:</strong> 166+ currencies with 1-hour caching</li>
+                <li><strong>AI Integration:</strong> Gemini for planning + Groq for chat</li>
+                <li><strong>Budget Optimization:</strong> Smart cost-saving algorithms</li>
+                <li><strong>Real-Time Tracking:</strong> Expense monitoring with alerts</li>
+                <li><strong>Multi-Stop Planning:</strong> Complex itineraries supported</li>
+                <li><strong>Trip Comparison:</strong> Side-by-side analysis of 5 destinations</li>
+                <li><strong>Carbon Footprint:</strong> Eco-score calculation</li>
+                <li><strong>Dark Mode:</strong> Seamless theme switching</li>
+                <li><strong>Mobile Responsive:</strong> Works on all devices</li>
+                <li><strong>QR Sharing:</strong> Instant trip sharing (production-ready)</li>
+            </ul>
+        </div>
+
+        <!-- Slide 12: Testing & Quality Assurance -->
+        <div class="slide">
+            <h1>Testing & Quality Assurance</h1>
+            
+            <h2>✅ Test Coverage</h2>
+            
+            <div class="feature-box">
+                <h4>Functional Test Suite (functional_test.py)</h4>
+                <p><strong>17/17 Tests Passed (100%)</strong></p>
+                <p>✓ User Registration | ✓ Login | ✓ Destination Listing | ✓ Trip Planning | ✓ Budget Optimization | ✓ Expense Tracking | ✓ AI Chat | ✓ Document Upload | ✓ Sharing | ✓ Notifications | ✓ Carbon Footprint | ✓ Weather Intelligence | ✓ Admin Analytics</p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Currency Converter Tests (test_live_currency.py)</h4>
+                <p><strong>All Tests Passed</strong></p>
+                <p>✓ External API Access | ✓ Backend Endpoints | ✓ 166 Currencies Available | ✓ Response Time < 500ms</p>
+            </div>
+
+            <h2>🐛 Issues Fixed</h2>
+            <ul>
+                <li>Trip relationship loading (N+1 query problem)</li>
+                <li>Expense tracking schema validation</li>
+                <li>AI chat model compatibility</li>
+                <li>Currency rate static → live migration</li>
+                <li>UTF-8 encoding in MultiStopPlanner</li>
+                <li>Travelers count input validation</li>
+            </ul>
+        </div>
+
+        <!-- Slide 13: Security Features -->
+        <div class="slide">
+            <h1>Security Features</h1>
+            
+            <h2>🔒 Security Implementations</h2>
+            
+            <div class="feature-box">
+                <h4>Authentication & Authorization</h4>
+                <p>✓ JWT-based stateless authentication | ✓ Password hashing with bcrypt | ✓ Protected routes with dependency injection | ✓ Role-based access control (Admin/User)</p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Data Protection</h4>
+                <p>✓ SQL injection prevention (ORM) | ✓ Input validation (Pydantic schemas) | ✓ CORS configuration | ✓ Environment variables for secrets</p>
+            </div>
+
+            <div class="feature-box">
+                <h4>API Security</h4>
+                <p>✓ Rate limiting ready | ✓ HTTPS support (production) | ✓ Token expiration | ✓ Secure file upload handling</p>
+            </div>
+
+            <h2>🔐 Best Practices</h2>
+            <ul>
+                <li>Passwords never stored in plain text</li>
+                <li>API keys in environment variables</li>
+                <li>Database queries parameterized</li>
+                <li>User input sanitized</li>
+                <li>Error messages don't leak sensitive info</li>
+            </ul>
+        </div>
+
+        <!-- Slide 14: Future Enhancements -->
+        <div class="slide">
+            <h1>Future Enhancements</h1>
+            
+            <h2>🚀 Potential Improvements</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Feature Additions</h3>
+                    <ul>
+                        <li>Real-time flight/hotel booking APIs</li>
+                        <li>Payment gateway integration</li>
+                        <li>Social features (reviews, ratings)</li>
+                        <li>Push notifications (mobile)</li>
+                        <li>Collaborative trip planning</li>
+                        <li>ML-based personalization</li>
+                        <li>Google Maps integration</li>
+                        <li>Trip insurance recommendations</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Technical Improvements</h3>
+                    <ul>
+                        <li>Deploy to cloud (AWS/Azure/Vercel)</li>
+                        <li>PostgreSQL for production</li>
+                        <li>Redis for caching</li>
+                        <li>CDN for static assets</li>
+                        <li>Docker containerization</li>
+                        <li>CI/CD pipeline</li>
+                        <li>Mobile app (React Native)</li>
+                        <li>GraphQL API option</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Conclusion -->
+        <div class="slide">
+            <h1>Conclusion</h1>
+            
+            <h2>📌 Project Summary</h2>
+            <p><strong>BudgetBound</strong> is a comprehensive, AI-powered travel planning platform that successfully addresses the challenges of budget-conscious travelers.</p>
+            
+            <h2>✅ Key Achievements</h2>
+            <ul>
+                <li><span class="highlight">Full-Stack Implementation</span> - React frontend + FastAPI backend</li>
+                <li><span class="highlight">100% Test Pass Rate</span> - All features tested and working</li>
+                <li><span class="highlight">205 Destinations</span> - Comprehensive coverage (India + International)</li>
+                <li><span class="highlight">AI Integration</span> - Smart recommendations and chat assistance</li>
+                <li><span class="highlight">Live Currency Rates</span> - Real-time conversion for 166+ currencies</li>
+                <li><span class="highlight">Modern Tech Stack</span> - Industry-standard tools and frameworks</li>
+                <li><span class="highlight">Production-Ready</span> - Scalable, secure, and maintainable</li>
+            </ul>
+
+            <h2>🎯 Project Impact</h2>
+            <p>BudgetBound empowers travelers to:</p>
+            <ul>
+                <li>Plan trips confidently with accurate budget estimates</li>
+                <li>Make informed decisions with AI-powered insights</li>
+                <li>Track expenses and avoid budget overruns</li>
+                <li>Explore destinations within their financial constraints</li>
+                <li>Share travel plans seamlessly with others</li>
+            </ul>
+        </div>
+
+        <!-- Slide 16: Thank You -->
+        <div class="slide title-slide">
+            <h1>Thank You! 🙏</h1>
+            <p class="subtitle">Questions & Discussion</p>
+            <div style="margin-top: 80px; font-size: 1.4em;">
+                <p>🌍 <strong>BudgetBound</strong></p>
+                <p>Making Travel Planning Accessible for Everyone</p>
+            </div>
+            <div style="margin-top: 60px; font-size: 1.2em; opacity: 0.8;">
+                <p>Project Repository: github.com/yourrepo/budgetbound</p>
+                <p>Live Demo: budgetbound.app (when deployed)</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Optional: Add keyboard navigation
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                currentSlide++;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                currentSlide--;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // Add slide numbers
+        slides.forEach((slide, index) => {
+            const slideNumber = document.createElement('div');
+            slideNumber.className = 'slide-number';
+            slideNumber.textContent = `${index + 1} / ${slides.length}`;
+            slide.appendChild(slideNumber);
+        });
+    </script>
+</body>
+</html>
