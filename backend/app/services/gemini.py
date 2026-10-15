@@ -19,6 +19,7 @@ from app.services.groq_model_discovery import get_available_model
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # Capture at module load
 FALLBACK_MODEL_OVERRIDE = os.getenv("GROQ_MODEL")  # Allow manual override via env var
+GROQ_MODEL = FALLBACK_MODEL_OVERRIDE or "llama-3.3-70b-versatile"
 
 # These cover common Indian trip destinations immediately.  Other places are
 # resolved through Nominatim below; importantly, we never fabricate a point
