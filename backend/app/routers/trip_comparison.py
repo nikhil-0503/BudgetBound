@@ -180,8 +180,8 @@ def compare_saved_trips(
         
         comparison_results.append({
             "trip_id": trip.id,
-            "destination": trip.destination.name,
-            "state": trip.destination.state,
+            "destination": (trip.destination or trip.custom_destination).name,
+            "state": (trip.destination or trip.custom_destination).state,
             "budget": trip.budget,
             "estimated_cost": trip.total_estimated_cost,
             "actual_spent": round(actual_spent, 2),

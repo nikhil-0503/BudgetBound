@@ -387,7 +387,7 @@ export const ReverseSearch: React.FC = () => {
       <LocationPickerModal
         isOpen={isMapModalOpen}
         onClose={() => setIsMapModalOpen(false)}
-        onSelectLocation={(city) => setStartingCity(city)}
+        onSelectLocation={(location) => setStartingCity(location.name)}
         initialCity={startingCity}
       />
     </div>

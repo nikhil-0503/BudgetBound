@@ -1,10 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
+import logging
 
 from app import auth, models
 from app.database import get_db
 from app.services.gemini import gemini_service
+from app.services.weather import get_forecast, resolve_location, WeatherServiceError
+from app.services.geoapify_destination_search import (
+    resolve_location_coordinates,
+    GeoapifyError,
+)
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/ai", tags=["AI Copilot"])
 
@@ -215,8 +223,6 @@ async def ai_multistop_plan(
     current_user: models.User = Depends(auth.get_current_user),
 ):
     """Generate an AI-powered multi-stop trip itinerary."""
-    import logging
-    logger = logging.getLogger(__name__)
     
     stops = payload.get("stops", [])
     budget = float(payload.get("budget", 50000))
@@ -233,6 +239,30 @@ async def ai_multistop_plan(
             raise HTTPException(status_code=400, detail="Each stop must have a destination name.")
         if int(s.get("days", 0)) < 1:
             raise HTTPException(status_code=400, detail="Each stop must have at least 1 day.")
+
+    # Resolve coordinates for each stop using live Geoapify or fallback to weather service
+    for stop in stops:
+        stop["weather_context"] = None
+        try:
+            if stop.get("latitude") is not None and stop.get("longitude") is not None:
+                lat, lon = float(stop["latitude"]), float(stop["longitude"])
+                label = stop["destination"]
+            else:
+                # Try Geoapify first (live data)
+                try:
+                    lat, lon, label = await resolve_location_coordinates(stop["destination"])
+                    logger.info(f"Resolved '{stop['destination']}' via Geoapify: {lat}, {lon}")
+                except GeoapifyError as geo_err:
+                    # Fallback to weather service resolver (hardcoded aliases)
+                    logger.warning(f"Geoapify failed for '{stop['destination']}', falling back: {geo_err}")
+                    lat, lon, label = await resolve_location(stop["destination"])
+            
+            forecast = await get_forecast(lat, lon, min(int(stop["days"]), 16), label)
+            stop["coordinates"] = {"lat": lat, "lng": lon}
+            stop["weather_context"] = {"timezone": forecast.get("timezone"), "daily": forecast.get("daily")}
+        except (WeatherServiceError, ValueError, TypeError, GeoapifyError) as exc:
+            stop["weather_unavailable"] = True
+            logger.info("Weather or location unavailable for one multi-stop destination: %s", exc)
 
     try:
         logger.info("Calling generate_multistop_plan...")

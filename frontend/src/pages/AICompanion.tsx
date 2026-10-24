@@ -602,7 +602,7 @@ export const AICompanion: React.FC = () => {
             {/* Explainability Report Component */}
             {explanationData && (
               <div className="animate-fade-in">
-                <ExplainabilityReport data={explanationData} error={explanationError} />
+                <ExplainabilityReport data={explanationData} error={explanationError || undefined} />
               </div>
             )}
           </div>

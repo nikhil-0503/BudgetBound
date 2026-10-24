@@ -216,10 +216,15 @@ export const SavedTrips: React.FC = () => {
   // Filter & Sort computation
   const filteredTrips = trips.filter(trip => {
     const search = searchTerm.toLowerCase();
+    // Safely access destination properties
+    const destName = trip.destination?.name || "Unknown";
+    const destState = trip.destination?.state || "";
+    const travelType = trip.travel_type || "";
+    
     return (
-      trip.destination.name.toLowerCase().includes(search) ||
-      trip.destination.state.toLowerCase().includes(search) ||
-      trip.travel_type.toLowerCase().includes(search)
+      destName.toLowerCase().includes(search) ||
+      destState.toLowerCase().includes(search) ||
+      travelType.toLowerCase().includes(search)
     );
   });
 
@@ -234,7 +239,9 @@ export const SavedTrips: React.FC = () => {
       case 'lowest_budget':
         return a.budget - b.budget;
       case 'dest_name':
-        return a.destination.name.localeCompare(b.destination.name);
+        const nameA = a.destination?.name || "";
+        const nameB = b.destination?.name || "";
+        return nameA.localeCompare(nameB);
       default:
         return 0;
     }
@@ -340,8 +347,8 @@ export const SavedTrips: React.FC = () => {
                 {/* Image / Destination details */}
                 <div className="p-5 border-b border-paper-100 dark:border-paper-700 flex justify-between items-start">
                   <div>
-                    <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider block">{trip.destination.state}</span>
-                    <h3 className="text-lg font-extrabold text-paper-900 dark:text-white mt-0.5">{trip.destination.name}</h3>
+                    <span className="text-[9px] text-paper-400 font-bold uppercase tracking-wider block">{trip.destination?.state || "Unknown"}</span>
+                    <h3 className="text-lg font-extrabold text-paper-900 dark:text-white mt-0.5">{trip.destination?.name || "Unknown Destination"}</h3>
                     <div className="flex gap-2 items-center mt-1">
                       <span className="text-[10px] bg-paper-100 dark:bg-paper-900 text-paper-500 dark:text-paper-400 px-1.5 py-0.2 rounded font-semibold uppercase">
                         {trip.travel_type}
@@ -365,7 +372,7 @@ export const SavedTrips: React.FC = () => {
                 </div>
 
                 {/* Weather Quick Badge */}
-                {trip.destination.weather_intelligence && (
+                {trip.destination?.weather_intelligence && (
                   <div className="px-5 py-2.5 bg-paper-50/20 dark:bg-paper-900/5 border-b border-paper-100 dark:border-paper-700/60 flex items-center justify-between text-[11px]">
                     <span className="text-paper-400 font-semibold flex items-center gap-1">
                       <CloudSun size={13} className="text-marigold-500" />

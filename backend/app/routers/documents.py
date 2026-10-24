@@ -73,7 +73,7 @@ async def upload_document(
     db_notif = models.Notification(
         user_id=current_user.id,
         type="Trip Exported" if "ticket" in category.lower() else "Trip Reminder",
-        message=f"Uploaded document '{file.filename}' for your trip to {trip.destination.name}."
+        message=f"Uploaded document '{file.filename}' for your trip to {(trip.destination or trip.custom_destination).name}."
     )
     db.add(db_notif)
     

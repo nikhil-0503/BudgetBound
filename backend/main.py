@@ -6,11 +6,11 @@ import os
 from dotenv import load_dotenv
 
 # CRITICAL: Load .env BEFORE anything else
-load_dotenv(override=True)
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"), override=False)
 
 from app import models, seed, auth
 from app.database import engine, get_db
-from app.routers import auth as auth_router, destinations, trips, expenses, ai_placeholders, notifications, documents, admin_analytics, trip_comparison, budget_alerts, currency_converter
+from app.routers import auth as auth_router, destinations, destinations_live, trips, expenses, ai_placeholders, notifications, documents, admin_analytics, trip_comparison, budget_alerts, currency_converter, weather
 import os
 os.makedirs("uploads", exist_ok=True)
 
@@ -53,6 +53,54 @@ try:
             logger.info("Database migration: Added share_token column.")
         except Exception:
             pass
+        try:
+            conn.execute(text("ALTER TABLE trips ADD COLUMN custom_destination_id INTEGER REFERENCES custom_destinations(id)"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE custom_destinations ADD COLUMN category VARCHAR"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE custom_destinations ADD COLUMN geoapify_place_id VARCHAR"))
+            logger.info("Database migration: Added geoapify_place_id column to custom_destinations.")
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE trips ADD COLUMN geoapify_place_id VARCHAR"))
+            logger.info("Database migration: Added geoapify_place_id column to trips.")
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE trips ADD COLUMN data_source VARCHAR"))
+            logger.info("Database migration: Added data_source column to trips.")
+        except Exception:
+            pass
+        if engine.dialect.name == "sqlite":
+            raw = engine.raw_connection()
+            try:
+                raw.execute("PRAGMA foreign_keys=OFF")
+                cur = raw.cursor()
+                create_sql = cur.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='trips'").fetchone()[0]
+                if "destination_id INTEGER NOT NULL" in create_sql:
+                    indexes = [row[0] for row in cur.execute("SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name='trips' AND sql IS NOT NULL").fetchall()]
+                    columns = [row[1] for row in cur.execute("PRAGMA table_info(trips)").fetchall()]
+                    rebuilt = create_sql.replace("CREATE TABLE trips", "CREATE TABLE trips_new", 1).replace("destination_id INTEGER NOT NULL", "destination_id INTEGER", 1)
+                    cur.execute("BEGIN")
+                    cur.execute(rebuilt)
+                    quoted = ", ".join(f'"{column}"' for column in columns)
+                    cur.execute(f"INSERT INTO trips_new ({quoted}) SELECT {quoted} FROM trips")
+                    cur.execute("DROP TABLE trips")
+                    cur.execute("ALTER TABLE trips_new RENAME TO trips")
+                    for index_sql in indexes:
+                        cur.execute(index_sql)
+                    raw.commit()
+            except Exception:
+                raw.rollback()
+                logger.exception("Could not migrate legacy SQLite Trip destination reference")
+            finally:
+                raw.execute("PRAGMA foreign_keys=ON")
+                raw.close()
         try:
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS packing_items (
@@ -145,6 +193,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth_router.router)
 app.include_router(destinations.router)
+app.include_router(destinations_live.router)  # New live Geoapify destinations
 app.include_router(trips.router)
 app.include_router(expenses.router)
 app.include_router(ai_placeholders.router)
@@ -154,6 +203,7 @@ app.include_router(admin_analytics.router)
 app.include_router(trip_comparison.router)
 app.include_router(budget_alerts.router)
 app.include_router(currency_converter.router)
+app.include_router(weather.router)
 
 @app.get("/")
 def read_root():
@@ -224,10 +274,24 @@ def get_dashboard_stats(
     # Sort trips by created_at desc
     sorted_trips = sorted(trips_list, key=lambda x: x.created_at, reverse=True)[:5]
     for t in sorted_trips:
+        # Handle destination - prefer actual destination, then custom destination
+        if t.destination:
+            dest_name = t.destination.name
+            dest_state = t.destination.state
+        elif t.custom_destination_id:
+            custom_dest = db.query(models.CustomDestination).filter(
+                models.CustomDestination.id == t.custom_destination_id
+            ).first()
+            dest_name = custom_dest.name if custom_dest else "Unknown destination"
+            dest_state = custom_dest.address or "" if custom_dest else ""
+        else:
+            dest_name = "Unknown destination"
+            dest_state = ""
+        
         recent_trips.append({
             "id": t.id,
-            "destination": t.destination.name,
-            "state": t.destination.state,
+            "destination": dest_name,
+            "state": dest_state,
             "budget": t.budget,
             "estimated_cost": t.total_estimated_cost,
             "days": t.days,
@@ -242,10 +306,24 @@ def get_dashboard_stats(
     upcoming_trips = []
     sorted_upcoming = sorted(upcoming_raw, key=lambda x: x.start_date or "9999-12-31")[:5]
     for t in sorted_upcoming:
+        # Handle destination - prefer actual destination, then custom destination
+        if t.destination:
+            dest_name = t.destination.name
+            dest_state = t.destination.state
+        elif t.custom_destination_id:
+            custom_dest = db.query(models.CustomDestination).filter(
+                models.CustomDestination.id == t.custom_destination_id
+            ).first()
+            dest_name = custom_dest.name if custom_dest else "Unknown destination"
+            dest_state = custom_dest.address or "" if custom_dest else ""
+        else:
+            dest_name = "Unknown destination"
+            dest_state = ""
+        
         upcoming_trips.append({
             "id": t.id,
-            "destination": t.destination.name,
-            "state": t.destination.state,
+            "destination": dest_name,
+            "state": dest_state,
             "budget": t.budget,
             "estimated_cost": t.total_estimated_cost,
             "days": t.days,
@@ -258,8 +336,20 @@ def get_dashboard_stats(
     budget_usage_chart = []
     for t in sorted(trips_list, key=lambda x: x.created_at)[:6]: # oldest to newest (limit 6)
         trip_expenses = [e.amount for e in all_expenses if e.trip_id == t.id]
+        
+        # Handle destination - prefer actual destination, then custom destination
+        if t.destination:
+            chart_name = t.destination.name
+        elif t.custom_destination_id:
+            custom_dest = db.query(models.CustomDestination).filter(
+                models.CustomDestination.id == t.custom_destination_id
+            ).first()
+            chart_name = custom_dest.name if custom_dest else "Unknown destination"
+        else:
+            chart_name = "Unknown destination"
+        
         budget_usage_chart.append({
-            "name": t.destination.name,
+            "name": chart_name,
             "budget": t.budget,
             "estimated": t.total_estimated_cost,
             "actual": sum(trip_expenses)

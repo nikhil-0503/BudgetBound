@@ -42,6 +42,9 @@ import { BudgetAllocationEditor } from '../components/BudgetAllocationEditor';
 import { TimelineItinerary } from '../components/TimelineItinerary';
 import { TripChecklist } from '../components/TripChecklist';
 import { ShareModal } from '../components/ShareModal';
+import { WeatherForecast } from '../components/WeatherForecast';
+import { OriginCandidateRankingDetails, formatCandidateRating, capDisplayedOriginShortlist } from '../components/OriginCandidateRankingDetails.mjs';
+import { useQuery } from '@tanstack/react-query';
 
 
 interface ItineraryActivity {
@@ -72,9 +75,14 @@ interface CostAllocation {
 interface PlanResult {
   destination: {
     id: number;
+    geoapify_place_id?: string | null;
+    google_place_id?: string | null;
     name: string;
     state: string;
     description: string;
+    address?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     rating: number;
     category: string;
     best_season: string;
@@ -121,6 +129,54 @@ interface SearchResult {
   breakdown?: any;
 }
 
+interface OriginCandidate {
+  destination_id: string;
+  name: string;
+  region?: string | null;
+  country: string;
+  country_code: string;
+  latitude: number;
+  longitude: number;
+  distance_km: number;
+  estimated_travel_hours?: number | null;
+  travel_time_type: string;
+  rating: number | null;
+  user_rating_count: number | null;
+  google_place_id: string | null;
+  google_maps_uri: string | null;
+  rating_source: 'foursquare' | 'unavailable';
+  provider?: string | null;
+  rating_scale?: number | null;
+  review_count?: number | null;
+  rating_url?: string | null;
+  fsq_place_id?: string | null;
+  status?: string | null;
+  rating_unavailable_reason?: string | null;
+  address?: string | null;
+  description?: string | null;
+  destination_highlights: string[];
+  why_visit: string;
+  trip_fit: string;
+  practical_note?: string | null;
+  matched_categories: string[];
+  data_source: string;
+  estimated_cost: number;
+  budget_remaining: number;
+  under_budget: boolean;
+  value_score: number | null;
+  overall_match_score: number | null;
+  category_relevance_score: number | null;
+  interest_match_score: number | null;
+  comfort_suitability_score: number | null;
+  duration_suitability_score: number | null;
+  destination_quality_score: number | null;
+  match_reasons: string[];
+  tradeoffs: string[];
+  breakdown: Record<string, number | null>;
+  explanation: string;
+  costs: CostAllocation & { accommodation_nights: number };
+}
+
 type PlannerMode = 'plan' | 'discover';
 
 interface BudgetPlannerProps {
@@ -137,13 +193,21 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
   const [flowMode, setFlowMode] = useState<PlannerMode>(startingMode);
   const [startingCity, setStartingCity] = useState('');
+  const [originAddress, setOriginAddress] = useState('');
+  const [originCoordinates, setOriginCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [budget, setBudget] = useState<string>('20000');
   const [days, setDays] = useState<number>(4);
   const [travelType, setTravelType] = useState('Nature');
+  const [additionalInterests, setAdditionalInterests] = useState('');
   const [travelersCount, setTravelersCount] = useState<number>(1);
   const [comfortScore, setComfortScore] = useState<number>(50);
   const [selectedDestinationId, setSelectedDestinationId] = useState<number | null>(null);
   const [selectedDestinationName, setSelectedDestinationName] = useState<string | null>(null);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [selectedDestinationAddress, setSelectedDestinationAddress] = useState<string | null>(null);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [selectedGeoapifyPlaceId, setSelectedGeoapifyPlaceId] = useState<string | null>(null);
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string | null>(null);
   const [allDestinations, setAllDestinations] = useState<{ id: number; name: string; category: string; state: string }[]>([]);
   const { user } = useAuth();
 
@@ -161,14 +225,37 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   }, [user, searchParams]);
 
   const [loading, setLoading] = useState(false);
+  const [itineraryRetryAttempts, setItineraryRetryAttempts] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchCompleted, setSearchCompleted] = useState(false);
+  const [discoveredCandidates, setDiscoveredCandidates] = useState<OriginCandidate[]>([]);
+  const [discoveryWarnings, setDiscoveryWarnings] = useState<string[]>([]);
+  const [discoveryStats, setDiscoveryStats] = useState<Record<string, number> | null>(null);
+  const [rankingSource, setRankingSource] = useState<'ai' | 'fallback' | 'not_applicable'>('not_applicable');
+  const [includeLocalGetaways, setIncludeLocalGetaways] = useState(false);
   const [plan, setPlan] = useState<PlanResult | null>(null);
   const [savedTripId, setSavedTripId] = useState<number | null>(null);
   const [savingTrip, setSavingTrip] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isDestinationMapOpen, setIsDestinationMapOpen] = useState(false);
+
+  const placeDiscovery = useQuery({
+    queryKey: ['trip-places', selectedDestinationName, selectedCoordinates?.latitude, selectedCoordinates?.longitude, travelType],
+    enabled: Boolean(selectedDestinationName && selectedCoordinates),
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => (await api.post('/api/trips/discover', {
+      destination_name: selectedDestinationName,
+      destination_address: selectedDestinationAddress,
+      latitude: selectedCoordinates?.latitude,
+      longitude: selectedCoordinates?.longitude,
+      destination_country_code: selectedCountryCode || undefined,
+      travel_type: travelType,
+      days,
+      interests: [travelType]
+    })).data,
+  });
 
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
@@ -177,6 +264,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
   // Fetch all destinations for select dropdown in Build Itinerary mode
   React.useEffect(() => {
+    if (flowMode !== 'plan' || selectedCoordinates) return;
     api.get('/api/destinations/', { params: { limit: 100 } })
       .then(response => {
         setAllDestinations(response.data.destinations || []);
@@ -184,7 +272,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       .catch(err => {
         console.error('Failed to fetch destinations list:', err);
       });
-  }, []);
+  }, [flowMode, selectedCoordinates]);
 
   // Fetch existing saved trip details if tripId query param is provided
   React.useEffect(() => {
@@ -194,6 +282,11 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
         setLoading(true);
         const response = await api.get(`/api/trips/${id}`);
         const trip = response.data;
+        if (trip.destination?.latitude != null && trip.destination?.longitude != null) {
+          setSelectedCoordinates({ latitude: trip.destination.latitude, longitude: trip.destination.longitude });
+          setSelectedDestinationName(trip.destination.name);
+          setSelectedDestinationAddress(trip.destination.address || null);
+        }
         const alloc = trip.budget_allocation;
         setPlan({
           destination: trip.destination,
@@ -422,28 +515,30 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
   ];
 
   const getComfortLabel = (score: number) => {
-    if (score < 30) return { label: 'Budget Traveler', desc: 'Sleeper Trains, local homestays & street eats.', color: 'text-emerald-500' };
-    if (score <= 70) return { label: 'Mid-Range Comfort', desc: 'AC Trains / Flights, 3-star hotels & dining.', color: 'text-marigold-500' };
-    return { label: 'Luxury Stays', desc: 'Premium Flights, 4/5-star resorts & fine dining.', color: 'text-amber-500' };
-  };
-
-  const getValueScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-    if (score >= 50) return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-    return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+    if (score < 34) return { label: 'Maximum Savings', desc: 'Favors lower-cost transport, stays, dining, and activities.', color: 'text-emerald-500' };
+    if (score > 66) return { label: 'Higher Comfort', desc: 'Gradually increases estimated spend for more comfortable options; it does not automatically select luxury stays or flights.', color: 'text-amber-500' };
+    return { label: 'Balanced Comfort', desc: 'Uses the middle of the continuous comfort-adjusted cost range.', color: 'text-marigold-500' };
   };
 
   const comfortInfo = getComfortLabel(comfortScore);
 
   const buildTripPayload = (destinationId?: number | null) => ({
     starting_city: startingCity || 'Bangalore',
+    ...(originCoordinates ? { origin_latitude: originCoordinates.latitude, origin_longitude: originCoordinates.longitude } : {}),
     budget: Number(budget),
     days,
     travel_type: travelType,
     travelers_count: travelersCount,
     comfort_score: comfortScore,
+    interests: Array.from(new Set([travelType, ...additionalInterests.split(',').map((item) => item.trim()).filter(Boolean)])).slice(0, 12),
     // Use explicit arg first, then fall back to current state
-    destination_id: destinationId !== undefined ? destinationId : (selectedDestinationId ?? null)
+    destination_id: destinationId !== undefined ? destinationId : (selectedDestinationId ?? null),
+    ...(selectedCoordinates || {}),
+    ...(selectedDestinationName ? { destination_name: selectedDestinationName } : {}),
+    ...(selectedDestinationAddress ? { destination_address: selectedDestinationAddress } : {}),
+    ...(selectedPlaceId ? { google_place_id: selectedPlaceId } : {}),
+    ...(selectedGeoapifyPlaceId ? { geoapify_place_id: selectedGeoapifyPlaceId } : {}),
+    ...(selectedCountryCode ? { destination_country_code: selectedCountryCode } : {})
   });
 
   const handlePrimaryAction = async (e: React.FormEvent) => {
@@ -462,12 +557,6 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       return;
     }
 
-    // In discover mode: if no city is provided, fall back to 'Bangalore' silently
-    // so the button always fires. Show a soft hint rather than a hard block.
-    const effectiveCity = startingCity.trim() || 'Bangalore';
-    if (!startingCity.trim() && flowMode === 'discover') {
-      setStartingCity('Bangalore');
-    }
     // In plan mode, starting city is required for accurate cost estimation
     if (!startingCity.trim() && flowMode === 'plan') {
       setError('Please enter a starting city for accurate cost estimation.');
@@ -475,30 +564,42 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     }
 
     if (flowMode === 'discover') {
+      if (!startingCity.trim()) {
+        setError('Enter or select a valid starting location to discover destinations.');
+        return;
+      }
       setSearchLoading(true);
       setSearchCompleted(false);
       setSearchResults([]);
+      setDiscoveredCandidates([]);
+      setDiscoveryWarnings([]);
+      setDiscoveryStats(null);
+      setRankingSource('not_applicable');
       try {
-        const response = await api.get('/api/trips/reverse/search', {
-          params: {
-            budget: budgetNum,
-            days,
-            travel_type: travelType,
-            travelers_count: travelersCount,
-            starting_city: effectiveCity,
-            comfort_score: comfortScore
-          }
+        const response = await api.post('/api/trips/discover-from-origin', {
+          origin_name: startingCity.trim(),
+          origin_address: originAddress || undefined,
+          origin_latitude: originCoordinates?.latitude,
+          origin_longitude: originCoordinates?.longitude,
+          budget: budgetNum,
+          days,
+          travelers_count: travelersCount,
+          travel_type: travelType,
+          comfort_score: comfortScore,
+          interests: Array.from(new Set([travelType, ...additionalInterests.split(',').map((item) => item.trim()).filter(Boolean)])).slice(0, 12),
+          short_local_getaway: includeLocalGetaways
         });
-        setSearchResults(response.data);
+        if (response.data.origin?.latitude != null && response.data.origin?.longitude != null) {
+          setOriginCoordinates({ latitude: response.data.origin.latitude, longitude: response.data.origin.longitude });
+        }
+        setDiscoveredCandidates(response.data.candidates || []);
+        setDiscoveryWarnings(response.data.warnings || []);
+        setDiscoveryStats({ ...(response.data.filter_counts || {}), examined_candidate_count: response.data.examined_candidate_count || 0, shortlisted: response.data.candidate_count || 0 });
+        setRankingSource(response.data.ranking_source || 'not_applicable');
         setSearchCompleted(true);
       } catch (err: any) {
-        console.error(err);
-        const detail = err.response?.data?.detail;
-        if (err.response?.status === 422) {
-          setError(detail || 'No destinations found within your budget. Try increasing the budget or reducing comfort score.');
-        } else {
-          setError(detail || 'Failed to fetch matching destinations.');
-        }
+        setError(err.response?.data?.detail || 'Destination discovery is unavailable. Check the starting location and try again.');
+        setSearchCompleted(true);
       } finally {
         setSearchLoading(false);
       }
@@ -510,10 +611,12 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       const response = await api.post('/api/trips/plan', buildTripPayload());
       setPlan(response.data);
       setExpandedDays({ 1: true });
+      setItineraryRetryAttempts(0);
     } catch (err: any) {
       console.error(err);
       const status = err.response?.status;
       const detail = err.response?.data?.detail;
+      setItineraryRetryAttempts(prev => prev + 1);
       if (status === 422) {
         // Backend returned a user-friendly constraint message (e.g. no destination fits budget)
         setError(detail || 'No destination found within your selected budget. Try increasing your budget, reducing trip days, or lowering the comfort score.');
@@ -531,12 +634,69 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
     }
   };
 
+  const handleSelectOriginCandidate = async (candidate: OriginCandidate) => {
+    setSelectedDestinationId(null);
+    setSelectedDestinationName(candidate.name);
+    setSelectedDestinationAddress([candidate.region, candidate.country].filter(Boolean).join(', '));
+    setSelectedCoordinates({ latitude: candidate.latitude, longitude: candidate.longitude });
+    // Keep the Geoapify destination ID separate from Google's identifier.
+    setSelectedPlaceId(candidate.google_place_id || null);
+    setSelectedGeoapifyPlaceId(candidate.destination_id);
+    setSelectedCountryCode(candidate.country_code || null);
+    setError(null);
+    setPlan(null);
+    setFlowMode('plan');
+    setSearchCompleted(false);
+    setItineraryRetryAttempts(0);
+    
+    // Immediately generate the plan with the selected destination
+    setLoading(true);
+    try {
+      const payload = {
+        starting_city: startingCity || 'Bangalore',
+        origin_latitude: originCoordinates?.latitude,
+        origin_longitude: originCoordinates?.longitude,
+        budget: Number(budget),
+        days,
+        travel_type: travelType,
+        travelers_count: travelersCount,
+        comfort_score: comfortScore,
+        interests: Array.from(new Set([travelType, ...additionalInterests.split(',').map((item) => item.trim()).filter(Boolean)])).slice(0, 12),
+        // Use the geoapify place ID for discovered destinations
+        geoapify_place_id: candidate.destination_id,
+        latitude: candidate.latitude,
+        longitude: candidate.longitude,
+        destination_name: candidate.name,
+        destination_address: [candidate.region, candidate.country].filter(Boolean).join(', '),
+        destination_country_code: candidate.country_code || undefined
+      };
+      
+      const response = await api.post('/api/trips/plan', payload);
+      setPlan(response.data);
+      setExpandedDays({ 1: true });
+      setItineraryRetryAttempts(0);
+    } catch (err: any) {
+      console.error(err);
+      const detail = err.response?.data?.detail;
+      if (err.response?.status === 422) {
+        setError(detail || `This destination exceeds your budget. Try increasing your budget or reducing duration.`);
+      } else {
+        setError(detail || 'Failed to generate a plan for this destination.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSelectDestination = async (result: SearchResult) => {
     const destId = result.destination.id;
     const destCategory = result.destination.category;
 
     setSelectedDestinationId(destId);
     setSelectedDestinationName(result.destination.name);
+    setSelectedPlaceId(null);
+    setSelectedGeoapifyPlaceId(null);
+    setSelectedCountryCode(null);
     setTravelType(destCategory);
     setFlowMode('plan');
     setError(null);
@@ -552,13 +712,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
       travel_type: destCategory,
       travelers_count: travelersCount,
       comfort_score: comfortScore,
-      destination_id: destId
+      destination_id: destId,
+      ...(selectedCoordinates || {})
     };
 
     try {
       const response = await api.post('/api/trips/plan', payload);
       setPlan(response.data);
       setExpandedDays({ 1: true });
+      setItineraryRetryAttempts(0);
     } catch (err: any) {
       console.error(err);
       const detail = err.response?.data?.detail;
@@ -701,7 +863,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             Trip Settings
           </h2>
 
-          <form onSubmit={handlePrimaryAction} className="flex flex-col gap-5">
+          <form id="trip-settings-form" onSubmit={handlePrimaryAction} className="flex flex-col gap-5">
             <div>
               <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Starting Location</label>
               <div className="flex gap-2">
@@ -711,7 +873,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     type="text"
                     required
                     value={startingCity}
-                    onChange={(e) => setStartingCity(e.target.value)}
+                    onChange={(e) => { setStartingCity(e.target.value); setOriginCoordinates(null); setOriginAddress(''); }}
                     placeholder="e.g. Bangalore, Delhi"
                     className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white"
                   />
@@ -725,6 +887,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                   <Map size={18} />
                 </button>
               </div>
+              {flowMode === 'discover' && <label className="flex items-start gap-2 text-xs text-paper-600 dark:text-paper-300"><input type="checkbox" checked={includeLocalGetaways} onChange={e => setIncludeLocalGetaways(e.target.checked)} className="mt-0.5 accent-marigold-600"/>Include nearby getaways (20 km minimum)</label>}
             </div>
 
             {flowMode === 'plan' && (
@@ -738,12 +901,18 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                       if (!idVal) {
                         setSelectedDestinationId(null);
                         setSelectedDestinationName(null);
+                        setSelectedPlaceId(null);
+                        setSelectedGeoapifyPlaceId(null);
+                        setSelectedCoordinates(null);
                       } else {
                         const numericId = Number(idVal);
                         const match = allDestinations.find(d => d.id === numericId);
                         if (match) {
                           setSelectedDestinationId(numericId);
                           setSelectedDestinationName(match.name);
+                          setSelectedPlaceId(null);
+                          setSelectedGeoapifyPlaceId(null);
+                          setSelectedCoordinates(null);
                           setTravelType(match.category);
                         }
                       }
@@ -758,6 +927,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 </div>
               </div>
             )}
+            {flowMode === 'plan' && <button type="button" onClick={() => setIsDestinationMapOpen(true)} className="inline-flex items-center gap-2 self-start rounded-xl border border-paper-200 px-3 py-2 text-xs font-bold text-paper-700 dark:border-paper-700 dark:text-paper-200"><MapPin size={14}/> Choose any destination on map</button>}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -833,6 +1003,12 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               </div>
             </div>
 
+            {flowMode === 'discover' && <div>
+              <label htmlFor="destination-interests" className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Additional Interests</label>
+              <input id="destination-interests" type="text" value={additionalInterests} onChange={(event) => setAdditionalInterests(event.target.value)} placeholder="e.g. wildlife, local food, museums" className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-marigold-500 text-paper-900 dark:text-white" />
+              <p className="mt-1 text-[10px] text-paper-400">Separate interests with commas. They guide personalization after budget checks.</p>
+            </div>}
+
             {/* Comfort vs Budget Slider */}
             <div className="border-t border-paper-100 dark:border-paper-700 pt-4 mt-2">
               <div className="flex items-center justify-between mb-2">
@@ -849,7 +1025,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               />
               <div className="flex justify-between text-[10px] text-paper-400 font-bold uppercase mt-1">
                 <span>Maximum Savings</span>
-                <span>Premium Quality</span>
+                <span>Higher Comfort</span>
               </div>
 
               {/* Dynamic slider details */}
@@ -887,7 +1063,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               ) : loading ? (
                 <>
                   <Loader size={18} className="animate-spin" />
-                  Mapping Destinations...
+                  Generating itinerary...
                 </>
               ) : (
                 <>
@@ -908,15 +1084,15 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                     <AlertTriangle size={20} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-rose-700 dark:text-rose-400 text-sm mb-1">No results</h3>
+                    <h3 className="font-bold text-rose-700 dark:text-rose-400 text-sm mb-1">{flowMode === 'discover' ? 'Discovery notice' : 'Itinerary builder error'}</h3>
                     <p className="text-rose-600 dark:text-rose-300 text-xs leading-relaxed">{error}</p>
-                    <button
+                    {(flowMode === 'discover' || itineraryRetryAttempts < 3) && <button
                       type="button"
-                      onClick={() => setError(null)}
+                      onClick={() => { setError(null); (document.getElementById('trip-settings-form') as HTMLFormElement | null)?.requestSubmit(); }}
                       className="mt-3 text-[10px] font-bold uppercase tracking-wider text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 transition-colors"
                     >
-                      Dismiss
-                    </button>
+                      {flowMode === 'discover' ? 'Try again' : `Retry itinerary generation (${itineraryRetryAttempts + 1}/3)`}
+                    </button>}
                   </div>
                 </div>
               )}
@@ -928,7 +1104,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                   <Search className="h-16 w-16 text-paper-300 dark:text-paper-600 mb-4 animate-pulse" />
                   <h3 className="text-lg font-bold text-paper-700 dark:text-paper-300 mb-2">Search for matching destinations</h3>
                   <p className="text-sm text-paper-400 max-w-sm">
-                    Use the same trip inputs to compare options first. The strongest matches will appear here.
+                    Set your starting location and trip details. We’ll find destination cities you can reach within your budget.
                   </p>
                 </div>
               )}
@@ -945,30 +1121,32 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                 </div>
               )}
 
-              {searchCompleted && searchResults.length === 0 && (
+              {searchCompleted && discoveredCandidates.length === 0 && !error && (
                 <div className="bg-paper-100 dark:bg-paper-800/40 border border-dashed border-paper-200 dark:border-paper-700 rounded-2xl h-96 flex flex-col items-center justify-center text-center p-6">
                   <AlertTriangle className="h-16 w-16 text-paper-300 dark:text-paper-600 mb-4" />
                   <h3 className="text-lg font-bold text-paper-700 dark:text-paper-300 mb-2">No matches found</h3>
                   <p className="text-sm text-paper-400 max-w-sm">
-                    Try adjusting the budget, duration, or trip type, then search again.
+                    {discoveryWarnings.length ? discoveryWarnings.join(' ') : 'Try adjusting the budget, duration, or trip type, then search again.'}
                   </p>
                 </div>
               )}
 
-              {searchCompleted && searchResults.length > 0 && (
+              {searchCompleted && discoveredCandidates.length > 0 && (
                 <div className="flex flex-col gap-4">
+                  {discoveryWarnings.map((warning, index) => <p key={index} role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">{warning}</p>)}
                   <div>
-                    <h3 className="text-lg font-bold text-paper-800 dark:text-white">Top destination matches</h3>
+                    <h3 className="text-lg font-bold text-paper-800 dark:text-white">Destinations from {startingCity}</h3>
                     <p className="text-xs text-paper-500 dark:text-paper-400 mt-1">
-                      Pick a destination below to lock it into the itinerary builder.
+                      Geoapify Places · {rankingSource === 'ai' ? 'AI-personalized ranking · Groq' : 'Fallback ranking · verified destination evidence and trip fit; no AI score'} · cost values are planning estimates, not live quotes.
                     </p>
+                    <p className="mt-1 text-xs font-semibold text-paper-600 dark:text-paper-300">Showing {capDisplayedOriginShortlist(discoveredCandidates).length} of {discoveryStats?.examined_candidate_count ?? discoveredCandidates.length} eligible destinations · maximum 8</p>
+                    {discoveryStats && <p className="mt-1 text-[11px] text-paper-500">{discoveryStats.received || 0} Geoapify places · {discoveryStats.verified_country || 0} verified in India · {(discoveryStats.low_quality_records_rejected || 0) + (discoveryStats.low_quality_localities_rejected || 0)} low-quality records/localities excluded · {discoveryStats.budget_survivors || 0} budget-feasible candidates ranked · {discoveryStats.shortlisted || 0} shown</p>}
                   </div>
 
-                  {searchResults.map((res, index) => {
-                    const isExpanded = expandedSearchIdx === index;
+                  {capDisplayedOriginShortlist(discoveredCandidates).map((candidate, index) => {
                     return (
                       <div
-                        key={res.destination.id}
+                        key={candidate.destination_id}
                         className="bg-paper-50 dark:bg-paper-800 border border-paper-200 dark:border-paper-700 rounded-2xl p-5 shadow-sm flex flex-col hover:border-marigold-500/40 transition-all gap-4"
                       >
                         <div className="flex flex-col md:flex-row gap-5 items-start justify-between w-full">
@@ -977,70 +1155,56 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                               <div className="h-6 w-6 rounded-full bg-marigold-600/10 dark:bg-marigold-950/40 text-marigold-600 dark:text-marigold-400 font-extrabold text-[10px] flex items-center justify-center">
                                 #{index + 1}
                               </div>
-                              <h4 className="font-extrabold text-lg text-paper-900 dark:text-white hover:text-marigold-600 dark:hover:text-marigold-400 transition-colors">
-                                {res.destination.name}
-                              </h4>
-                              <span className="bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                {res.destination.category}
-                              </span>
+                              <h4 className="font-extrabold text-lg text-paper-900 dark:text-white">{candidate.name}</h4>
+                              {candidate.matched_categories.map((category: string) => <span key={category} className="bg-paper-100 dark:bg-paper-900 text-paper-600 dark:text-paper-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{category}</span>)}
                             </div>
 
                             <span className="text-[10px] text-paper-400 font-bold uppercase tracking-wider flex items-center gap-1">
                               <MapPin size={11} className="text-paper-400 shrink-0" />
-                              {res.destination.state}
+                              {[candidate.region, candidate.country].filter(Boolean).join(', ')}
                             </span>
 
-                            <p className="text-paper-500 dark:text-paper-400 text-xs leading-relaxed max-w-xl line-clamp-2">
-                              {res.destination.description}
-                            </p>
+                            <p className="text-paper-500 dark:text-paper-400 text-xs leading-relaxed max-w-xl">{candidate.distance_km} km straight-line from origin · live route distance and travel time unavailable</p>
 
                             <div className="flex items-center gap-4 text-xs font-semibold text-paper-600 dark:text-paper-400 pt-1">
                               <div className="flex items-center gap-0.5 text-amber-500">
                                 <Star size={13} fill="currentColor" />
-                                <span className="font-bold text-paper-800 dark:text-white">{res.destination.rating}</span>
+                                <span className="font-bold text-paper-800 dark:text-white" title={candidate.rating_unavailable_reason || undefined}>{formatCandidateRating(candidate.rating, candidate.review_count ?? candidate.user_rating_count, candidate.rating_scale ?? 10)}</span>
                               </div>
-                              <span>Best season: {res.destination.best_season}</span>
+                              <span translate="no">{candidate.rating != null ? 'Foursquare rating' : 'Rating unavailable'}</span>
+                              {candidate.rating_url && <a href={candidate.rating_url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-blue-600 hover:underline">Open Foursquare place</a>}
                             </div>
+                            {candidate.rating == null && candidate.rating_unavailable_reason && <p className="text-[10px] text-paper-500">{candidate.rating_unavailable_reason}</p>}
+                            <OriginCandidateRankingDetails candidate={candidate} rankingSource={rankingSource} expanded={expandedSearchIdx === index} />
                           </div>
 
                           <div className="flex flex-col items-start md:items-end gap-3 justify-between md:border-l md:border-paper-100 md:dark:border-paper-700/60 md:pl-6 shrink-0 w-full md:w-auto">
                             <div className="flex flex-col md:items-end">
                               <span className="text-[9px] text-paper-400 font-bold uppercase">Estimated Cost</span>
-                              <span className="text-lg font-extrabold text-paper-900 dark:text-white">INR {res.estimated_cost.toLocaleString()}</span>
-                              <span className="text-[9px] text-paper-400 font-medium">({res.budget_fit}% of budget)</span>
-                            </div>
-
-                            <div className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase ${getValueScoreColor(res.value_score)}`}>
-                              Match Score: {res.value_score}
+                              <span className="text-lg font-extrabold text-paper-900 dark:text-white">INR {candidate.estimated_cost.toLocaleString()}</span>
+                              <span className="text-[9px] text-paper-400 font-medium">INR {candidate.budget_remaining.toLocaleString()} remaining · estimate</span>
+                              <span className="mt-2 text-[10px] text-paper-500">Travel INR {candidate.costs.transport_cost.toLocaleString()} · lodging INR {candidate.costs.hotel_cost.toLocaleString()} ({candidate.costs.accommodation_nights} nights)</span>
                             </div>
 
                             <div className="flex gap-2 w-full md:w-auto">
                               <button
                                 type="button"
-                                onClick={() => setExpandedSearchIdx(isExpanded ? null : index)}
+                                onClick={() => setExpandedSearchIdx(expandedSearchIdx === index ? null : index)}
                                 className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-paper-100 hover:bg-paper-200 dark:bg-paper-700 dark:hover:bg-paper-600 text-paper-800 dark:text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-paper-200 dark:border-paper-600"
                               >
-                                {isExpanded ? 'Hide Match' : 'Show Match'}
+                                {expandedSearchIdx === index ? 'Hide ranking details' : 'Ranking details'}
                               </button>
                               <button
-                                onClick={() => handleSelectDestination(res)}
+                                onClick={() => handleSelectOriginCandidate(candidate)}
                                 className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 bg-paper-900 hover:bg-paper-800 dark:bg-paper-700 dark:hover:bg-paper-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-paper-900/10"
                               >
-                                Use this destination
+                                Choose destination
                                 <ArrowRight size={13} />
                               </button>
                             </div>
                           </div>
                         </div>
 
-                        {isExpanded && res.breakdown && (
-                          <RecommendationExplainability
-                            destinationName={res.destination.name}
-                            overallScore={res.value_score}
-                            breakdown={res.breakdown}
-                            className="w-full mt-2 border border-paper-100 dark:border-paper-700 bg-paper-50/50 dark:bg-paper-900/10"
-                          />
-                        )}
                       </div>
                     );
                   })}
@@ -1054,7 +1218,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
               <Compass className="h-16 w-16 text-paper-300 dark:text-paper-600 mb-4 animate-pulse" />
               <h3 className="text-lg font-bold text-paper-700 dark:text-paper-300 mb-2">No Plan Generated Yet</h3>
               <p className="text-sm text-paper-400 max-w-sm">
-                Enter your details on the left and hit generate to compute the itinerary.
+                {selectedDestinationName ? `${selectedDestinationName} is selected. Review your trip settings, then choose Generate Travel Plan when you’re ready to create the itinerary.` : 'Enter your details on the left and hit generate to compute the itinerary.'}
               </p>
             </div>
           )}
@@ -1168,7 +1332,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
                   </div>
                   <div className="p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl">
                     <span className="text-[10px] text-paper-400 font-bold block uppercase mb-1">Transport</span>
-                    <span className="text-sm font-bold text-paper-800 dark:text-white">{plan.costs.transport_mode}</span>
+                              <span className="text-sm font-bold text-paper-800 dark:text-white">{plan.costs.transport_mode}</span>
                   </div>
                   <div className="p-3 bg-paper-50 dark:bg-paper-900/50 rounded-xl">
                     <span className="text-[10px] text-paper-400 font-bold block uppercase mb-1">Best Season</span>
@@ -1444,11 +1608,57 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
 
       </div>
 
+      {selectedCoordinates && selectedDestinationName && (
+        <section className="space-y-4">
+          <WeatherForecast latitude={selectedCoordinates.latitude} longitude={selectedCoordinates.longitude} location={selectedDestinationName} days={days} />
+          <div className="rounded-2xl border border-paper-200 bg-paper-50 p-5 dark:border-paper-700 dark:bg-paper-900">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div><h3 className="text-lg font-black text-paper-900 dark:text-white">Places near {selectedDestinationName}</h3><p className="text-xs text-paper-500">{placeDiscovery.data?.data_source === 'geoapify' ? 'Geoapify Places results matched to your destination and travel type.' : 'Places results matched to your destination and travel type.'}</p></div>
+              {placeDiscovery.data?.data_source === 'database_fallback' && <span role="status" className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Older database fallback</span>}
+            </div>
+            {placeDiscovery.isLoading && <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Searching places">{[1,2,3].map(i => <div key={i} className="h-28 animate-pulse rounded-xl bg-paper-200 dark:bg-paper-800" />)}</div>}
+            {placeDiscovery.isError && <div role="alert" className="mt-3 flex items-center gap-3 text-sm text-rose-600">{(placeDiscovery.error as any)?.response?.data?.detail || 'Places could not be loaded.'} <button onClick={() => placeDiscovery.refetch()} className="font-bold underline">Retry</button></div>}
+            {!placeDiscovery.isLoading && !placeDiscovery.isError && placeDiscovery.data?.fallback_notice && <p className="mt-3 text-sm text-amber-700 dark:text-amber-300">{placeDiscovery.data.fallback_notice}</p>}
+            {!placeDiscovery.isLoading && !placeDiscovery.isError && placeDiscovery.data?.places?.length === 0 && <p className="mt-4 text-sm text-paper-500">No places matched this search. Try another destination or travel type.</p>}
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {placeDiscovery.data?.places?.map((place: any, index: number) => <div key={place.place_id || `${place.name}-${index}`} className="rounded-xl border border-paper-200 bg-white p-4 text-left transition hover:border-marigold-500 dark:border-paper-700 dark:bg-paper-800">
+                <button type="button" onClick={() => { if (place.latitude == null || place.longitude == null) return; setSelectedDestinationName(place.name); setSelectedDestinationAddress(place.address || null); setSelectedCoordinates({ latitude: place.latitude, longitude: place.longitude }); setSelectedPlaceId(place.data_source === 'google_places' ? place.place_id || null : null); setSelectedGeoapifyPlaceId(place.data_source === 'geoapify' ? place.place_id || null : null); setSelectedCountryCode(place.data_source === 'geoapify' ? 'IN' : null); setPlan(null); }} className="w-full text-left" aria-label={`Select ${place.name}`}>
+                <span className="flex items-start justify-between gap-2"><strong className="text-sm text-paper-900 dark:text-white">{place.name}</strong>{place.rating != null && <span className="shrink-0 text-xs font-bold text-amber-600">★ {place.rating}{place.user_rating_count != null ? ` (${place.user_rating_count})` : ''}</span>}</span>
+                {place.address && <span className="mt-2 block text-xs text-paper-500">{place.address}</span>}
+                {place.price_level && <span className="mt-1 block text-xs text-paper-500">Provider price level: {String(place.price_level).replace('PRICE_LEVEL_', '')} (not an exact price)</span>}
+                </button>
+                {place.reviews?.[0]?.text && <p className="mt-2 line-clamp-2 text-xs text-paper-600 dark:text-paper-300">“{place.reviews[0].text}”</p>}
+                {place.reviews?.[0]?.author_name && <p className="mt-1 text-[10px] text-paper-500">Review by {place.reviews[0].author_url ? <a href={place.reviews[0].author_url} target="_blank" rel="noreferrer" className="underline">{place.reviews[0].author_name}</a> : place.reviews[0].author_name}{place.reviews[0].visit_date ? ` · visited ${place.reviews[0].visit_date}` : ''}</p>}
+                <span className="mt-3 flex items-center justify-between text-xs font-bold text-marigold-700 dark:text-marigold-300"><span>{place.data_source === 'database_fallback' ? 'BudgetBound database' : place.data_source === 'geoapify' ? 'Geoapify Places' : <img src="https://maps.gstatic.com/mapfiles/api-3/images/google_on_white.png" alt="Google" className="h-4 w-auto" />}</span>{(place.map_url || place.google_maps_url) && <a href={place.map_url || place.google_maps_url} target="_blank" rel="noreferrer" className="underline">Open map</a>}</span>
+              </div>)}
+            </div>
+            {placeDiscovery.data?.weather_data_source === 'unavailable' && <p className="mt-3 text-sm text-amber-700 dark:text-amber-300">Weather data is unavailable; itinerary generation can continue without weather personalization.</p>}
+          </div>
+        </section>
+      )}
+
       <LocationPickerModal
         isOpen={isMapModalOpen}
         onClose={() => setIsMapModalOpen(false)}
-        onSelectLocation={(city) => setStartingCity(city)}
+        onSelectLocation={(location) => {
+          setStartingCity(location.name);
+          setOriginCoordinates({ latitude: location.latitude, longitude: location.longitude });
+          setOriginAddress(location.address || '');
+        }}
         initialCity={startingCity}
+      />
+      <LocationPickerModal
+        isOpen={isDestinationMapOpen}
+        onClose={() => setIsDestinationMapOpen(false)}
+        onSelectLocation={(location) => {
+          setSelectedDestinationId(null);
+          setSelectedDestinationName(location.name);
+          setSelectedCoordinates({ latitude: location.latitude, longitude: location.longitude });
+          setSelectedDestinationAddress(location.address || location.name);
+          setSelectedPlaceId(null);
+          setSelectedGeoapifyPlaceId(null);
+        }}
+        initialCity={selectedDestinationName || undefined}
       />
 
       {isShareModalOpen && savedTripId && plan && (

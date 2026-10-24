@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m
 const BudgetPlanner = lazy(() => import('./pages/BudgetPlanner').then(m => ({ default: m.BudgetPlanner })));
 const DestinationExplorer = lazy(() => import('./pages/DestinationExplorer').then(m => ({ default: m.DestinationExplorer })));
 const DestinationDetail = lazy(() => import('./pages/DestinationDetail').then(m => ({ default: m.DestinationDetail })));
+const UnifiedDestinationDetail = lazy(() => import('./pages/UnifiedDestinationDetail').then(m => ({ default: m.UnifiedDestinationDetail })));
 const BudgetOptimizer = lazy(() => import('./pages/BudgetOptimizer').then(m => ({ default: m.BudgetOptimizer })));
 const ExpenseTracker = lazy(() => import('./pages/ExpenseTracker').then(m => ({ default: m.ExpenseTracker })));
 const AICompanion = lazy(() => import('./pages/AICompanion').then(m => ({ default: m.AICompanion })));
@@ -82,6 +83,7 @@ function App() {
 
             <Route path="/explorer" element={<ProtectedRoute><DestinationExplorer /></ProtectedRoute>} />
             <Route path="/explorer/:id" element={<ProtectedRoute><DestinationDetail /></ProtectedRoute>} />
+            <Route path="/explorer/detail/:id" element={<ProtectedRoute><UnifiedDestinationDetail /></ProtectedRoute>} />
 
             <Route path="/optimizer/:tripId" element={<ProtectedRoute><BudgetOptimizer /></ProtectedRoute>} />
             <Route path="/expenses/:tripId" element={<ProtectedRoute><ExpenseTracker /></ProtectedRoute>} />

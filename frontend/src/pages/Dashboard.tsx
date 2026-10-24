@@ -465,16 +465,8 @@ export const Dashboard: React.FC = () => {
                           <div className="flex items-center justify-end gap-2.5">
                             <button
                               onClick={() => {
-                                // Prefecture prefills to planner
-                                sessionStorage.setItem('prefilled_planner', JSON.stringify({
-                                  startingCity: 'Your City',
-                                  budget: trip.budget,
-                                  days: trip.days,
-                                  travelType: trip.category,
-                                  travelersCount: 1,
-                                  destName: trip.destination
-                                }));
-                                navigate('/planner');
+                                // Navigate to planner with tripId to load the complete saved trip
+                                navigate(`/planner?tripId=${trip.id}`);
                               }}
                               className="p-2 rounded-lg bg-paper-50 hover:bg-paper-100 dark:bg-paper-700/40 dark:hover:bg-paper-700 text-paper-600 dark:text-paper-300 transition-all"
                               title="View Details / Re-simulate"

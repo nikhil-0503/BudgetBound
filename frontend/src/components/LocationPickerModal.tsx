@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -20,7 +20,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 interface LocationPickerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectLocation: (city: string) => void;
+  onSelectLocation: (location: { name: string; latitude: number; longitude: number; address?: string; region?: string }) => void;
   initialCity?: string;
 }
 
@@ -28,11 +28,11 @@ interface LocationPickerModalProps {
 const DEFAULT_CENTER: [number, number] = [20.5937, 78.9629];
 const DEFAULT_ZOOM = 4;
 
-const LocationMarker = ({ position, setPosition, setCityName, setLoadingCity }: any) => {
+const LocationMarker = ({ position, setPosition, resolvePosition }: any) => {
   const map = useMapEvents({
     click(e) {
       setPosition(e.latlng);
-      fetchCityFromCoords(e.latlng.lat, e.latlng.lng, setCityName, setLoadingCity);
+      resolvePosition(e.latlng.lat, e.latlng.lng);
     },
   });
 
@@ -47,11 +47,13 @@ const LocationMarker = ({ position, setPosition, setCityName, setLoadingCity }: 
   );
 };
 
-const fetchCityFromCoords = async (lat: number, lon: number, setCityName: any, setLoadingCity: any) => {
+const fetchCityFromCoords = async (lat: number, lon: number, setCityName: any, setLoadingCity: any, setAddressName: any, isCurrent: () => boolean) => {
   setLoadingCity(true);
   try {
     const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`);
+    if (!isCurrent()) return;
     const address = response.data.address;
+    setAddressName(response.data.display_name || '');
     const city = address.city || address.town || address.village || address.state_district || address.county;
     if (city) {
       setCityName(city);
@@ -59,10 +61,12 @@ const fetchCityFromCoords = async (lat: number, lon: number, setCityName: any, s
       setCityName('Unknown Location');
     }
   } catch (error) {
-    console.error("Error reverse geocoding:", error);
-    setCityName('Error resolving location');
+    if (isCurrent()) {
+      console.error("Error reverse geocoding:", error);
+      setCityName('Error resolving location');
+    }
   } finally {
-    setLoadingCity(false);
+    if (isCurrent()) setLoadingCity(false);
   }
 };
 
@@ -71,14 +75,30 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({ isOpen
   const [position, setPosition] = useState<L.LatLng | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [cityName, setCityName] = useState(initialCity || '');
+  const [addressName, setAddressName] = useState('');
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [loadingCity, setLoadingCity] = useState(false);
+  const lookupId = useRef(0);
+
+  const resolvePosition = (lat: number, lon: number, requestId = ++lookupId.current) =>
+    fetchCityFromCoords(lat, lon, setCityName, setLoadingCity, setAddressName, () => lookupId.current === requestId);
 
   useEffect(() => {
-     if (isOpen && initialCity && !position) {
+     if (isOpen && initialCity) {
         setSearchQuery(initialCity);
         handleSearch(null, initialCity);
      }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      lookupId.current += 1;
+      setPosition(null);
+      setCityName('');
+      setAddressName('');
+      setLoadingCity(false);
+      setLoadingSearch(false);
+    }
   }, [isOpen]);
 
 
@@ -89,27 +109,32 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({ isOpen
     const query = queryOverride || searchQuery;
     if (!query.trim()) return;
 
+    const requestId = ++lookupId.current;
+    setCityName('');
+    setAddressName('');
     setLoadingSearch(true);
     try {
       const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+      if (lookupId.current !== requestId) return;
       if (response.data && response.data.length > 0) {
         const result = response.data[0];
         const newPos = new L.LatLng(parseFloat(result.lat), parseFloat(result.lon));
         setPosition(newPos);
-        fetchCityFromCoords(newPos.lat, newPos.lng, setCityName, setLoadingCity);
+        setAddressName(result.display_name || '');
+        await resolvePosition(newPos.lat, newPos.lng, requestId);
       } else {
          // handle not found
       }
     } catch (error) {
-      console.error("Error searching location:", error);
+      if (lookupId.current === requestId) console.error("Error searching location:", error);
     } finally {
-      setLoadingSearch(false);
+      if (lookupId.current === requestId) setLoadingSearch(false);
     }
   };
 
   const handleConfirm = () => {
-    if (cityName && cityName !== 'Unknown Location' && cityName !== 'Error resolving location') {
-      onSelectLocation(cityName);
+    if (position && cityName && cityName !== 'Unknown Location' && cityName !== 'Error resolving location') {
+      onSelectLocation({ name: cityName, latitude: position.lat, longitude: position.lng, address: addressName || cityName, region: addressName || undefined });
       onClose();
     }
   };
@@ -124,7 +149,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({ isOpen
             <div className="p-1.5 bg-marigold-100 dark:bg-marigold-900/40 text-marigold-600 rounded-lg">
               <MapPin size={18} />
             </div>
-            <h2 className="font-bold text-lg">Select Starting Location</h2>
+            <h2 className="font-bold text-lg">Select a location</h2>
           </div>
           <button 
             onClick={onClose}
@@ -168,8 +193,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({ isOpen
                 <LocationMarker 
                     position={position} 
                     setPosition={setPosition} 
-                    setCityName={setCityName}
-                    setLoadingCity={setLoadingCity}
+                    resolvePosition={resolvePosition}
                 />
              </MapContainer>
           </div>
@@ -191,7 +215,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({ isOpen
              
              <button
                onClick={handleConfirm}
-               disabled={!cityName || cityName === 'Unknown Location' || cityName === 'Error resolving location' || loadingCity}
+               disabled={!position || !cityName || cityName === 'Unknown Location' || cityName === 'Error resolving location' || loadingCity || loadingSearch}
                className="bg-marigold-600 hover:bg-marigold-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-marigold-600/20"
              >
                Confirm Location

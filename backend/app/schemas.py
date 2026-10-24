@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from typing import List, Optional, Any
 from datetime import datetime
+import math
 
 # User Schemas
 class UserBase(BaseModel):
@@ -146,12 +147,123 @@ class ExpenseOut(ExpenseCreate):
 # Trip Plan Request (from slider & planner)
 class TripPlanRequest(BaseModel):
     starting_city: str
+    origin_latitude: Optional[float] = Field(None, ge=-90, le=90)
+    origin_longitude: Optional[float] = Field(None, ge=-180, le=180)
     budget: float
     days: int
     travel_type: str
     travelers_count: int = 1
     comfort_score: int = 50
     destination_id: Optional[int] = None
+    latitude: Optional[float] = Field(None, ge=-90, le=90)
+    longitude: Optional[float] = Field(None, ge=-180, le=180)
+    start_date: Optional[str] = None
+    destination_name: Optional[str] = Field(None, min_length=2, max_length=200)
+    destination_address: Optional[str] = Field(None, max_length=400)
+    google_place_id: Optional[str] = Field(None, max_length=200)
+    geoapify_place_id: Optional[str] = Field(None, max_length=200)
+    destination_country_code: Optional[str] = Field(None, min_length=2, max_length=2)
+    interests: List[str] = Field(default_factory=list, max_length=12)
+    cuisine_preferences: List[str] = Field(default_factory=list, max_length=8)
+    accessibility: Optional[str] = Field(None, max_length=500)
+
+    @model_validator(mode="after")
+    def origin_coordinate_pair(self):
+        if (self.origin_latitude is None) != (self.origin_longitude is None):
+            raise ValueError("Provide both origin coordinates or leave both blank.")
+        if self.origin_latitude is not None and not all(math.isfinite(value) for value in (self.origin_latitude, self.origin_longitude)):
+            raise ValueError("Origin coordinates must be finite numbers.")
+        return self
+
+
+class OriginDiscoveryRequest(BaseModel):
+    origin_name: str = Field(..., min_length=2, max_length=200)
+    origin_address: Optional[str] = Field(None, max_length=400)
+    origin_latitude: Optional[float] = Field(None, ge=-90, le=90)
+    origin_longitude: Optional[float] = Field(None, ge=-180, le=180)
+    budget: float = Field(..., gt=0, le=10000000)
+    days: int = Field(..., ge=1, le=30)
+    travelers_count: int = Field(1, ge=1, le=20)
+    travel_type: str = Field("Nature", max_length=80)
+    comfort_score: int = Field(50, ge=0, le=100)
+    interests: List[str] = Field(default_factory=list, max_length=12)
+    short_local_getaway: bool = False
+
+    @model_validator(mode="after")
+    def origin_coordinate_pair(self):
+        if (self.origin_latitude is None) != (self.origin_longitude is None):
+            raise ValueError("Provide both origin coordinates or leave both blank.")
+        if self.origin_latitude is not None and not all(math.isfinite(value) for value in (self.origin_latitude, self.origin_longitude)):
+            raise ValueError("Origin coordinates must be finite numbers.")
+        return self
+
+
+class OriginCandidateOut(BaseModel):
+    destination_id: str
+    name: str
+    region: Optional[str] = None
+    country: str
+    country_code: str
+    latitude: float
+    longitude: float
+    distance_km: float
+    estimated_travel_hours: Optional[float] = None
+    travel_time_type: str
+    rating: Optional[float] = None
+    user_rating_count: Optional[int] = None
+    google_place_id: Optional[str] = None
+    google_maps_uri: Optional[str] = None
+    rating_source: str = "unavailable"
+    rating_unavailable_reason: Optional[str] = None
+    provider: Optional[str] = None
+    place_name: Optional[str] = None
+    rating_scale: Optional[int] = None
+    review_count: Optional[int] = None
+    rating_url: Optional[str] = None
+    retrieved_at: Optional[str] = None
+    status: Optional[str] = None
+    fsq_place_id: Optional[str] = None
+    address: Optional[str] = None
+    description: Optional[str] = None
+    destination_highlights: List[str] = []
+    matched_categories: List[str]
+    verified_places: List[dict[str, Any]] = []
+    data_source: str
+    costs: dict[str, Any]
+    estimated_cost: float
+    budget_remaining: float
+    value_score: Optional[float] = None
+    under_budget: bool
+    breakdown: dict[str, Optional[int]] = {}
+    explanation: str
+    why_visit: str
+    trip_fit: str
+    practical_note: Optional[str] = None
+    category_relevance_score: Optional[int] = None
+    interest_match_score: Optional[int] = None
+    comfort_suitability_score: Optional[int] = None
+    duration_suitability_score: Optional[int] = None
+    destination_quality_score: Optional[int] = None
+    overall_match_score: Optional[int] = None
+    match_reasons: List[str] = []
+    tradeoffs: List[str] = []
+
+
+class OriginDiscoveryResponse(BaseModel):
+    origin: dict[str, Any]
+    candidates: List[OriginCandidateOut]
+    candidate_count: int
+    examined_candidate_count: int = 0
+    shortlist_limit: int = 8
+    data_source: str
+    partial_results: bool
+    warnings: List[str]
+    budget_feasible: bool
+    estimate_label: str
+    search_status: str
+    filter_counts: dict[str, int]
+    ranking_source: str = "not_applicable"
+    ranking_mode: Optional[str] = None
 
 class PackingItemOut(BaseModel):
     id: int
@@ -196,7 +308,7 @@ class TravelDocumentOut(BaseModel):
 class TripOut(BaseModel):
     id: int
     user_id: int
-    destination_id: int
+    destination_id: Optional[int] = None
     budget: float
     days: int
     travelers_count: int
@@ -206,7 +318,9 @@ class TripOut(BaseModel):
     hotel_tier: str
     transport_mode: str
     created_at: datetime
-    destination: DestinationOut
+    destination: Any
+    custom_destination_id: Optional[int] = None
+    data_source: Optional[str] = None
     itineraries: List[ItineraryOut] = []
     budget_allocation: Optional[BudgetAllocationOut] = None
     status: str = "Planned"

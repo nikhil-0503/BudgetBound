@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { MapPin, Plus, X, Calendar, Users, DollarSign, Loader, Sparkles, AlertCircle } from 'lucide-react';
+import { MapPin, Plus, X, Calendar, Users, DollarSign, Loader, Sparkles, AlertCircle, Zap } from 'lucide-react';
 import api from '../services/api';
+import { WeatherForecast } from '../components/WeatherForecast';
 
 interface Stop {
   id: string;
@@ -119,6 +120,14 @@ export const MultiStopPlanner: React.FC = () => {
         </h1>
         <p className="text-sm text-paper-600 dark:text-paper-400 mt-2">
           Plan a journey across multiple destinations with AI-powered itinerary generation
+        </p>
+      </div>
+
+      {/* Live Geoapify Notice */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg">
+        <Zap size={14} className="text-blue-600 flex-shrink-0" />
+        <p className="text-xs text-blue-700 dark:text-blue-300">
+          ✨ Stop locations are now resolved using live Geoapify data for accurate coordinates and planning.
         </p>
       </div>
 
@@ -320,6 +329,7 @@ export const MultiStopPlanner: React.FC = () => {
                       
                       return (
                         <div key={index} className="bg-paper-50 dark:bg-paper-900 rounded-lg p-4">
+                          {stop.coordinates && <div className="mb-4"><WeatherForecast latitude={stop.coordinates.lat} longitude={stop.coordinates.lng} location={stop.destination || stops[index]?.destination} days={stop.days || stops[index]?.days || 2} /></div>}
                           <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-marigold-600 text-white flex items-center justify-center font-semibold text-sm">
                               {index + 1}

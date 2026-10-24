@@ -88,7 +88,7 @@ export const ExpenseTracker: React.FC = () => {
   const [editingExpenseId, setEditingExpenseId] = useState<number | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [category, setCategory] = useState('Food');
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number | string>('');
   const [notes, setNotes] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [savingAllocations, setSavingAllocations] = useState(false);
@@ -158,7 +158,7 @@ export const ExpenseTracker: React.FC = () => {
     setEditingExpenseId(null);
     setDate(new Date().toISOString().split('T')[0]);
     setCategory('Food');
-    setAmount(0);
+    setAmount('');
     setNotes('');
     setFormError(null);
     setShowForm(true);
@@ -178,18 +178,26 @@ export const ExpenseTracker: React.FC = () => {
     e.preventDefault();
     setFormError(null);
 
-    if (amount <= 0) {
-      setFormError('Amount must be greater than 0.');
+    // Validate amount
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (!amount || numAmount <= 0 || isNaN(numAmount)) {
+      setFormError('Amount must be a positive number.');
       return;
     }
 
     try {
-      const payload = { date, category, amount, notes };
+      const payload = { 
+        trip_id: parseInt(tripId || '0', 10),
+        date, 
+        category, 
+        amount: numAmount, 
+        notes 
+      };
       
       if (editingExpenseId) {
         await api.put(`/api/expenses/${editingExpenseId}`, payload);
       } else {
-        await api.post(`/api/expenses/?trip_id=${tripId}`, payload);
+        await api.post(`/api/expenses/`, payload);
       }
       
       setShowForm(false);
@@ -197,7 +205,8 @@ export const ExpenseTracker: React.FC = () => {
       fetchData();
     } catch (err: any) {
       console.error(err);
-      setFormError('Failed to save expense details.');
+      const errorMessage = err.response?.data?.detail || 'Failed to save expense details.';
+      setFormError(errorMessage);
     }
   };
 
@@ -580,8 +589,8 @@ export const ExpenseTracker: React.FC = () => {
                     required
                     min={1}
                     value={amount}
-                    onChange={(e) => setAmount(Number(e.target.value))}
-                    placeholder="1500"
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="100"
                     className="w-full bg-paper-50 dark:bg-paper-900 border border-paper-200 dark:border-paper-700 rounded-xl px-4 py-3 text-sm text-paper-900 dark:text-white focus:outline-none focus:border-marigold-500"
                   />
                 </div>

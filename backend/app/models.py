@@ -58,12 +58,35 @@ class Destination(Base):
     # Relationships
     trips = relationship("Trip", back_populates="destination")
 
+class CustomDestination(Base):
+    __tablename__ = "custom_destinations"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    address = Column(String, nullable=True)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
+    google_place_id = Column(String, nullable=True, index=True)
+    geoapify_place_id = Column(String, nullable=True, index=True)
+    data_source = Column(String, nullable=False, default="google_places")  # google_places, geoapify
+    category = Column(String, nullable=True)
+
+    @property
+    def state(self):
+        return self.address or ""
+
+    @property
+    def description(self):
+        return "Custom destination"
+
 class Trip(Base):
     __tablename__ = "trips"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    destination_id = Column(Integer, ForeignKey("destinations.id"), nullable=False)
+    destination_id = Column(Integer, ForeignKey("destinations.id"), nullable=True)
+    custom_destination_id = Column(Integer, ForeignKey("custom_destinations.id"), nullable=True)
+    geoapify_place_id = Column(String, nullable=True, index=True)  # Live Geoapify place_id for later re-fetching
+    data_source = Column(String, nullable=True)  # "seeded", "google_places", "geoapify", or None for backward compat
     budget = Column(Float, nullable=False)
     days = Column(Integer, nullable=False)
     travelers_count = Column(Integer, default=1)
@@ -81,6 +104,7 @@ class Trip(Base):
     # Relationships
     user = relationship("User", back_populates="trips")
     destination = relationship("Destination", back_populates="trips")
+    custom_destination = relationship("CustomDestination")
     itineraries = relationship("Itinerary", back_populates="trip", cascade="all, delete-orphan")
     expenses = relationship("Expense", back_populates="trip", cascade="all, delete-orphan")
     budget_allocation = relationship("BudgetAllocation", uselist=False, back_populates="trip", cascade="all, delete-orphan")

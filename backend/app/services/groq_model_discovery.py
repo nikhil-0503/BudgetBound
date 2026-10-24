@@ -21,6 +21,7 @@ MODEL_DISCOVERY_CACHE_TTL = timedelta(hours=1)
 # Preferred models in order of preference for structured itinerary generation
 # Note: Only models with explicit json_schema support should be in this list
 PREFERRED_MODELS = [
+    "openai/gpt-oss-20b",  # Current strict-schema compatible model with bounded reasoning overhead.
     "qwen/qwen3.8-27b",  # Supports structured output (json_schema)
     "llama-3.3-70b-versatile",  # Supports structured output
     "llama-3.1-70b-versatile",  # Supports structured output
@@ -32,6 +33,7 @@ COMPATIBLE_MODEL_PATTERNS = [
     "llama-3",
     "qwen",  # Qwen supports structured output
     "allam",  # Allam as fallback
+    "openai/gpt-oss-20b",  # Strict structured output without the 120B reasoning-token issue.
 ]
 
 # Models to explicitly exclude (too small, specialized, or problematic)
@@ -50,6 +52,7 @@ AVOID_MODELS = [
 
 # Models with explicit json_schema support
 SCHEMA_SUPPORTED_MODELS = [
+    "openai/gpt-oss-20b",
     "qwen/qwen3.8-27b",
     "llama-3.3-70b-versatile",
     "llama-3.1-70b-versatile",

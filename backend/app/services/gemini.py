@@ -6,10 +6,11 @@ import re
 import time
 from typing import List, Dict, Any, Optional, Tuple
 from dotenv import load_dotenv
+from pathlib import Path
 from datetime import datetime
 
 # Load .env before reading env vars (singleton is created at import time)
-load_dotenv(override=True)  # Force reload from .env file
+load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,13 @@ from app.services.groq_model_discovery import get_available_model
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # Capture at module load
 FALLBACK_MODEL_OVERRIDE = os.getenv("GROQ_MODEL")  # Allow manual override via env var
+
+
+def _safe_provider_log(value: Any) -> str:
+    text = str(value or "")
+    text = re.sub(r"(?i)bearer\s+\S+|gsk_[a-z0-9_-]+|sk-[a-z0-9_-]+|https?://\S+", "[redacted]", text)
+    text = re.sub(r"(?i)(api[_ -]?key|authorization|token)\s*[:=]\s*\S+", r"\1=[redacted]", text)
+    return text.splitlines()[0][:240]
 
 # These cover common Indian trip destinations immediately.  Other places are
 # resolved through Nominatim below; importantly, we never fabricate a point
@@ -62,10 +70,15 @@ class GroqTravelService:
     _model_check_interval = 300  # Re-check model availability every 5 minutes
 
     def __init__(self):
-        self.api_key = GROQ_API_KEY
+        # Read the same backend environment settings used by the API at service
+        # initialization. This also respects dotenv loaded by app.config.
+        self.api_key = os.getenv("GROQ_API_KEY") or GROQ_API_KEY
         self._fallback_reason = None
         self._selected_model = None
         self._model_discovery_error = None
+        self._last_finish_reason = None
+        self._last_http_status = None
+        self._last_provider_error = None
         self._request_stats = {
             "total_requests": 0,
             "successful_requests": 0,
@@ -81,24 +94,16 @@ class GroqTravelService:
         # Log initialization ONCE per process
         if not GroqTravelService._init_logged:
             GroqTravelService._init_logged = True
-            import sys
-            
             if self.api_key:
-                key_preview = self.api_key[:10] + "..." if len(self.api_key) > 10 else "***"
-                
                 if self._selected_model:
-                    msg = f"✓ Groq AI service initialized: model={self._selected_model}, key={key_preview}"
-                    logger.info(msg)
-                    print(f"DEBUG: {msg}", file=sys.stderr)
+                    logger.info("Groq AI service initialized: model=%s", self._selected_model)
                 else:
                     reason = self._model_discovery_error or "Model discovery failed"
                     msg = f"⚠ Groq API key configured but no model available: {reason}. Using fallback generator."
                     logger.warning(msg)
-                    print(f"DEBUG: {msg}", file=sys.stderr)
             else:
                 msg = "✗ Groq API key not configured - using fallback generator for all requests"
                 logger.warning(msg)
-                print(f"DEBUG: {msg}", file=sys.stderr)
 
     def _refresh_model_selection(self):
         """Refresh model selection with caching."""
@@ -110,13 +115,25 @@ class GroqTravelService:
             return
         
         # Check for manual override
-        if FALLBACK_MODEL_OVERRIDE:
-            logger.info(f"Using manually configured model: {FALLBACK_MODEL_OVERRIDE}")
-            self._selected_model = FALLBACK_MODEL_OVERRIDE
-            self._model_discovery_error = None
-            GroqTravelService._model_cache = (self._selected_model, None)
-            GroqTravelService._last_model_check = now
-            return
+        configured_model = os.getenv("GROQ_MODEL") or FALLBACK_MODEL_OVERRIDE
+        if configured_model:
+            if "openai/gpt-oss-120b" in configured_model.casefold():
+                # This model is deliberately excluded by GroqModelDiscovery:
+                # its reasoning tokens can exhaust completion budgets for
+                # structured planner output. Do not let an env override bypass it.
+                self._selected_model = "openai/gpt-oss-20b"
+                self._model_discovery_error = "Configured gpt-oss-120b override is excluded; using the bounded gpt-oss-20b candidate."
+                GroqTravelService._model_cache = (self._selected_model, self._model_discovery_error)
+                GroqTravelService._last_model_check = now
+                logger.warning("Configured GROQ_MODEL is excluded for planner ranking; using openai/gpt-oss-20b")
+                return
+            else:
+                logger.info("Using manually configured model: %s", configured_model)
+                self._selected_model = configured_model
+                self._model_discovery_error = None
+                GroqTravelService._model_cache = (self._selected_model, None)
+                GroqTravelService._last_model_check = now
+                return
         
         # Discover available models
         model_id, discovery_error = get_available_model()
@@ -144,7 +161,10 @@ class GroqTravelService:
         self,
         prompt: str,
         max_retries: int = 3,
-        response_schema: Optional[dict] = None
+        response_schema: Optional[dict] = None,
+        strict_schema_only: bool = False,
+        max_completion_tokens: Optional[int] = None,
+        request_timeout: float = 60.0,
     ) -> Tuple[Optional[str], Optional[str]]:
         """
         Send a single-turn chat message with automatic retries and model discovery.
@@ -158,6 +178,9 @@ class GroqTravelService:
             Tuple of (content, error_reason) where error_reason is non-None if request failed
         """
         self._request_stats["total_requests"] += 1
+        self._last_finish_reason = None
+        self._last_http_status = None
+        self._last_provider_error = None
         
         if not self.is_available:
             error = f"Groq not available: {self._fallback_reason}"
@@ -181,6 +204,8 @@ class GroqTravelService:
                     "content": prompt
                 }],
             }
+            if max_completion_tokens is not None:
+                payload["max_completion_tokens"] = max(256, min(int(max_completion_tokens), 8192))
             
             # Add structured output schema if provided and model supports it
             if use_schema and not schema_unsupported:
@@ -195,7 +220,7 @@ class GroqTravelService:
                 logger.debug("Using strict JSON schema mode for Groq API")
             
             try:
-                with httpx.Client(timeout=60.0) as client:
+                with httpx.Client(timeout=max(1.0, min(float(request_timeout), 120.0))) as client:
                     response = client.post(
                         GROQ_API_URL,
                         headers=headers,
@@ -203,6 +228,7 @@ class GroqTravelService:
                     )
                     
                     if response.status_code != 200:
+                        self._last_http_status = response.status_code
                         error_msg = f"HTTP {response.status_code}"
                         try:
                             error_data = response.json()
@@ -210,24 +236,52 @@ class GroqTravelService:
                                 error_msg = error_data["error"]["message"]
                         except:
                             pass
+                        self._last_provider_error = error_msg
+                        safe_error = _safe_provider_log(error_msg)
+                        logger.warning("Groq request failed status=%s provider_error=%s model=%s finish_reason=%s", response.status_code, safe_error, self._selected_model, None)
                         
-                        logger.warning(f"Groq API error (attempt {attempt + 1}/{max_retries}): {error_msg}")
+                        logger.warning("Groq API error attempt=%d provider_error=%s", attempt + 1, safe_error)
                         
-                        # Handle HTTP 429 (rate limit) - always retry with backoff
+                        # Handle HTTP 429 (rate limit) - read Retry-After if provided
                         if response.status_code == 429:
-                            logger.warning(f"Rate limited (HTTP 429). Waiting before retry...")
-                            if attempt < max_retries - 1:
-                                # Longer backoff for rate limits
-                                wait_time = 1.0 * (attempt + 1)
-                                logger.info(f"Retrying Groq API in {wait_time}s...")
-                                time.sleep(wait_time)
-                                continue
+                            retry_after_str = response.headers.get("retry-after", "")
+                            retry_after_seconds = 0
+                            try:
+                                # Try to parse as integer (seconds)
+                                retry_after_seconds = int(retry_after_str)
+                            except (ValueError, TypeError):
+                                pass
+                            
+                            if retry_after_seconds > 0 and retry_after_seconds < 120:
+                                # Provider specified wait time; honor it instead of exponential backoff
+                                logger.warning("Rate limited (HTTP 429). Provider requires retry-after=%ds", retry_after_seconds)
+                                if attempt < max_retries - 1:
+                                    logger.info("Honoring Retry-After: waiting %d seconds before retry", retry_after_seconds)
+                                    time.sleep(float(retry_after_seconds))
+                                    continue
                             else:
-                                self._request_stats["failed_requests"] += 1
-                                return None, error_msg
+                                # No provider guidance; short exponential backoff
+                                logger.warning("Rate limited (HTTP 429). No Retry-After header; using bounded backoff.")
+                                if attempt < max_retries - 1:
+                                    wait_time = min(2.0 * (attempt + 1), 10.0)  # Cap at 10 seconds
+                                    logger.info("Retrying Groq API in %.1fs...", wait_time)
+                                    time.sleep(wait_time)
+                                    continue
+                            
+                            self._request_stats["failed_requests"] += 1
+                            return None, error_msg
                         
+                        # Destination ranking requires an accurately reported strict mode.
+                        # A schema-related 400 must fail into its explicit fallback path.
+                        if use_schema and strict_schema_only and response.status_code == 400:
+                            self._request_stats["failed_requests"] += 1
+                            return None, error_msg
+
                         # If model doesn't support json_schema, retry without schema
                         if use_schema and "json_schema" in error_msg.lower() and not schema_unsupported:
+                            if strict_schema_only:
+                                self._request_stats["failed_requests"] += 1
+                                return None, error_msg
                             logger.info(f"Model {self._selected_model} does not support json_schema, retrying without schema...")
                             schema_unsupported = True
                             if attempt < max_retries - 1:
@@ -253,6 +307,7 @@ class GroqTravelService:
                     
                     response_json = response.json()
                     finish_reason = response_json.get("choices", [{}])[0].get("finish_reason")
+                    self._last_finish_reason = finish_reason
                     content = response_json.get("choices", [{}])[0].get("message", {}).get("content", "")
                     usage = response_json.get("usage", {})
                     
@@ -269,17 +324,16 @@ class GroqTravelService:
                     if finish_reason == "length":
                         self._request_stats["token_exhaustion_count"] += 1
                         error_msg = "Token limit reached: model response incomplete"
-                        logger.warning(error_msg)
+                        self._last_provider_error = error_msg
+                        logger.warning("Groq response incomplete status=%s provider_error=%s model=%s finish_reason=%s", response.status_code, error_msg, self._selected_model, finish_reason)
                         self._request_stats["failed_requests"] += 1
                         return None, error_msg
                     
                     # Empty content rejection
                     if not content or len(content.strip()) == 0:
                         self._request_stats["empty_response_count"] += 1
-                        logger.warning(
-                            f"Groq returned empty content (finish_reason={finish_reason}). "
-                            f"Tokens used: {usage.get('total_tokens', 0)}"
-                        )
+                        self._last_provider_error = "Groq returned empty response"
+                        logger.warning("Groq response empty status=%s provider_error=%s model=%s finish_reason=%s", response.status_code, self._last_provider_error, self._selected_model, finish_reason)
                         
                         if attempt < max_retries - 1:
                             wait_time = 0.5 * (attempt + 1)
@@ -295,10 +349,21 @@ class GroqTravelService:
                     logger.debug(f"Groq request successful on attempt {attempt + 1}")
                     return content, None
             
+            except httpx.TimeoutException as err:
+                self._last_provider_error = "Groq request timed out"
+                logger.warning("Groq timeout status=%s provider_error=%s model=%s finish_reason=%s", self._last_http_status, self._last_provider_error, self._selected_model, self._last_finish_reason)
+                if attempt < max_retries - 1:
+                    time.sleep(0.5 * (attempt + 1))
+                    continue
+                self._request_stats["failed_requests"] += 1
+                return None, self._last_provider_error
+
             except (httpx.ConnectError, httpx.NetworkError, httpx.RemoteProtocolError, OSError) as err:
+                self._last_provider_error = str(err)
+                logger.warning("Groq transport failure status=%s provider_error=%s model=%s finish_reason=%s", self._last_http_status, _safe_provider_log(err), self._selected_model, self._last_finish_reason)
                 if attempt < max_retries - 1:
                     wait_time = 0.5 * (attempt + 1)
-                    logger.info(f"Retrying Groq API after network error (attempt {attempt + 1}/{max_retries}): {err}")
+                    logger.info("Retrying Groq API after network error attempt=%d", attempt + 1)
                     time.sleep(wait_time)
                     continue
                 
@@ -306,7 +371,8 @@ class GroqTravelService:
                 return None, f"Network error: {str(err)}"
             
             except Exception as e:
-                logger.exception("Unexpected error during Groq API call")
+                self._last_provider_error = str(e)
+                logger.warning("Groq call failed status=%s exception=%s model=%s finish_reason=%s", self._last_http_status, type(e).__name__, self._selected_model, self._last_finish_reason)
                 if attempt < max_retries - 1:
                     wait_time = 0.5 * (attempt + 1)
                     time.sleep(wait_time)
@@ -329,59 +395,82 @@ class GroqTravelService:
         comfort_score: int,
         avg_food_cost: float,
         avg_activity_cost: float,
+        weather_context: Optional[Dict[str, Any]] = None,
+        verified_places: Optional[List[Dict[str, Any]]] = None,
+        budget_limit: Optional[float] = None,
+        travelers_count: int = 1,
+        user_preferences: Optional[List[str]] = None,
     ) -> Optional[List[Dict[str, Any]]]:
         """
         Ask the LLM to generate a day-by-day itinerary in JSON format.
-        Returns None if unavailable or on any error so the caller can fall back.
+        Returns None if unavailable or on any error. The caller surfaces the failure.
         """
         if not self.is_available:
+            self._last_provider_error = self._fallback_reason or "No compatible Groq model is available"
+            logger.error("Groq itinerary generation unavailable status=None provider_error=%s model=%s finish_reason=None", self._last_provider_error, self._selected_model)
             return None
 
-        comfort_label = (
-            "budget traveler (prefer free / cheap activities)"
-            if comfort_score < 30
-            else "mid-range comfort (mix of paid attractions and free sights)"
-            if comfort_score <= 70
-            else "luxury traveler (premium experiences, fine dining, private tours)"
-        )
+        comfort_label = "budget" if comfort_score < 30 else "mid-range" if comfort_score <= 70 else "luxury"
+        
+        # Compact attractions list (top 5 only)
+        attractions_str = ", ".join(attractions[:5]) if attractions else "local landmarks"
+        
+        # Compact verified places (top 10 by relevance)
+        compact_places = []
+        if verified_places:
+            for p in verified_places[:10]:
+                if isinstance(p, dict):
+                    compact_places.append({
+                        "name": p.get("name", ""),
+                        "rating": p.get("rating"),
+                        "place_id": p.get("place_id")
+                    })
+        
+        # Compact weather context (only next 3 days)
+        # Note: daily is a dict with keys like "time", "weather_code", etc., each containing a list
+        compact_weather = None
+        if weather_context and isinstance(weather_context, dict):
+            daily = weather_context.get("daily", {})
+            if daily and isinstance(daily, dict):
+                # Extract time list to determine number of days available
+                time_list = daily.get("time", [])
+                if isinstance(time_list, list) and len(time_list) > 0:
+                    # Limit to first 3 days by slicing each field's list
+                    max_days = min(3, len(time_list))
+                    compact_daily = {}
+                    for key, value in daily.items():
+                        if isinstance(value, list):
+                            compact_daily[key] = value[:max_days]
+                        else:
+                            compact_daily[key] = value
+                    compact_weather = {
+                        "timezone": weather_context.get("timezone"),
+                        "daily": compact_daily
+                    }
+        
+        # Compact preferences (top 3 only)
+        prefs_str = ", ".join(user_preferences[:3]) if user_preferences else "none"
+        
+        # Compact, token-efficient prompt
+        prompt = f"""Generate a {days}-day {travel_type} itinerary for {destination_name}, {state}. {travelers_count} traveler(s), {comfort_label} comfort.
 
-        attractions_str = ", ".join(attractions[:10]) if attractions else "local landmarks"
+Place names (use exact): {", ".join(p['name'] for p in compact_places) if compact_places else attractions_str}
 
-        prompt = f"""You are a master Indian travel guide. Generate a vivid, detailed, day-by-day itinerary for the following trip.
+Preferences: {prefs_str}
+Costs: Food ₹{avg_food_cost:.0f}/meal, Activity ₹{avg_activity_cost:.0f}/item
 
-Trip details:
-- Destination: {destination_name}, {state}
-- Destination category: {category}
-- Travel type preference: {travel_type}
-- Duration: EXACTLY {days} days
-- Comfort level: {comfort_label} (score {comfort_score}/100)
-- Known attractions: {attractions_str}
-- Average food cost per meal: INR {avg_food_cost:.0f}
-- Average activity/entry cost: INR {avg_activity_cost:.0f}
+Rules: Generate EXACTLY {days} days. Day 1 morning=arrival. Day {days} evening=departure. Every activity is unique, vivid, cost-estimated. Use supplied place names only. If rain forecast (days 1-3), prefer indoors those days.
+Weather (days 1-3): {json.dumps(compact_weather.get('daily', []) if compact_weather else []) if compact_weather else "No forecast; no weather claims."}
 
-Rules:
-1. Generate EXACTLY {days} days in the array (day_number 1 through {days}).
-2. Day 1 Morning must start with arrival/check-in.
-3. The last day (Day {days}) must end with check-out and departure back home.
-4. Every activity title MUST be unique, vivid, and action-oriented — tailored to {travel_type} (e.g. "Sunrise photography trek", "Sampling local thali at heritage cafe"). NEVER repeat generic titles like "Sightseeing".
-5. Use known attractions naturally across the days.
-6. Provide estimated cost in INR for each activity (0 for free activities).
-
-Return ONLY a valid JSON array matching this exact structure with {days} days (no conversational text):
-[
-  {{
-    "day_number": 1,
-    "description": "Engaging 1-sentence day summary...",
-    "activities": [
-      {{"time": "Morning", "title": "Arrival in {destination_name} & Hotel Check-in", "cost": 0.0}},
-      {{"time": "Afternoon", "title": "Specific afternoon activity name", "cost": 300.0}},
-      {{"time": "Evening", "title": "Specific evening activity name", "cost": 150.0}}
-    ]
-  }}
-]"""
+Return ONLY valid JSON, no other text:
+[{{"day_number": 1, "description": "1-line summary", "activities": [{{"time": "Morning", "title": "Arrival & Check-in", "cost": 0}}, {{"time": "Afternoon", "title": "Activity name", "cost": 300}}, {{"time": "Evening", "title": "Activity name", "cost": 150}}]}}, ...]"""
 
         try:
-            raw = self._chat(prompt).strip()
+            raw, provider_error = self._chat(prompt, max_retries=1, max_completion_tokens=2000)
+            if provider_error or not raw:
+                logger.error("Groq itinerary generation failed status=%s provider_error=%s model=%s finish_reason=%s", self._last_http_status, provider_error or "empty response", self._selected_model, self._last_finish_reason)
+                return None
+            raw = raw.strip()
 
             # Helper for robust JSON array extraction
             def extract_json_array(text: str) -> Optional[List[Any]]:
@@ -411,24 +500,17 @@ Return ONLY a valid JSON array matching this exact structure with {days} days (n
 
             itinerary = extract_json_array(raw)
 
-            if not isinstance(itinerary, list) or len(itinerary) == 0:
-                logger.warning("LLM output could not be parsed as a valid JSON array. Falling back.")
+            if not isinstance(itinerary, list) or len(itinerary) != days:
+                logger.error("Groq itinerary validation failed status=%s provider_error=%s model=%s finish_reason=%s validation_failure=invalid_json_or_day_count expected_days=%d actual_days=%s", self._last_http_status, self._last_provider_error, self._selected_model, self._last_finish_reason, days, len(itinerary) if isinstance(itinerary, list) else None)
                 return None
-
-            # Adjust days count if slightly mismatched
-            if len(itinerary) > days:
-                itinerary = itinerary[:days]
-
-            # Sanitise cost fields to float and validate day structure
-            for idx, day in enumerate(itinerary, start=1):
-                day["day_number"] = idx
-                if not isinstance(day.get("activities"), list):
-                    day["activities"] = []
-                for act in day.get("activities", []):
-                    try:
-                        act["cost"] = float(act.get("cost", 0.0))
-                    except Exception:
-                        act["cost"] = 0.0
+            from app.schemas import ItineraryBase
+            try:
+                itinerary = [ItineraryBase.model_validate(day).model_dump() for day in itinerary]
+                if [day["day_number"] for day in itinerary] != list(range(1, days + 1)):
+                    raise ValueError("day sequence does not match requested itinerary")
+            except Exception as validation_error:
+                logger.error("Groq itinerary validation failed status=%s provider_error=%s model=%s finish_reason=%s validation_failure=%s", self._last_http_status, self._last_provider_error, self._selected_model, self._last_finish_reason, validation_error)
+                return None
 
             logger.info("AI itinerary successfully generated for %s (%d days)", destination_name, len(itinerary))
             return itinerary
@@ -478,7 +560,10 @@ Return ONLY a valid JSON array matching this exact structure with {days} days (n
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             }
-            payload = {"model": GROQ_MODEL, "messages": groq_messages}
+            payload = {
+    "model": self._selected_model or FALLBACK_MODEL_OVERRIDE,
+    "messages": groq_messages,
+}
             response = httpx.post(GROQ_API_URL, headers=headers, json=payload, timeout=30.0)
             response.raise_for_status()
             reply = response.json()["choices"][0]["message"]["content"]
@@ -1941,7 +2026,7 @@ Be specific with numbers and reasoning. Do not invent costs or suggest unsupport
             return data
 
         stops_desc = "\n".join(
-            [f"  - Stop {i+1}: {s['destination']} for {s['days']} day(s)" for i, s in enumerate(stops)]
+            [f"  - Stop {i+1}: {s['destination']} for {s['days']} day(s); verified weather context: {json.dumps(s.get('weather_context')) if s.get('weather_context') else 'unavailable; do not invent weather'}" for i, s in enumerate(stops)]
         )
         total_days = sum(s['days'] for s in stops)
         stop_destinations = " → ".join(s['destination'] for s in stops)
@@ -1991,6 +2076,7 @@ STRUCTURAL RULES:
    e. 'coordinates' — object with 'lat' and 'lng' float values (approx geographic center of the destination).
 10. The root JSON object MUST include a 'packing_list' array with 8-10 specific items relevant to this entire route and season.
 11. Add 'global_day_range' to each leg: [start_day, end_day] counting across all stops (e.g., Stop 1: [1,2], Stop 2: [3,5], Stop 3: [6,7]).
+12. Adapt activity suggestions to provided weather context for the corresponding stop; favor indoor plans on high-rain days and consider heat/wind outdoors. Never invent forecast values or alter the total budget.
 
 Return ONLY a valid JSON object (no markdown, no explanation):
 {{

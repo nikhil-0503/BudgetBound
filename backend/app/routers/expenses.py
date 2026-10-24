@@ -60,7 +60,8 @@ def check_expense_limit_and_notify(trip: models.Trip, category: str, db: Session
     total_spent = sum([e.amount for e in trip.expenses if e.category == category])
     
     if total_spent > allocated_limit:
-        message = f"You have exceeded your {category} budget of ₹{allocated_limit:.2f} for your trip to {trip.destination.name}. Total spent: ₹{total_spent:.2f}."
+        trip_destination = trip.destination or trip.custom_destination
+        message = f"You have exceeded your {category} budget of ₹{allocated_limit:.2f} for your trip to {trip_destination.name}. Total spent: ₹{total_spent:.2f}."
         exists = db.query(models.Notification).filter(
             models.Notification.user_id == trip.user_id,
             models.Notification.message == message
@@ -74,7 +75,8 @@ def check_expense_limit_and_notify(trip: models.Trip, category: str, db: Session
             db.add(db_notif)
             db.commit()
     elif total_spent > (allocated_limit * 0.90):
-        message = f"You are approaching your {category} budget limit (₹{allocated_limit:.2f}) for your trip to {trip.destination.name}. Current spending: ₹{total_spent:.2f}."
+        trip_destination = trip.destination or trip.custom_destination
+        message = f"You are approaching your {category} budget limit (₹{allocated_limit:.2f}) for your trip to {trip_destination.name}. Current spending: ₹{total_spent:.2f}."
         exists = db.query(models.Notification).filter(
             models.Notification.user_id == trip.user_id,
             models.Notification.message == message
