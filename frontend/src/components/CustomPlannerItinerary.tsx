@@ -433,7 +433,7 @@ export const CustomPlannerItinerary: React.FC<CustomPlannerItineraryProps> = ({
               {/* Day Header */}
               <div className="bg-gradient-to-r from-paper-100 to-paper-50 dark:from-paper-900/50 dark:to-paper-900/30 px-4 py-3 border-b border-paper-200 dark:border-paper-700">
                 <h5 className="text-sm font-bold text-paper-900 dark:text-white">
-                  DAY {day.day_number.toString().padStart(2, '0')} — {day.title}
+                  DAY {day.day_number.toString().padStart(2, '0')} - {day.title}
                 </h5>
                 <p className="text-xs text-paper-500 dark:text-paper-400 mt-1">
                   {day.description}

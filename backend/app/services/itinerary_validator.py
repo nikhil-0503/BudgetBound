@@ -40,7 +40,7 @@ class ItineraryValidator:
         r'local food',
         r'local experience',
         r'local area',
-        r'day \d+ — day \d+',  # Redundant heading format
+        r'day \d+ - day \d+',  # Redundant heading format
     ]
     
     MINIMUM_ACTIVITY_UNIQUENESS = 0.7  # At least 70% of activities should be unique
@@ -104,7 +104,7 @@ class ItineraryValidator:
         
         # Check each title for issues
         for title in titles:
-            # Check for redundant heading format: "DAY 01 — Day 1 — ..."
+            # Check for redundant heading format: "DAY 01 - Day 1 - ..."
             if re.search(r'day\s+\d+.*day\s+\d+', title, re.IGNORECASE):
                 self.warnings.append(f"Redundant day title format: '{title}'")
                 is_valid = False

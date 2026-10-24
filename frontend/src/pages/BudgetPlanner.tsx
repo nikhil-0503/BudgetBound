@@ -863,7 +863,11 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ initialMode = 'dis
             Trip Settings
           </h2>
 
+<<<<<<< HEAD
           <form id="trip-settings-form" onSubmit={handlePrimaryAction} className="flex flex-col gap-5">
+=======
+          <form onSubmit={handlePrimaryAction} className="flex flex-col gap-4">
+>>>>>>> 467e16fe48924e822e46cfc90613a82a82de7374
             <div>
               <label className="block text-xs font-semibold text-paper-500 dark:text-paper-400 uppercase tracking-wider mb-2">Starting Location</label>
               <div className="flex gap-2">

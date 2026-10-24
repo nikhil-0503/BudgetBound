@@ -122,7 +122,7 @@ class PersonalizedPlanValidator:
             self.checks_passed["day_titles"] = False
             return
         
-        # Check for generic titles (e.g., "Day 1 — Day 1", "DAY 01 — Day 1")
+        # Check for generic titles (e.g., "Day 1 - Day 1", "DAY 01 - Day 1")
         generic_count = 0
         for title in titles:
             if re.search(r"day\s+\d+.*day\s+\d+|DAY\s+\d+.*DAY\s+\d+", title, re.IGNORECASE):

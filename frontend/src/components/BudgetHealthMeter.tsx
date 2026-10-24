@@ -26,20 +26,26 @@ export const BudgetHealthMeter: React.FC<BudgetHealthMeterProps> = ({
   let progressColor = 'stroke-emerald-500';
   let bgColor = 'bg-emerald-50 dark:bg-emerald-950/20';
   let borderColor = 'border-emerald-200 dark:border-emerald-900/30';
-  let message = 'Excellent budget utilization';
+  let message = 'Excellent budget health';
 
-  if (percentage >= 70 && percentage <= 90) {
+  if (percentage >= 90 && percentage < 100) {
     statusColor = 'text-amber-500';
     progressColor = 'stroke-amber-500';
     bgColor = 'bg-amber-50 dark:bg-amber-950/20';
     borderColor = 'border-amber-200 dark:border-amber-900/30';
     message = 'Approaching budget limit';
-  } else if (percentage > 90) {
+  } else if (percentage >= 100) {
     statusColor = 'text-rose-500';
     progressColor = 'stroke-rose-500';
     bgColor = 'bg-rose-50 dark:bg-rose-950/20';
     borderColor = 'border-rose-200 dark:border-rose-900/30';
     message = 'Budget exceeded';
+  } else if (percentage >= 80) {
+    statusColor = 'text-amber-500';
+    progressColor = 'stroke-amber-500';
+    bgColor = 'bg-amber-50 dark:bg-amber-950/20';
+    borderColor = 'border-amber-200 dark:border-amber-900/30';
+    message = 'Good budget utilization';
   }
 
   // SVG Circular math

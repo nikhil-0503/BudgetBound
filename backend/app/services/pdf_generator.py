@@ -382,9 +382,9 @@ class DetailedTravelItineraryPDF:
         if self.trip.start_date or self.trip.transport_mode or self.trip.hotel_tier:
             summary_data.append([
                 Paragraph("<b>Transport</b>", self.styles['TableHeader']),
-                Paragraph(self.trip.transport_mode or "—", self.styles['TableCell']),
+                Paragraph(self.trip.transport_mode or "-", self.styles['TableCell']),
                 Paragraph("<b>Hotel Tier</b>", self.styles['TableHeader']),
-                Paragraph(self.trip.hotel_tier or "—", self.styles['TableCell']),
+                Paragraph(self.trip.hotel_tier or "-", self.styles['TableCell']),
             ])
         
         if self.trip.travel_type:
@@ -640,7 +640,7 @@ class DetailedTravelItineraryPDF:
                 # Truncate title if too long
                 if len(day_title) > 45:
                     day_title = day_title[:42] + "..."
-                day_text = f"{day_text} — {day_title.upper()}"
+                day_text = f"{day_text} - {day_title.upper()}"
             
             story.append(Paragraph(
                 day_text,
@@ -736,11 +736,11 @@ class DetailedTravelItineraryPDF:
             
             for i in range(mid_point):
                 left_item = items[i]
-                left_status = "✓" if left_item.checked else "—"
+                left_status = "✓" if left_item.checked else "-"
                 
                 if i + mid_point < len(items):
                     right_item = items[i + mid_point]
-                    right_status = "✓" if right_item.checked else "—"
+                    right_status = "✓" if right_item.checked else "-"
                 else:
                     right_item = None
                     right_status = ""
@@ -793,7 +793,7 @@ class DetailedTravelItineraryPDF:
             ]
             
             for doc in self.trip.documents:
-                upload_date = doc.uploaded_at.strftime("%Y-%m-%d") if doc.uploaded_at else "—"
+                upload_date = doc.uploaded_at.strftime("%Y-%m-%d") if doc.uploaded_at else "-"
                 docs_data.append([
                     Paragraph(doc.category, self.styles['TableCell']),
                     Paragraph(doc.filename, self.styles['TableCell']),

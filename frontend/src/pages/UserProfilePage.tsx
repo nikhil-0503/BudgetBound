@@ -44,6 +44,7 @@ export const UserProfilePage: React.FC = () => {
   // Form Fields State
   const [name, setName] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [defaultBudget, setDefaultBudget] = useState(20000);
   const [preferredTravelStyle, setPreferredTravelStyle] = useState('Nature');
   const [preferredComfortLevel, setPreferredComfortLevel] = useState(50);
@@ -56,6 +57,34 @@ export const UserProfilePage: React.FC = () => {
     'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&h=150&q=80', // Traveler Guy
     'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&h=150&q=80'  // Backpacker Girl
   ];
+
+  // Handle file upload
+  const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+      
+      setPhotoFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setPhotoUrl(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -237,6 +266,22 @@ export const UserProfilePage: React.FC = () => {
                 <img src={url} alt={`Option ${idx + 1}`} className="h-full w-full object-cover" />
               </button>
             ))}
+            <label 
+              htmlFor="photo-file-upload"
+              className="h-14 w-14 rounded-full border-2 border-dashed border-marigold-400 hover:border-marigold-600 flex items-center justify-center cursor-pointer transition-all hover:scale-105 bg-marigold-50 dark:bg-marigold-950/20 shrink-0"
+              title="Upload from device"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-marigold-600">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </label>
+            <input
+              id="photo-file-upload"
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoFileChange}
+              className="hidden"
+            />
             <input
               type="text"
               placeholder="Or enter custom avatar photo URL..."
@@ -246,6 +291,12 @@ export const UserProfilePage: React.FC = () => {
               className="flex-1 min-w-[200px] px-3.5 py-2.5 border border-paper-200 dark:border-paper-700 rounded-xl text-xs bg-paper-50 dark:bg-paper-900 focus:outline-none focus:border-marigold-500 dark:text-white"
             />
           </div>
+          {photoFile && (
+            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Photo uploaded: {photoFile.name}
+            </p>
+          )}
         </div>
 
         {/* Row 3: Defaults preferences */}

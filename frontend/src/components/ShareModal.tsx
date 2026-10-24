@@ -170,20 +170,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     {copied ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
                   </button>
                 </div>
-              </div>
-
-              {/* QR Code Canvas Card */}
-              <div className="flex flex-col items-center justify-center p-5 border border-paper-200 dark:border-paper-800 bg-paper-50/50 dark:bg-paper-900/10 rounded-2xl gap-4">
-                <div className="bg-paper-50 p-2 rounded-xl border border-paper-200 shadow-sm">
-                  <canvas ref={canvasRef} />
-                </div>
-                <button
-                  onClick={handleDownloadQR}
-                  className="inline-flex items-center gap-1.5 bg-marigold-600 hover:bg-marigold-500 text-white font-extrabold text-[10px] px-4 py-2 rounded-xl uppercase transition-all shadow-md shadow-marigold-600/10"
-                >
-                  <Download size={12} />
-                  Download QR Code
-                </button>
+                <p className="text-xs text-paper-500 dark:text-paper-400 mt-2">
+                  Share this link with friends and family. They can view your trip details without logging in.
+                </p>
               </div>
 
             </div>

@@ -115,10 +115,12 @@ export const SavedTrips: React.FC = () => {
     try {
       setLoading(true);
       await api.post(`/api/trips/${tripId}/duplicate`);
+      alert('Trip duplicated successfully!');
       await fetchTrips();
     } catch (err) {
       console.error(err);
       alert('Failed to duplicate trip.');
+    } finally {
       setLoading(false);
     }
   };

@@ -130,12 +130,14 @@ class ItineraryOut(ItineraryBase):
         from_attributes = True
 
 # Expense Schemas
-class ExpenseCreate(BaseModel):
-    trip_id: int
+class ExpenseBase(BaseModel):
     date: str
     category: str
     amount: float
     notes: Optional[str] = None
+
+class ExpenseCreate(ExpenseBase):
+    trip_id: int
 
 class ExpenseOut(ExpenseCreate):
     id: int
@@ -426,7 +428,7 @@ class PersonalizedPlanDay(BaseModel):
         json_schema_extra = {
             "example": {
                 "day_number": 1,
-                "title": "Day 1 — Arrival & South Kolkata Heritage",
+                "title": "Day 1 - Arrival & South Kolkata Heritage",
                 "description": "Arrive in Kolkata, check in to your hotel, and explore the South Kolkata heritage district including Victoria Memorial.",
                 "activities": [],
                 "total_cost": 3600.0

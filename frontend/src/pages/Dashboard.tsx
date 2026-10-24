@@ -209,7 +209,7 @@ export const Dashboard: React.FC = () => {
         </Link>
       </div>
 
-      {/* Core Stats Cards — ticket stubs */}
+      {/* Core Stats Cards - ticket stubs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
         {/* Total Trips */}
@@ -464,12 +464,16 @@ export const Dashboard: React.FC = () => {
                         <td className="py-4 text-right">
                           <div className="flex items-center justify-end gap-2.5">
                             <button
+<<<<<<< HEAD
                               onClick={() => {
                                 // Navigate to planner with tripId to load the complete saved trip
                                 navigate(`/planner?tripId=${trip.id}`);
                               }}
+=======
+                              onClick={() => navigate(`/optimizer/${trip.id}`)}
+>>>>>>> 467e16fe48924e822e46cfc90613a82a82de7374
                               className="p-2 rounded-lg bg-paper-50 hover:bg-paper-100 dark:bg-paper-700/40 dark:hover:bg-paper-700 text-paper-600 dark:text-paper-300 transition-all"
-                              title="View Details / Re-simulate"
+                              title="View Trip Details"
                             >
                               <Eye size={14} />
                             </button>

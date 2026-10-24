@@ -779,47 +779,67 @@ def get_region(text: str) -> str:
     return "Unknown"
 
 def calculate_costs(dest: models.Destination, days: int, travelers: int, comfort_score: int, starting_city: str = ""):
-    # 1. Transport Mode & Cost (influenced by starting city region)
+    # 1. Transport Mode & Cost (influenced by starting city region and inter-regional distance)
     start_region = get_region(starting_city)
     dest_region = get_region(dest.state)
 
-    # Expanded regional multiplier matrix — geographically calibrated haul distances.
-    # Multiplier is applied to the base cost BEFORE flooring so cheap destinations
-    # still reflect regional distance differences.
+    # Enhanced regional multiplier matrix with stronger differentiation
+    # Base transport cost varies significantly based on distance
     multiplier = 1.0
     if start_region != "Unknown" and dest_region != "Unknown":
         if start_region == dest_region:
-            multiplier = 0.45   # same region — short haul, heavy discount
+            # Same region - short haul (Bangalore to Mysore, Mumbai to Goa)
+            multiplier = 0.35   # Much cheaper for nearby destinations
         else:
-            # Long haul: North↔South (Delhi↔Chennai ~2200km), East↔West (Kolkata↔Mumbai ~2000km)
+            # Calculate distance-based multipliers for different region pairs
             long_haul = (
-                {start_region, dest_region} == {"North", "South"} or
-                {start_region, dest_region} == {"East", "West"}
+                {start_region, dest_region} == {"North", "South"} or  # Delhi↔Chennai ~2200km
+                {start_region, dest_region} == {"East", "West"}       # Kolkata↔Mumbai ~2000km
             )
-            # Medium-long: North↔West (Delhi↔Goa ~1900km), North↔East (Delhi↔Kolkata ~1500km)
             medium_long = (
-                {start_region, dest_region} == {"North", "West"} or
-                {start_region, dest_region} == {"North", "East"}
+                {start_region, dest_region} == {"North", "West"} or   # Delhi↔Goa ~1900km
+                {start_region, dest_region} == {"North", "East"} or   # Delhi↔Kolkata ~1500km
+                {start_region, dest_region} == {"South", "East"}      # Chennai↔Kolkata ~1700km
             )
-            # Medium: South↔West (Chennai↔Goa ~1000km), South↔East (Chennai↔Kolkata ~1700km)
             medium = (
-                {start_region, dest_region} == {"South", "West"} or
-                {start_region, dest_region} == {"South", "East"}
+                {start_region, dest_region} == {"South", "West"}      # Chennai↔Goa ~1000km
             )
+            
             if long_haul:
-                multiplier = 1.45   # Delhi↔Chennai, Kolkata↔Goa — farthest routes
+                multiplier = 1.75   # Maximum distance - highest transport cost
             elif medium_long:
-                multiplier = 1.25   # Delhi↔Goa, Delhi↔Kolkata
+                multiplier = 1.35   # Medium-long distance
             elif medium:
-                multiplier = 1.05   # Chennai↔Goa, Chennai↔Kolkata — shorter routes
+                multiplier = 1.10   # Medium distance
             else:
-                multiplier = 1.0    # fallback for any unmatched pair
+                multiplier = 1.20   # Default inter-regional
+    else:
+        # If starting city is unknown, assume average distance
+        multiplier = 1.0
 
+<<<<<<< HEAD
     comfort_factors = _comfort_cost_factors(comfort_score)
     # Keep mode and cost independent of arbitrary comfort thresholds. Destination
     # average travel cost remains the anchor; the continuous factor is applied once.
     transport_mode = "Comfort-adjusted intercity estimate"
     transport_cost = max(600.0, dest.avg_travel_cost * multiplier) * travelers * comfort_factors["transport"]
+=======
+    # Apply distance multiplier with stronger impact
+    if comfort_score < 50:
+        transport_mode = "Train"
+        # Base train cost with distance multiplier
+        base_train = dest.avg_travel_cost * 0.40 * multiplier
+        # Add minimum floor based on distance
+        min_cost = 400.0 if multiplier < 0.5 else (800.0 if multiplier < 1.0 else 1200.0)
+        transport_cost = max(min_cost, base_train) * travelers
+    else:
+        transport_mode = "Flight"
+        # Base flight cost with distance multiplier
+        base_flight = dest.avg_travel_cost * 1.20 * multiplier
+        # Add minimum floor based on distance
+        min_cost = 2000.0 if multiplier < 0.5 else (3000.0 if multiplier < 1.0 else 4500.0)
+        transport_cost = max(min_cost, base_flight) * travelers
+>>>>>>> 467e16fe48924e822e46cfc90613a82a82de7374
 
     # 2. Hotel Tier & Cost
     hotel_tier = "Comfort-adjusted"
@@ -871,7 +891,7 @@ def calculate_score_breakdown(
     travel_type: str,
     comfort_score: int
 ) -> dict:
-    # 1. Budget Fit (35%) — still the primary driver but comfort gets more room
+    # 1. Budget Fit (35%) - still the primary driver but comfort gets more room
     total_cost = costs["total_estimated_cost"]
     diff = abs(budget - total_cost) / budget
     if total_cost <= budget:
@@ -879,7 +899,7 @@ def calculate_score_breakdown(
     else:
         budget_fit = max(0.0, 1.0 - diff * 4.0)  # heavy penalty if over budget
 
-    # 2. Category Match (25%) — unchanged
+    # 2. Category Match (25%) - unchanged
     main_match = 1.0 if dest.category.lower() == travel_type.lower() else 0.0
     sub_score = 0.0
     t_type = travel_type.lower()
@@ -902,14 +922,14 @@ def calculate_score_breakdown(
 
     cat_match = 0.6 * main_match + 0.4 * (sub_score / 100.0)
 
-    # 3. Rating Match (12%) — slightly reduced to make room for comfort
+    # 3. Rating Match (12%) - slightly reduced to make room for comfort
     rating_match = (dest.rating or 4.0) / 5.0
 
-    # 4. Comfort Match (20%) — doubled from 10% so slider meaningfully reorders results.
+    # 4. Comfort Match (20%) - doubled from 10% so slider meaningfully reorders results.
     # A destination whose comfort_level is far from the user's comfort_score is penalised.
     comfort_match = 1.0 - abs(comfort_score - (dest.comfort_level or 50)) / 100.0
 
-    # 5. Duration Suitability (8%) — minor factor
+    # 5. Duration Suitability (8%) - minor factor
     rec_dur = dest.recommended_duration or 4
     duration_suitability = max(0.0, 1.0 - abs(days - rec_dur) / 5.0)
 
@@ -933,19 +953,19 @@ def calculate_score_breakdown(
     savings_amt = round(budget - estimated_cost, 0)
     if budget_fit >= 0.90:
         explanations.append(
-            f"Excellent budget fit ({budget_fit_pct}%) — estimated cost ₹{estimated_cost:,.0f} leaves ₹{savings_amt:,.0f} unspent."
+            f"Excellent budget fit ({budget_fit_pct}%) - estimated cost ₹{estimated_cost:,.0f} leaves ₹{savings_amt:,.0f} unspent."
         )
     elif budget_fit >= 0.75:
         explanations.append(
-            f"Good budget fit ({budget_fit_pct}%) — estimated ₹{estimated_cost:,.0f} uses most of your ₹{budget:,.0f} budget efficiently."
+            f"Good budget fit ({budget_fit_pct}%) - estimated ₹{estimated_cost:,.0f} uses most of your ₹{budget:,.0f} budget efficiently."
         )
     elif budget_fit >= 0.50:
         explanations.append(
-            f"Moderate budget fit ({budget_fit_pct}%) — estimated ₹{estimated_cost:,.0f} is close to your ₹{budget:,.0f} budget limit."
+            f"Moderate budget fit ({budget_fit_pct}%) - estimated ₹{estimated_cost:,.0f} is close to your ₹{budget:,.0f} budget limit."
         )
     else:
         explanations.append(
-            f"Low budget fit ({budget_fit_pct}%) — estimated ₹{estimated_cost:,.0f} against ₹{budget:,.0f} budget. Consider adjusting days or comfort."
+            f"Low budget fit ({budget_fit_pct}%) - estimated ₹{estimated_cost:,.0f} against ₹{budget:,.0f} budget. Consider adjusting days or comfort."
         )
 
     # 2. Travel type / category match explanation
@@ -953,15 +973,15 @@ def calculate_score_breakdown(
     dest_cat = dest.category
     if cat_match >= 0.80:
         explanations.append(
-            f"Strong {travel_type} match ({type_pct}%) — {dest.name} is categorised as {dest_cat} and scores highly for your travel style."
+            f"Strong {travel_type} match ({type_pct}%) - {dest.name} is categorised as {dest_cat} and scores highly for your travel style."
         )
     elif cat_match >= 0.55:
         explanations.append(
-            f"Good {travel_type} alignment ({type_pct}%) — {dest.name} is a {dest_cat} destination with relevant attractions for your style."
+            f"Good {travel_type} alignment ({type_pct}%) - {dest.name} is a {dest_cat} destination with relevant attractions for your style."
         )
     else:
         explanations.append(
-            f"Partial {travel_type} match ({type_pct}%) — {dest.name} is primarily a {dest_cat} destination but has activities that suit your interests."
+            f"Partial {travel_type} match ({type_pct}%) - {dest.name} is primarily a {dest_cat} destination but has activities that suit your interests."
         )
 
     # 3. Comfort match explanation
@@ -970,45 +990,45 @@ def calculate_score_breakdown(
     gap = abs(comfort_score - dest_comfort)
     if comfort_match >= 0.90:
         explanations.append(
-            f"Comfort alignment is excellent ({comfort_match_pct}%) — your comfort preference ({comfort_score}/100) closely matches this destination's standard ({dest_comfort}/100)."
+            f"Comfort alignment is excellent ({comfort_match_pct}%) - your comfort preference ({comfort_score}/100) closely matches this destination's standard ({dest_comfort}/100)."
         )
     elif comfort_match >= 0.75:
         explanations.append(
-            f"Good comfort match ({comfort_match_pct}%) — your preference ({comfort_score}/100) is {gap} points from the destination comfort level ({dest_comfort}/100)."
+            f"Good comfort match ({comfort_match_pct}%) - your preference ({comfort_score}/100) is {gap} points from the destination comfort level ({dest_comfort}/100)."
         )
     else:
         explanations.append(
-            f"Comfort mismatch ({comfort_match_pct}%) — your preference is {comfort_score}/100 but this destination is rated {dest_comfort}/100. Adjust comfort score for better fits."
+            f"Comfort mismatch ({comfort_match_pct}%) - your preference is {comfort_score}/100 but this destination is rated {dest_comfort}/100. Adjust comfort score for better fits."
         )
 
     # 4. Rating explanation
     rating_val = dest.rating or 4.0
     if rating_val >= 4.5:
         explanations.append(
-            f"Top-rated destination — {dest.name} holds a {rating_val}/5.0 visitor rating, placing it in the top tier of all destinations."
+            f"Top-rated destination - {dest.name} holds a {rating_val}/5.0 visitor rating, placing it in the top tier of all destinations."
         )
     elif rating_val >= 4.0:
         explanations.append(
-            f"Highly rated — {dest.name} has a strong {rating_val}/5.0 visitor rating based on traveler feedback."
+            f"Highly rated - {dest.name} has a strong {rating_val}/5.0 visitor rating based on traveler feedback."
         )
     else:
         explanations.append(
-            f"Moderately rated — {dest.name} has a {rating_val}/5.0 visitor rating. Fewer reviews or a niche appeal destination."
+            f"Moderately rated - {dest.name} has a {rating_val}/5.0 visitor rating. Fewer reviews or a niche appeal destination."
         )
 
     # 5. Duration suitability explanation
     dur_pct = round(duration_suitability * 100, 1)
     if duration_suitability >= 0.90:
         explanations.append(
-            f"Ideal trip length — your {days}-day plan perfectly matches the recommended {rec_dur}-day itinerary for {dest.name} ({dur_pct}% suitability)."
+            f"Ideal trip length - your {days}-day plan perfectly matches the recommended {rec_dur}-day itinerary for {dest.name} ({dur_pct}% suitability)."
         )
     elif days < rec_dur:
         explanations.append(
-            f"Short trip alert ({dur_pct}%) — {dest.name} is best explored in {rec_dur} days; your {days}-day plan may miss some key attractions."
+            f"Short trip alert ({dur_pct}%) - {dest.name} is best explored in {rec_dur} days; your {days}-day plan may miss some key attractions."
         )
     else:
         explanations.append(
-            f"Extended stay ({dur_pct}%) — {dest.name} is ideally visited in {rec_dur} days; your {days}-day plan gives extra relaxation time."
+            f"Extended stay ({dur_pct}%) - {dest.name} is ideally visited in {rec_dur} days; your {days}-day plan gives extra relaxation time."
         )
 
     return {
@@ -1477,7 +1497,7 @@ async def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends
 
     # --- Strict budget enforcement ---
     if req.destination_id is not None:
-        # A specific destination was requested — check if it fits the budget
+        # A specific destination was requested - check if it fits the budget
         selected_plan = matched_plans[0]
         if not selected_plan["under_budget"]:
             est = round(selected_plan["costs"]["total_estimated_cost"], 2)
@@ -1512,11 +1532,11 @@ async def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends
                 )
             )
     else:
-        # Full catalog mode — only consider under-budget destinations
+        # Full catalog mode - only consider under-budget destinations
         under_budget_plans = [p for p in matched_plans if p["under_budget"]]
 
         if not under_budget_plans:
-            # No destination fits — find the closest one for a helpful message
+            # No destination fits - find the closest one for a helpful message
             matched_plans.sort(key=lambda x: x["costs"]["total_estimated_cost"])
             cheapest = matched_plans[0]
             cheapest_cost = round(cheapest["costs"]["total_estimated_cost"], 2)
@@ -1565,7 +1585,7 @@ async def generate_trip_plan(req: schemas.TripPlanRequest, db: Session = Depends
         selected_plan["costs"]["transport_cost"]
     )
 
-    # 4. Score breakdown (explainability) — MUST be computed before return
+    # 4. Score breakdown (explainability) - MUST be computed before return
     breakdown = calculate_score_breakdown(
         dest,
         selected_plan["costs"],
@@ -2021,21 +2041,73 @@ def update_trip(
     ).first()
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")
-        
+    
+    # Track if parameters that affect cost calculation have changed
+    needs_recalculation = False
+    old_travelers = trip.travelers_count
+    old_days = trip.days
+    old_comfort = trip.comfort_score
+    
     if "budget" in payload:
         trip.budget = float(payload["budget"])
     if "days" in payload:
-        trip.days = int(payload["days"])
+        new_days = int(payload["days"])
+        if new_days != old_days:
+            needs_recalculation = True
+        trip.days = new_days
     if "travelers_count" in payload:
-        trip.travelers_count = int(payload["travelers_count"])
+        new_travelers = int(payload["travelers_count"])
+        if new_travelers != old_travelers:
+            needs_recalculation = True
+        trip.travelers_count = new_travelers
     if "travel_type" in payload:
         trip.travel_type = payload["travel_type"]
     if "comfort_score" in payload:
-        trip.comfort_score = int(payload["comfort_score"])
+        new_comfort = int(payload["comfort_score"])
+        if new_comfort != old_comfort:
+            needs_recalculation = True
+        trip.comfort_score = new_comfort
     if "status" in payload:
         trip.status = payload["status"]
     if "start_date" in payload:
         trip.start_date = payload["start_date"]
+    
+    # Recalculate costs if necessary parameters changed
+    if needs_recalculation:
+        # Get destination for cost calculation
+        destination = db.query(models.Destination).filter(
+            models.Destination.id == trip.destination_id
+        ).first()
+        
+        if destination:
+            # Get user's default starting city or use empty string
+            starting_city = current_user.default_starting_city or ""
+            
+            # Recalculate costs based on new parameters
+            # Note: calculate_costs uses 'travelers' parameter, not 'travelers_count'
+            costs = calculate_costs(
+                dest=destination,
+                days=trip.days,
+                travelers=trip.travelers_count,
+                comfort_score=trip.comfort_score,
+                starting_city=starting_city
+            )
+            
+            # Update trip with new costs
+            trip.total_estimated_cost = costs["total_estimated_cost"]
+            trip.hotel_tier = costs["hotel_tier"]
+            trip.transport_mode = costs["transport_mode"]
+            
+            # Update budget allocation if it exists
+            if trip.budget_allocation:
+                alloc = trip.budget_allocation
+                alloc.transport_cost = costs["transport_cost"]
+                alloc.local_transport_cost = costs["local_transport_cost"]
+                alloc.hotel_cost = costs["hotel_cost"]
+                alloc.food_cost = costs["food_cost"]
+                alloc.activities_cost = costs["activities_cost"]
+                alloc.taxes_fees_cost = costs["taxes_fees_cost"]
+                alloc.emergency_reserve = costs["emergency_reserve"]
         
     db.commit()
     db.refresh(trip)
@@ -2466,7 +2538,7 @@ def reverse_travel_search(
 
     # Step 3: Rank the under-budget destinations by value_score.
     under_budget.sort(key=lambda x: x["value_score"], reverse=True)
-    return under_budget[:8]
+    return under_budget[:5]  # Return top 5 matches
 
 @router.post("/{trip_id}/optimize", response_model=schemas.OptimizationResponse)
 def optimize_trip(

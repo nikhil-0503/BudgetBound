@@ -20,6 +20,7 @@ from app.services.groq_model_discovery import get_available_model
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # Capture at module load
 FALLBACK_MODEL_OVERRIDE = os.getenv("GROQ_MODEL")  # Allow manual override via env var
+GROQ_MODEL = FALLBACK_MODEL_OVERRIDE or "llama-3.3-70b-versatile"
 
 
 def _safe_provider_log(value: Any) -> str:
@@ -462,8 +463,31 @@ Costs: Food ₹{avg_food_cost:.0f}/meal, Activity ₹{avg_activity_cost:.0f}/ite
 Rules: Generate EXACTLY {days} days. Day 1 morning=arrival. Day {days} evening=departure. Every activity is unique, vivid, cost-estimated. Use supplied place names only. If rain forecast (days 1-3), prefer indoors those days.
 Weather (days 1-3): {json.dumps(compact_weather.get('daily', []) if compact_weather else []) if compact_weather else "No forecast; no weather claims."}
 
+<<<<<<< HEAD
 Return ONLY valid JSON, no other text:
 [{{"day_number": 1, "description": "1-line summary", "activities": [{{"time": "Morning", "title": "Arrival & Check-in", "cost": 0}}, {{"time": "Afternoon", "title": "Activity name", "cost": 300}}, {{"time": "Evening", "title": "Activity name", "cost": 150}}]}}, ...]"""
+=======
+Rules:
+1. Generate EXACTLY {days} days in the array (day_number 1 through {days}).
+2. Day 1 Morning must start with arrival/check-in.
+3. The last day (Day {days}) must end with check-out and departure back home.
+4. Every activity title MUST be unique, vivid, and action-oriented - tailored to {travel_type} (e.g. "Sunrise photography trek", "Sampling local thali at heritage cafe"). NEVER repeat generic titles like "Sightseeing".
+5. Use known attractions naturally across the days.
+6. Provide estimated cost in INR for each activity (0 for free activities).
+
+Return ONLY a valid JSON array matching this exact structure with {days} days (no conversational text):
+[
+  {{
+    "day_number": 1,
+    "description": "Engaging 1-sentence day summary...",
+    "activities": [
+      {{"time": "Morning", "title": "Arrival in {destination_name} & Hotel Check-in", "cost": 0.0}},
+      {{"time": "Afternoon", "title": "Specific afternoon activity name", "cost": 300.0}},
+      {{"time": "Evening", "title": "Specific evening activity name", "cost": 150.0}}
+    ]
+  }}
+]"""
+>>>>>>> 467e16fe48924e822e46cfc90613a82a82de7374
 
         try:
             raw, provider_error = self._chat(prompt, max_retries=1, max_completion_tokens=2000)
@@ -516,10 +540,10 @@ Return ONLY valid JSON, no other text:
             return itinerary
 
         except httpx.HTTPStatusError as e:
-            logger.warning("Groq API error %s: %s — falling back.", e.response.status_code, e.response.text)
+            logger.warning("Groq API error %s: %s - falling back.", e.response.status_code, e.response.text)
             return None
         except Exception as e:
-            logger.warning("AI itinerary generation failed: %s — falling back to templates.", e)
+            logger.warning("AI itinerary generation failed: %s - falling back to templates.", e)
             return None
 
     async def chat_assistant(self, messages: List[Dict[str, str]]) -> Dict[str, Any]:
@@ -783,7 +807,7 @@ ITINERARY REQUIREMENTS (NON-NEGOTIABLE):
 5. Activity titles MUST be:
    - Unique across all {days} days (no repetition)
    - Descriptive and action-oriented (e.g., "Morning ferry ride on Hooghly River to Dakshineswar Temple")
-   - NOT formatted as "DAY 01 — Day 1" (avoid redundant heading styles)
+   - NOT formatted as "DAY 01 - Day 1" (avoid redundant heading styles)
 6. Activities must vary meaningfully by day (different themes, locations, experiences).
 7. Activity timing must be logical (morning → afternoon → evening per day).
 
@@ -830,7 +854,7 @@ RESPONSE FORMAT (Return ONLY valid JSON, no markdown, no explanations):
   "days": [
     {{
       "day_number": 1,
-      "title": "Day 1 — <specific, unique day title>",
+      "title": "Day 1 - <specific, unique day title>",
       "description": "<1-2 sentence overview of the day>",
       "activities": [
         {{
@@ -1013,7 +1037,7 @@ EXAMPLES OF GOOD vs BAD TITLES:
                 for i in range(len(llm_days) + 1, days + 1):
                     llm_days.append({
                         "day_number": i,
-                        "title": f"Day {i} — Continued Exploration",
+                        "title": f"Day {i} - Continued Exploration",
                         "description": f"Additional exploration of {keywords}",
                         "activities": []
                     })
@@ -1374,7 +1398,7 @@ EXAMPLES OF GOOD vs BAD TITLES:
         
         # Ensure we have enough themes
         while len(day_themes) < days:
-            day_themes.append((f"Day {len(day_themes)+1} — Additional Exploration", dest, "Local area"))
+            day_themes.append((f"Day {len(day_themes)+1} - Additional Exploration", dest, "Local area"))
         
         # Build days with varied activities per theme
         days_list = []
@@ -1547,7 +1571,7 @@ EXAMPLES OF GOOD vs BAD TITLES:
             
             days_list.append({
                 "day_number": day_num,
-                "title": f"Day {day_num} — {theme_title}",
+                "title": f"Day {day_num} - {theme_title}",
                 "description": f"Experience {theme_title.lower()} in {dest}. Immerse yourself in local culture and attractions.{' Savor diverse culinary experiences.' if has_food_pref else ''}",
                 "activities": activities,
                 "total_cost": round(day_cost, 2)
@@ -2046,14 +2070,14 @@ Be specific with numbers and reasoning. Do not invent costs or suggest unsupport
 Trip Info:
 - Total Budget: INR {budget:.0f}
 - Total Duration: {total_days} days
-- Budget Allocation Guide (reference only — ensure costs fit within total):
+- Budget Allocation Guide (reference only - ensure costs fit within total):
   - Per night accommodation: ₹{allocations['stops'][0]['allocation']['accommodation_per_night']:.0f}
   - Per day food: ₹{allocations['stops'][0]['allocation']['food_per_day']:.0f}
   - Per day activities: ₹{allocations['stops'][0]['allocation']['activities_per_day']:.0f}
   - Per day local transport: ₹{allocations['stops'][0]['allocation']['local_transport_per_day']:.0f}{preference_instruction}
 
 CRITICAL RULES FOR DESTINATION SPECIFICITY:
-1. For EACH destination, research and use ACTUAL local attractions, restaurants, and experiences — NOT generic templates like "Old Quarter Walk", "Bazaar & Handicraft", "Scenic Viewpoint".
+1. For EACH destination, research and use ACTUAL local attractions, restaurants, and experiences - NOT generic templates like "Old Quarter Walk", "Bazaar & Handicraft", "Scenic Viewpoint".
 2. Activities MUST be vivid, specific, and action-oriented. Examples:
    - Good: "Sunrise hike to Arunachaleswara Temple via jungle trail"
    - Bad: "Visit historical temple"
@@ -2066,14 +2090,14 @@ STRUCTURAL RULES:
 4. Final leg must end with check-out and return home.
 5. Budget per leg should be proportional to its days. DO NOT allocate equal budget per stop regardless of duration.
 6. All activity costs must be realistic INR values based on destination cost of living.
-7. Every activity title must be VIVID and SPECIFIC — never use generic terms like "Sightseeing", "Lunch", "Shopping", "Relaxation".
+7. Every activity title must be VIVID and SPECIFIC - never use generic terms like "Sightseeing", "Lunch", "Shopping", "Relaxation".
 8. Each activity MUST include a 1-sentence 'notes' field with insider tips, best times, or local recommendations.
 9. Each leg MUST include:
-   a. 'highlights' — a list of 3-4 SPECIFIC must-see attractions for that destination (not generic).
-   b. 'must_try_food' — a list of 2-3 SPECIFIC iconic local dishes or street foods (use REAL local names where possible).
-   c. 'travel_to_next' — object with 'mode' (Train/Bus/Flight/Road), 'duration' (e.g. '4 hrs'), 'approx_cost' (INR). Omit ONLY for the final leg.
-   d. 'best_time_tip' — one sentence tip about the best time of day or season for this destination.
-   e. 'coordinates' — object with 'lat' and 'lng' float values (approx geographic center of the destination).
+   a. 'highlights' - a list of 3-4 SPECIFIC must-see attractions for that destination (not generic).
+   b. 'must_try_food' - a list of 2-3 SPECIFIC iconic local dishes or street foods (use REAL local names where possible).
+   c. 'travel_to_next' - object with 'mode' (Train/Bus/Flight/Road), 'duration' (e.g. '4 hrs'), 'approx_cost' (INR). Omit ONLY for the final leg.
+   d. 'best_time_tip' - one sentence tip about the best time of day or season for this destination.
+   e. 'coordinates' - object with 'lat' and 'lng' float values (approx geographic center of the destination).
 10. The root JSON object MUST include a 'packing_list' array with 8-10 specific items relevant to this entire route and season.
 11. Add 'global_day_range' to each leg: [start_day, end_day] counting across all stops (e.g., Stop 1: [1,2], Stop 2: [3,5], Stop 3: [6,7]).
 12. Adapt activity suggestions to provided weather context for the corresponding stop; favor indoor plans on high-rain days and consider heat/wind outdoors. Never invent forecast values or alter the total budget.
@@ -2422,7 +2446,7 @@ Return ONLY a valid JSON object (no markdown, no explanation):
                 itinerary_days.append({
                     "day_number": day_num,
                     "global_day_number": global_day_num,
-                    "description": f"Day {global_day_num} — {dest}" + (" (Arrival)" if d == 0 else (" (Departure)" if d == days - 1 and not is_last else "")),
+                    "description": f"Day {global_day_num} - {dest}" + (" (Arrival)" if d == 0 else (" (Departure)" if d == days - 1 and not is_last else "")),
                     "activities": activities
                 })
             
